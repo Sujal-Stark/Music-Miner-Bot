@@ -6,8 +6,9 @@ import Constants
 
 try:
     with PagalWorldDataScraperBot(siteUrl = Constants.PAGALWORLDURL) as bot1:
-        bot1.getInput("challa")
-        ic(bot1.findSongHolderElements())
+        bot1.getInput("kash aisa hota")
+        # bot1.downloadSingleSong(bot1.findSongHolderElements()[0])
+        ic(bot1.getMusicInfoFromPage(bot1.findSongHolderElements()[0]))
         pass
 
 except WebDriverException as e:
