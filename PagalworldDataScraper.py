@@ -13,6 +13,7 @@ import time
 
 class PagalWorldDataScraperBot(webdriver.Chrome):
     def __init__(self,siteUrl : list, options = None, service = None, keep_alive = True)->None:
+        '''Constructor for Pagal world website crawling bot if bot doesn't work may possible that links are changed, use new links'''
         super().__init__(options, service, keep_alive)
         self.get(siteUrl)
         self.implicitly_wait(10)
@@ -21,6 +22,7 @@ class PagalWorldDataScraperBot(webdriver.Chrome):
         return
     
     def getInput(self, searchParameter : str):
+        '''Takes user given input as song name'''
         searchBar = self.find_element(By.CSS_SELECTOR, 'input[id="gsc-i-id1"]')
         searchBar.send_keys(searchParameter)
         searchBar.send_keys(Keys.ENTER)
@@ -28,6 +30,7 @@ class PagalWorldDataScraperBot(webdriver.Chrome):
         return
     
     def findSongHolderElements(self):
+        '''Finds all the HTML links that ridirects to diffent page'''
         songHolder = self.find_elements(By.CSS_SELECTOR, 'div[class="gs-title"]')
         songContainingURL = []
         for holder in songHolder:
@@ -38,6 +41,7 @@ class PagalWorldDataScraperBot(webdriver.Chrome):
     
     # download a specific song
     def downloadSingleSong(self, pageURL : str):
+        '''download song from the given url in paramter. It uses two appproach.\n1. Sends HHTP request using the link found by bot and download it.\n2. If request fails then bot downloads it.'''
         try:
             self.minimize_window()
             downloader = webdriver.Chrome()
@@ -67,6 +71,7 @@ class PagalWorldDataScraperBot(webdriver.Chrome):
     # stores the all information that is available in the page about the song
     @staticmethod
     def getMusicInfoFromPage(htmlURL : str)-> dict:
+        '''Takes Html links of Pagal world site and fetch song related important data.'''
         dataSet = {}
         htmlPage = BeautifulSoup(requests.get(htmlURL).text, 'html.parser')
         try:
@@ -80,6 +85,8 @@ class PagalWorldDataScraperBot(webdriver.Chrome):
         except AttributeError:
             pass
         return dataSet
+    
+    # filters out actual song link from given HTML link O(1)
     
     def __exit__(self, exc_type, exc, traceback):
         self.quit()
