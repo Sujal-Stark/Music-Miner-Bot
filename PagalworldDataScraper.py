@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 from bs4 import BeautifulSoup
+from utility import Utility
 
 import re
 import Constants
@@ -29,7 +30,7 @@ class PagalWorldDataScraperBot(webdriver.Chrome):
         time.sleep(Constants.WAITFORLOADING)
         return
     
-    def findSongHolderElements(self):
+    def findSongHolderElements(self) -> list:
         '''Finds all the HTML links that ridirects to diffent page'''
         songHolder = self.find_elements(By.CSS_SELECTOR, 'div[class="gs-title"]')
         songContainingURL = []
@@ -87,6 +88,12 @@ class PagalWorldDataScraperBot(webdriver.Chrome):
         return dataSet
     
     # filters out actual song link from given HTML link O(1)
+    def filterHtmlPagesByName(self, urls : list[str], targetText : str) -> list:
+        '''Takes a list of URLs and analysing the target text inside it, if found returns it in a list'''
+        for html in urls:
+            if not (isinstance(html, str) and html.endswith(".html") and Utility.ifStringContains(html.split('/')[3], targetText = targetText)):
+                urls.remove(html)
+        return urls
     
     def __exit__(self, exc_type, exc, traceback):
         self.quit()
