@@ -9,10 +9,13 @@ class Utility:
         fetchedText, targetText = fetchedText.upper(), targetText.upper() # converting everything upper case to avoid case sensitivity
         ptr1 : int = 0 # tells the current positon for fetchedText
         ptr2 : int = 0 # tells the current position for targetText
-        while (ptr2 != len(targetText)):
+        while (ptr2 != len(targetText) and ptr1 != len(fetchedText)):
+            print(fetchedText[ptr1] , "-----", targetText[ptr2],"\n")
             if(fetchedText[ptr1] == targetText[ptr2]):
                 ptr1 += 1
                 ptr2 += 1
             else:
-                return False
-        return True
+                if(ptr2 != 0):
+                    ptr2 = 0
+                ptr1 += 1
+        return ptr2 == len(targetText)
