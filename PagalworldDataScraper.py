@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.remote.webelement import WebElement
 from bs4 import BeautifulSoup
 from utility import Utility
 
@@ -36,6 +37,42 @@ class PagalWorldDataScraperBot(webdriver.Chrome):
         searchBar.send_keys(Keys.ENTER)
         time.sleep(Constants.WAITFORLOADING)
         return
+    
+    # returns how many pages can be iterated if user search by signer name only
+    def searchBySingerInput(self) -> int:
+        '''Search in website if only self.singer input is given, and finds out total number of pages that could be reached'''
+        searchBar = self.find_element(By.CSS_SELECTOR, 'input[id="gsc-i-id1"]')
+        searchBar.send_keys(self.singer_name)
+        searchBar.send_keys(Keys.ENTER)
+        time.sleep(Constants.WAITFORLOADING)
+        try:
+            searchPagesSoup = BeautifulSoup(
+                self.find_element(By.CSS_SELECTOR, 'div[class="gsc-cursor"]').get_attribute("outerHTML"),
+                "html.parser"
+            )
+            return len(searchPagesSoup.find_all("div"))
+        except WebDriverException:
+            ic("Unable to find selector")
+        return 0
+
+    def getAllSongHolderHTMLforSingerSearch(self, iter : int):
+        if iter == 0 : return []
+        urlList : list[str] = [] # all the songs holding HTML
+        # assuming that bot is landed on first page
+        i = -1
+        try:
+            for i in range(1, iter + 1):
+                # navigatorDivision = self.find_element(By.CSS_SELECTOR, 'div[class="gsc-cursor"]')
+                if(int(self.find_element(By.CSS_SELECTOR, 'div[class="gsc-cursor-page gsc-cursor-current-page"]').text) == i):
+                    htmlLinks = [
+                        el.get_attribute("href") for el in self.find_elements(By.CSS_SELECTOR,'a[class="gs-title"]')if (el.get_attribute("href")!= None and el.get_attribute("href").endswith(".html"))
+                    ]
+                    urlList = urlList + htmlLinks
+                    self.find_element(By.CSS_SELECTOR, f'div[aria-label="Page {i+1}"]').click()
+                    time.sleep(Constants.WAITFORLOADING)
+        except WebDriverException as e:
+            ic(f"oooops wrong web element: {e}") if i == -1 else ic(f"Got Runtime error: {e}")
+            return urlList
     
     def findSongHolderElements(self) -> list:
         '''Finds all the HTML links that ridirects to diffent page'''
@@ -118,10 +155,12 @@ class PagalWorldDataScraperBot(webdriver.Chrome):
     # reorganise the links based upon user given song name singer name and album name
     def filterSongs(self, urls:list[str]) -> list[str]:
         urls = self.filterHtmlPagesByName(urls = urls, targetText = self.song_name) # finds the name of song in links
+        if(len(urls) == 0): return ["Invalid search query"] # don't check further if links are empty
         if self.singer_name: # finds the singer name in link and reorder
             urls = self.filerHTMLPageswithOtherparameter(urls = urls, secondaryParameter = self.singer_name)
         if(self.album_name): # finds album name and reorder
             urls = self.filerHTMLPageswithOtherparameter(urls = urls, secondaryParameter = self.album_name)
+        if(len(urls) == 0): return ["Invalid search query"]
         return urls
     
     def __exit__(self, exc_type, exc, traceback):
