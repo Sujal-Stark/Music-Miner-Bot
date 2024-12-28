@@ -7,22 +7,10 @@ class Utility:
         '''Takes 2 string and finds out fetchedText contains the targetText the utility just ignore case sensitivity'''
         if(len(targetText) > len(fetchedText)): return False # if fetched text is smaller it can't contain the target text
         fetchedText, targetText = fetchedText.upper(), targetText.upper() # converting everything upper case to avoid case sensitivity
-        ptr1 : int = 0 # tells the current positon for fetchedText
-        ptr2 : int = 0 # tells the current position for targetText
-        fetchedText = fetchedText.replace('-', ' ') # replaces special character to analyse properly
-        while (ptr2 != len(targetText) and ptr1 != len(fetchedText)):
-            ic(fetchedText[ptr1], targetText[ptr2])
-            if(fetchedText[ptr1] == targetText[ptr2]):
-                ptr2 += 1
-                ptr1 += 1
-                if(ptr2 == len(targetText)): break
-            else:
-                if(ptr2 != 0):
-                    ptr2 = 0
-                else:
-                    ptr1 += 1
-        # return ptr2 == len(targetText)
-        return targetText in fetchedText
+        # replaces special character to analyse properly
+        fetchedText = fetchedText.replace('-', ' ')
+        fetchedText = fetchedText.replace('%', ' ')
+        return targetText in fetchedText # returns true if target text is in fetched text else returns false
 
 if __name__ == '__main__':
     ic(Utility.ifStringContains(fetchedText = "i am sujal khb Sujal Khan a Good boy", targetText = "Sujal khan"))
