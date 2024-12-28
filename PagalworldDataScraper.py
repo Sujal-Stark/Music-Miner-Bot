@@ -22,6 +22,13 @@ class PagalWorldDataScraperBot(webdriver.Chrome):
         time.sleep(Constants.WAITFORLOADING)
         return
     
+    # initiate properties of song
+    def setSongDetailsFromUser(self, songName : str, singer : str = None, album : str = None) -> None:
+        self.song_name = songName
+        self.singer_name = singer
+        self.album_name = album
+        return
+    
     def getInput(self, searchParameter : str):
         '''Takes user given input as song name'''
         searchBar = self.find_element(By.CSS_SELECTOR, 'input[id="gsc-i-id1"]')
@@ -90,9 +97,31 @@ class PagalWorldDataScraperBot(webdriver.Chrome):
     # filters out actual song link from given HTML link O(1)
     def filterHtmlPagesByName(self, urls : list[str], targetText : str) -> list:
         '''Takes a list of URLs and analysing the target text inside it, if found returns it in a list'''
+        outputUrls : list[str] = [] # a list that will store all the values of validated urls
         for html in urls:
-            if not (isinstance(html, str) and html.endswith(".html") and Utility.ifStringContains(html.split('/')[3], targetText = targetText)):
-                urls.remove(html)
+            if (isinstance(html, str) and html.endswith(".html") and Utility.ifStringContains(html.split('/')[3], targetText = targetText)):
+                outputUrls.append(html)
+        return outputUrls
+    
+    # if other song paramters are given then it tries to analyse that parameter in link if found then that link is ranked up
+    def filerHTMLPageswithOtherparameter(self, urls : list[str], secondaryParameter : str) -> list[str]:
+        '''Reaarange given urls list according to the avialavility of secondary parameter is found in urls.\nReturn urls'''
+        pos : int = 0 # it's the postion of the last ranked up link
+        for i in range(len(urls)):
+            if(urls[i] != None and Utility.ifStringContains(urls[i].split('/')[3], targetText = secondaryParameter)):
+                temp = urls[pos]
+                urls[pos] = urls[i]
+                urls[i] = temp
+                pos += 1
+        return urls
+    
+    # reorganise the links based upon user given song name singer name and album name
+    def filterSongs(self, urls:list[str]) -> list[str]:
+        urls = self.filterHtmlPagesByName(urls = urls, targetText = self.song_name) # finds the name of song in links
+        if self.singer_name: # finds the singer name in link and reorder
+            urls = self.filerHTMLPageswithOtherparameter(urls = urls, secondaryParameter = self.singer_name)
+        if(self.album_name): # finds album name and reorder
+            urls = self.filerHTMLPageswithOtherparameter(urls = urls, secondaryParameter = self.album_name)
         return urls
     
     def __exit__(self, exc_type, exc, traceback):
