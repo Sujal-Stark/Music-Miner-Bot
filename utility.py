@@ -11,11 +11,18 @@ class Utility:
         ptr2 : int = 0 # tells the current position for targetText
         fetchedText = fetchedText.replace('-', ' ') # replaces special character to analyse properly
         while (ptr2 != len(targetText) and ptr1 != len(fetchedText)):
+            ic(fetchedText[ptr1], targetText[ptr2])
             if(fetchedText[ptr1] == targetText[ptr2]):
                 ptr2 += 1
+                ptr1 += 1
                 if(ptr2 == len(targetText)): break
             else:
                 if(ptr2 != 0):
                     ptr2 = 0
-            ptr1 += 1
-        return ptr2 == len(targetText)
+                else:
+                    ptr1 += 1
+        # return ptr2 == len(targetText)
+        return targetText in fetchedText
+
+if __name__ == '__main__':
+    ic(Utility.ifStringContains(fetchedText = "i am sujal khb Sujal Khan a Good boy", targetText = "Sujal khan"))
