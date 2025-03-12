@@ -9,6 +9,8 @@ HREF = "href"
 IMG_TAG = "img"
 SRC = "src"
 B_TAG = "b"
+RGBA_LITERAL = "RGBA"
+RAW_LITERAL = "raw"
 
 
 # WEB SITE PARAMTERS
