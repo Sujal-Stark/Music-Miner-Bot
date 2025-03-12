@@ -24,7 +24,8 @@ class PagalFreeSiteExplorer:
         self.songDataContainer = {
             Constants.LINK_TO_REDIRECT_TUNE_CONTAINER : [], # contains the link of the song
             Constants.LINK_TO_TUNE_POSTER_CONTAINER : [], # stores the link of the poster
-            Constants.SONG_NAME : [] # stores the name of actual songs
+            Constants.SONG_NAME : [], # stores the name of actual songs
+            Constants.SINGER_NAME : [] # The singer name is being stored here
         }
         self.downloadableLinks : list[str] = None # actual links to download songs is stored here, none to abort
         return None
@@ -63,13 +64,16 @@ class PagalFreeSiteExplorer:
     # separates search query elemnts and sent them in a dictionary form
     def dataExtractFromSearchQuery(self, dataElement : list[element.Tag]) -> dict:
         '''Takes self.searchInWebsite() as input and provides a dictionary as output
-            output format => dict {[link to download page], [song name], [url to the poster]}
+            output format => dict {[link to download page], [song name], [singer name]. [url to the poster]}
         '''
         for el in dataElement:
             self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER].append( el.find(Constants.A_TAG).get_attribute_list(Constants.HREF)[0])
             self.songDataContainer[Constants.LINK_TO_TUNE_POSTER_CONTAINER].append(el.find(Constants.IMG_TAG).get_attribute_list(Constants.SRC)[0])
             self.songDataContainer[Constants.SONG_NAME].append(
                 str(el.find(Constants.DIV, class_ = Constants.MAIN_PAGE_SONG_TEXT).find(Constants.B_TAG).text).replace(" ", "").replace("\n", "")
+            )
+            self.songDataContainer[Constants.SINGER_NAME].append(
+                str(el.find(Constants.DIV, class_ = Constants.MAIN_PAGE_SONG_TEXT).find_all(Constants.DIV)[1].text).replace(" ", "").replace("\n", "")
             )
         return self.songDataContainer
     
@@ -126,4 +130,10 @@ if __name__ == '__main__':
     bot = PagalFreeSiteExplorer()
     bot.getParameterFromUser(textInput = input("Enter song name:\t"))
     output = bot.dataExtractFromSearchQuery(bot.searchInWebsite())
-    ic(bot.loadImagesFromLink())
+    # ic(bot.loadImagesFromLink())
+    for index in range(len(output[Constants.SINGER_NAME])):
+        print("Sing name:--->",output[Constants.SONG_NAME][index],"\n",
+            "Singer name:--->",output[Constants.SINGER_NAME][index],"\n",
+            "Song Link:--->",output[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER][index],"\n",
+            "Poster Address:\--->",output[Constants.LINK_TO_TUNE_POSTER_CONTAINER][index],"\n"
+        )
