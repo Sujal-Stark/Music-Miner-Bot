@@ -1,5 +1,5 @@
 # this file is mainly responsible for creating the Graphical user inerface of the software using pyqt5
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QScrollArea
 from PyQt5.QtCore import Qt
 import sys
 # custom import
@@ -18,8 +18,10 @@ class MasterGrapicalUserInterface(QMainWindow):
     def _initializeUI(self) -> None:
         '''this function must be called inside the  constructor so that when the class is called all the uI components get's loaded in the window'''
         self._buildFrames()
+        self._buildScrollArea()
         self._buildLayouts()
         self._buildButtons()
+        self._buildLineInput()
         return
 
     def _buildFrames(self) -> None:
@@ -48,27 +50,74 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.controlSectionLayoutFrame = QFrame()
         self.controlSectionLayoutFrame.setFixedSize(Constants.CONTROL_SECTION_WIDTH, Constants.CONTROL_SECTION_HEIGHT)
         self.controlSectionLayoutFrame.setFrameShape(QFrame.Shape.WinPanel)
+        self.separator_one = QFrame()
+        self.separator_one.setFrameShape(QFrame.Shape.HLine)
+        self.separator_two = QFrame()
+        self.separator_two.setFrameShape(QFrame.Shape.HLine)
+        self.separator_three = QFrame()
+        self.separator_three.setFrameShape(QFrame.Shape.HLine)
 
         self.viewPanelLayoutFrame = QFrame()
         self.viewPanelLayoutFrame.setFixedSize(Constants.VIEW_PANEL_WIDTH, Constants.VIEW_PANEL_HEIGHT)
         self.viewPanelLayoutFrame.setFrameShape(QFrame.Shape.WinPanel)
         return
     
+    def _buildScrollArea(self) -> None:
+        self.tableScrollArea = QScrollArea()
+        # self.tableScrollArea.setWindowOpacity(0.0)
+        self.tableScrollArea.setWidgetResizable(True)
+        self.tableScrollArea.setFixedSize(Constants.VIEW_PANEL_WIDTH -20, Constants.VIEW_PANEL_HEIGHT - 20)
+        self.tableScrollArea.setStyleSheet("background-color: rgba(255, 255, 255, 10);")
+        return
+
     def _buildLayouts(self) -> None:
         '''Must be called inside _initializeUI method. it is used to build the Layouts'''
-        self.masterLayout = QVBoxLayout()
-        self.bodyLayout = QVBoxLayout()
-        self.searchSectionLayout = QHBoxLayout()
-        self.searchSectionLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.actionLayout = QHBoxLayout()
+        self.masterLayout = QVBoxLayout() # master layout for centeral widget
+        self.bodyLayout = QVBoxLayout() # boy layout holds all functioning layouts
+        
+        self.searchSectionLayout = QHBoxLayout() # search field
+        self.searchSectionInnerLayout =  QVBoxLayout() # held by frame
+        self.searchFieldLayout = QHBoxLayout() # holds the search bar
+        self.searchRelatedButtonLayout = QHBoxLayout() # holds the other butten related to search
+        
+        self.actionLayout = QHBoxLayout() # holds Control sectio and view table
+
         self.controlSectionLayout = QVBoxLayout()
-        self.controlSectionLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.viewPanelLayout = QHBoxLayout()
-        self.viewPanelLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.controlSectionInnerLayout = QVBoxLayout() # holds the control widgets
+
+        self.viewPanelLayout = QHBoxLayout() # stores the song details
+        self.viewPanelInnerLayout = QHBoxLayout() # stores the table Scroll Widget
         return
     
     def _buildButtons(self) -> None:
+        # search Related
         self.searchButton = QPushButton(Constants.SEARCH_BUTTON)
+        self.searchBySingerButton = QPushButton(Constants.SEARCH_BY_SINGER_BUTTON)
+
+        # Control Related
+        self.BackGroundbutton = QPushButton(Constants.CHANGE_BACKGROUND)
+        self.BackGroundbutton.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        
+        self.setDownloadDirectory = QPushButton(Constants.SET_DOWNLOAD_DIRECTORY)
+        self.setDownloadDirectory.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        
+        self.HighQualityEnableButton = QPushButton(Constants.SHOW_HIGH_QUALITY)
+        self.HighQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        self.HighQualityEnableButton.setCheckable(True)
+        
+        self.lowQualityEnableButton = QPushButton(Constants.SHOW_LOW_QUALITY)
+        self.lowQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        self.lowQualityEnableButton.setCheckable(True)
+        
+        self.showDownloadingHistory = QPushButton(Constants.SHOW_DOWNLOAD_HISTORY)
+        self.showDownloadingHistory.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        
+        self.deleteDownlaodingHistory = QPushButton(Constants.DELETE_DOWNLOAD_HISTORY)
+        self.deleteDownlaodingHistory.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        return
+    
+    def _buildLineInput(self) -> None:
+        self.inputField = QLineEdit(Constants.SEARCH_HERE)
         return
 
     def _constuctUI(self) -> None:
@@ -82,21 +131,40 @@ class MasterGrapicalUserInterface(QMainWindow):
         #INPUT SECTION
         self.bodyLayout.addLayout(self.searchSectionLayout)
         self.searchSectionLayout.addWidget(self.searchSectionLayoutFrame, Qt.AlignmentFlag.AlignCenter)
+        self.searchSectionLayoutFrame.setLayout(self.searchSectionInnerLayout)
+        self.searchSectionInnerLayout.addLayout(self.searchFieldLayout, Qt.AlignmentFlag.AlignCenter)
+        self.searchSectionInnerLayout.addLayout(self.searchRelatedButtonLayout, Qt.AlignmentFlag.AlignCenter)
 
         #ACTION SECTION
         self.bodyLayout.addLayout(self.actionLayout)
 
         #CONTROL PANEL
-        self.actionLayout.addLayout(self.controlSectionLayout)
+        self.actionLayout.addLayout(self.controlSectionLayout, Qt.AlignmentFlag.AlignCenter)
         self.controlSectionLayout.addWidget(self.controlSectionLayoutFrame, Qt.AlignmentFlag.AlignCenter)
+        self.controlSectionLayoutFrame.setLayout(self.controlSectionInnerLayout)
 
         #VIEW PANEL
         self.actionLayout.addLayout(self.viewPanelLayout)
         self.viewPanelLayout.addWidget(self.viewPanelLayoutFrame, Qt.AlignmentFlag.AlignCenter)
+        self.viewPanelLayoutFrame.setLayout(self.viewPanelInnerLayout)
+        self.viewPanelInnerLayout.addWidget(self.tableScrollArea)
         return
     
     def _addAttributes(self):
-        # self.searchSectionLayout.addWidget(self.searchButton, alignment = Qt.AlignmentFlag.AlignLeft)
+        # search Section
+        self.searchFieldLayout.addWidget(self.inputField, Qt.AlignmentFlag.AlignCenter)
+        self.searchRelatedButtonLayout.addWidget(self.searchBySingerButton, Qt.AlignmentFlag.AlignCenter)
+        self.searchRelatedButtonLayout.addWidget(self.searchButton, Qt.AlignmentFlag.AlignCenter)
+
+        # Control Section
+        self.controlSectionInnerLayout.addWidget(self.BackGroundbutton, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerLayout.addWidget(self.separator_one, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerLayout.addWidget(self.HighQualityEnableButton, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerLayout.addWidget(self.lowQualityEnableButton, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerLayout.addWidget(self.separator_two, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerLayout.addWidget(self.setDownloadDirectory, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerLayout.addWidget(self.showDownloadingHistory, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerLayout.addWidget(self.deleteDownlaodingHistory, alignment=Qt.AlignmentFlag.AlignTop)
         return
     pass
 
