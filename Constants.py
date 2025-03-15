@@ -40,4 +40,16 @@ VIEW_PANEL_WIDTH = 610
 VIEW_PANEL_HEIGHT = CONTROL_SECTION_HEIGHT
 
 # widget titles
+
+# search Related
 SEARCH_BUTTON = "search"
+SEARCH_BY_SINGER_BUTTON =  "Search by singer's Name"
+SEARCH_HERE = "Search here 😁"
+
+# CONTROL RELATED
+CHANGE_BACKGROUND = "Change Background"
+SET_DOWNLOAD_DIRECTORY = "Set downlaoding Directory"
+SHOW_HIGH_QUALITY = "Show High Quality"
+SHOW_LOW_QUALITY = "Show Low Quality"
+SHOW_DOWNLOAD_HISTORY = "Show downloading history"
+DELETE_DOWNLOAD_HISTORY = "Delete downloading history"
