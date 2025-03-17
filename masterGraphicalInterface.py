@@ -1,5 +1,5 @@
 # this file is mainly responsible for creating the Graphical user inerface of the software using pyqt5
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QScrollArea
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QScrollArea, QTableWidget, QAbstractItemView
 from PyQt5.QtCore import Qt
 import sys
 # custom import
@@ -22,6 +22,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self._buildLayouts()
         self._buildButtons()
         self._buildLineInput()
+        self._buildTableWidget()
         return
 
     def _buildFrames(self) -> None:
@@ -87,8 +88,25 @@ class MasterGrapicalUserInterface(QMainWindow):
 
         self.viewPanelLayout = QHBoxLayout() # stores the song details
         self.viewPanelInnerLayout = QHBoxLayout() # stores the table Scroll Widget
+        self.tableHolderLayout = QHBoxLayout() # holds the table
         return
     
+    def _buildTableWidget(self) -> None:
+        '''Mean't to be  called under _initailizeUI method builds the table view of the generated song data'''
+        width, height = self.tableScrollArea.width()- 20, self.tableScrollArea.height()- 20
+        self.songDetailExhibiterTable = QTableWidget()
+        self.songDetailExhibiterTable.setFixedSize(width, height)
+        self.songDetailExhibiterTable.setColumnCount(4)
+        self.songDetailExhibiterTable.setColumnWidth(0, Constants.THUMBNAIL_SIZE)
+        self.songDetailExhibiterTable.setColumnWidth(1,Constants.SONG_NAME_SIZE)
+        self.songDetailExhibiterTable.setColumnWidth(2,Constants.SINGER_NAME_SIZE)
+        self.songDetailExhibiterTable.setColumnWidth(3, Constants.DOWNLOAD_URL_SIZE)
+        self.songDetailExhibiterTable.setHorizontalHeaderLabels(
+            [Constants.THUMBNAIL, Constants.SONG_NAME, Constants.SINGER_NAME, Constants.DOWNLOAD_URL]
+        )
+        self.songDetailExhibiterTable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        return
+
     def _buildButtons(self) -> None:
         # search Related
         self.searchButton = QPushButton(Constants.SEARCH_BUTTON)
@@ -148,6 +166,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.viewPanelLayout.addWidget(self.viewPanelLayoutFrame, Qt.AlignmentFlag.AlignCenter)
         self.viewPanelLayoutFrame.setLayout(self.viewPanelInnerLayout)
         self.viewPanelInnerLayout.addWidget(self.tableScrollArea)
+        self.tableScrollArea.setLayout(self.tableHolderLayout)
         return
     
     def _addAttributes(self):
@@ -165,6 +184,8 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.controlSectionInnerLayout.addWidget(self.setDownloadDirectory, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerLayout.addWidget(self.showDownloadingHistory, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerLayout.addWidget(self.deleteDownlaodingHistory, alignment=Qt.AlignmentFlag.AlignTop)
+
+        # View panel
         return
     pass
 
