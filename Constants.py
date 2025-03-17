@@ -53,3 +53,15 @@ SHOW_HIGH_QUALITY = "Show High Quality"
 SHOW_LOW_QUALITY = "Show Low Quality"
 SHOW_DOWNLOAD_HISTORY = "Show downloading history"
 DELETE_DOWNLOAD_HISTORY = "Delete downloading history"
+
+# table Headers
+SERIAL = "Serial"
+SERIAL_SIZE = 130
+THUMBNAIL = "Thumbnail"
+THUMBNAIL_SIZE = 130
+SONG_NAME = "Song name"
+SONG_NAME_SIZE = 150
+SINGER_NAME = "Singer name"
+SINGER_NAME_SIZE = 150
+DOWNLOAD_URL = "Download Url"
+DOWNLOAD_URL_SIZE = 115
