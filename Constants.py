@@ -42,7 +42,7 @@ VIEW_PANEL_HEIGHT = CONTROL_SECTION_HEIGHT
 # widget titles
 
 # search Related
-SEARCH_BUTTON = "search"
+SEARCH_BUTTON = "Search"
 SEARCH_BY_SINGER_BUTTON =  "Search by singer's Name"
 SEARCH_HERE = "Search here 😁"
 
@@ -65,3 +65,10 @@ SINGER_NAME = "Singer name"
 SINGER_NAME_SIZE = 150
 DOWNLOAD_URL = "Download Url"
 DOWNLOAD_URL_SIZE = 115
+
+# Static file Paths
+ICON_PATH = R"static\icon.png"
+TABLE_DEFAULT_LABEL = R"static\tagline.png"
+
+#QML path
+MAIN_QML_PATH = "masterUI.qml"
