@@ -1,18 +1,24 @@
 # this file is mainly responsible for creating the Graphical user inerface of the software using pyqt5
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QScrollArea, QTableWidget, QAbstractItemView
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QAbstractItemView
+from PyQt5.QtCore import Qt, QFile, QIODevice
+from PyQt5.QtGui import QIcon, QPixmap
 import sys
+
 # custom import
 import Constants
+from ImageModifierEngine import ImageModifier
 
 class MasterGrapicalUserInterface(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle(Constants.SOFTWARE_TITLE)
+        self.setWindowIcon(QIcon(Constants.ICON_PATH))
         self.setFixedSize(Constants.SOFTWARE_WIDTH, Constants.SOFTWARE_HEIGHT)
         self._initializeUI()
         self._constuctUI()
         self._addAttributes()
+        self.alterTableView()
+        self._loadStyleSheet()
         return
 
     def _initializeUI(self) -> None:
@@ -21,6 +27,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self._buildScrollArea()
         self._buildLayouts()
         self._buildButtons()
+        self._buildLabels()
         self._buildLineInput()
         self._buildTableWidget()
         return
@@ -42,15 +49,15 @@ class MasterGrapicalUserInterface(QMainWindow):
         
         self.masterLayoutInnerFrame = QFrame()
         self.masterLayoutInnerFrame.setFixedSize(Constants.SOFTWARE_WIDTH - 20, Constants.SOFTWARE_HEIGHT - 20)
-        self.masterLayoutInnerFrame.setFrameShape(QFrame.Shape.WinPanel)
+        self.masterLayoutInnerFrame.setFrameShape(QFrame.Shape.StyledPanel)
         
         self.searchSectionLayoutFrame = QFrame()
         self.searchSectionLayoutFrame.setFixedSize(Constants.SEARCH_SECTION_WIDTH, Constants.SEARCH_SECTION_HEIGHT)
-        self.searchSectionLayoutFrame.setFrameShape(QFrame.Shape.WinPanel)
+        self.searchSectionLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
 
         self.controlSectionLayoutFrame = QFrame()
         self.controlSectionLayoutFrame.setFixedSize(Constants.CONTROL_SECTION_WIDTH, Constants.CONTROL_SECTION_HEIGHT)
-        self.controlSectionLayoutFrame.setFrameShape(QFrame.Shape.WinPanel)
+        self.controlSectionLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
         self.separator_one = QFrame()
         self.separator_one.setFrameShape(QFrame.Shape.HLine)
         self.separator_two = QFrame()
@@ -60,7 +67,7 @@ class MasterGrapicalUserInterface(QMainWindow):
 
         self.viewPanelLayoutFrame = QFrame()
         self.viewPanelLayoutFrame.setFixedSize(Constants.VIEW_PANEL_WIDTH, Constants.VIEW_PANEL_HEIGHT)
-        self.viewPanelLayoutFrame.setFrameShape(QFrame.Shape.WinPanel)
+        self.viewPanelLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
         return
     
     def _buildScrollArea(self) -> None:
@@ -110,7 +117,9 @@ class MasterGrapicalUserInterface(QMainWindow):
     def _buildButtons(self) -> None:
         # search Related
         self.searchButton = QPushButton(Constants.SEARCH_BUTTON)
+        self.searchButton.setFixedHeight(25)
         self.searchBySingerButton = QPushButton(Constants.SEARCH_BY_SINGER_BUTTON)
+        self.searchBySingerButton.setFixedHeight(25)
 
         # Control Related
         self.BackGroundbutton = QPushButton(Constants.CHANGE_BACKGROUND)
@@ -132,6 +141,11 @@ class MasterGrapicalUserInterface(QMainWindow):
         
         self.deleteDownlaodingHistory = QPushButton(Constants.DELETE_DOWNLOAD_HISTORY)
         self.deleteDownlaodingHistory.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        return
+    
+    def _buildLabels(self) -> None:
+        '''Meant to be called in the _constructUI method and forms QLabels'''
+        self.default_label = QLabel()
         return
     
     def _buildLineInput(self) -> None:
@@ -170,6 +184,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def _addAttributes(self):
+        '''Packs all the widgets in their holder layouts'''
         # search Section
         self.searchFieldLayout.addWidget(self.inputField, Qt.AlignmentFlag.AlignCenter)
         self.searchRelatedButtonLayout.addWidget(self.searchBySingerButton, Qt.AlignmentFlag.AlignCenter)
@@ -186,6 +201,27 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.controlSectionInnerLayout.addWidget(self.deleteDownlaodingHistory, alignment=Qt.AlignmentFlag.AlignTop)
 
         # View panel
+        self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
+        return
+    
+    # INTERFACING
+    def alterTableView(self)-> None:
+        '''Alter table method removes the table from the table view and put poster image'''
+        self.default_label.hide()
+        table_default_poster = QPixmap(Constants.TABLE_DEFAULT_LABEL)
+        table_default_poster = table_default_poster.scaled(
+            Constants.VIEW_PANEL_WIDTH - 40, Constants.VIEW_PANEL_HEIGHT - 40
+        )
+        self.default_label.setPixmap(table_default_poster)
+        self.default_label.show()
+        return
+    
+    def _loadStyleSheet(self) -> None:
+        '''Should be called in the constructor and it loads the style sheet from qml file'''
+        file = QFile(Constants.MAIN_QML_PATH)
+        if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
+            qss = file.readAll().data().decode(Constants.PARSER_KEY)
+            self.setStyleSheet(qss)
         return
     pass
 
