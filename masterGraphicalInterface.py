@@ -1,5 +1,6 @@
 # this file is mainly responsible for creating the Graphical user inerface of the software using pyqt5
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QAbstractItemView
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QAbstractItemView, QSplashScreen
+import time
 from PyQt5.QtCore import Qt, QFile, QIODevice
 from PyQt5.QtGui import QIcon, QPixmap
 import sys
@@ -228,6 +229,10 @@ class MasterGrapicalUserInterface(QMainWindow):
 
 if __name__ == "__main__":
     Application = QApplication(sys.argv)
+    StartingScreen = QPixmap(Constants.STARTING_SCREEN_PATH)
+    splashScreen = QSplashScreen(StartingScreen)
+    splashScreen.show()
+    time.sleep(Constants.STARTING_SCREEN_SHOW_TIME)
     music_Miner_Bot = MasterGrapicalUserInterface()
     music_Miner_Bot.show()
     Application.exec_()

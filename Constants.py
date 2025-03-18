@@ -69,6 +69,8 @@ DOWNLOAD_URL_SIZE = 115
 # Static file Paths
 ICON_PATH = R"static\icon.png"
 TABLE_DEFAULT_LABEL = R"static\tagline.png"
+STARTING_SCREEN_PATH = R"static\startingScreen.png"
+STARTING_SCREEN_SHOW_TIME = 3
 
 #QML path
 MAIN_QML_PATH = "masterUI.qml"
