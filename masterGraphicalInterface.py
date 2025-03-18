@@ -12,14 +12,14 @@ from ImageModifierEngine import ImageModifier
 class MasterGrapicalUserInterface(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle(Constants.SOFTWARE_TITLE)
-        self.setWindowIcon(QIcon(Constants.ICON_PATH))
-        self.setFixedSize(Constants.SOFTWARE_WIDTH, Constants.SOFTWARE_HEIGHT)
-        self._initializeUI()
-        self._constuctUI()
-        self._addAttributes()
-        self.alterTableView()
-        self._loadStyleSheet()
+        self.setWindowTitle(Constants.SOFTWARE_TITLE) # application name
+        self.setWindowIcon(QIcon(Constants.ICON_PATH)) # icon for the application
+        self.setFixedSize(Constants.SOFTWARE_WIDTH, Constants.SOFTWARE_HEIGHT) # application max size
+        self._initializeUI() # builds all the components
+        self._constuctUI() # form the layouts together
+        self._addAttributes() # add widgets to the layouts
+        self.alterTableView() # shows the poster in TableView
+        self._loadStyleSheet() # loads the Qss
         return
 
     def _initializeUI(self) -> None:
@@ -48,32 +48,34 @@ class MasterGrapicalUserInterface(QMainWindow):
             }
         """)
         
-        self.masterLayoutInnerFrame = QFrame()
+        self.masterLayoutInnerFrame = QFrame() # provides shape to the master layout
         self.masterLayoutInnerFrame.setFixedSize(Constants.SOFTWARE_WIDTH - 20, Constants.SOFTWARE_HEIGHT - 20)
         self.masterLayoutInnerFrame.setFrameShape(QFrame.Shape.StyledPanel)
         
-        self.searchSectionLayoutFrame = QFrame()
+        self.searchSectionLayoutFrame = QFrame() # provides shape to SearchSectionLayout
         self.searchSectionLayoutFrame.setFixedSize(Constants.SEARCH_SECTION_WIDTH, Constants.SEARCH_SECTION_HEIGHT)
         self.searchSectionLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
 
-        self.controlSectionLayoutFrame = QFrame()
+        self.controlSectionLayoutFrame = QFrame() # Provides shape to ControlSectionLayout
         self.controlSectionLayoutFrame.setFixedSize(Constants.CONTROL_SECTION_WIDTH, Constants.CONTROL_SECTION_HEIGHT)
         self.controlSectionLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.separator_one = QFrame()
-        self.separator_one.setFrameShape(QFrame.Shape.HLine)
-        self.separator_two = QFrame()
-        self.separator_two.setFrameShape(QFrame.Shape.HLine)
-        self.separator_three = QFrame()
-        self.separator_three.setFrameShape(QFrame.Shape.HLine)
 
-        self.viewPanelLayoutFrame = QFrame()
+        self.viewPanelLayoutFrame = QFrame() # provides shape to the ViewPanellayout
         self.viewPanelLayoutFrame.setFixedSize(Constants.VIEW_PANEL_WIDTH, Constants.VIEW_PANEL_HEIGHT)
         self.viewPanelLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        
+        # Horizontal Separators
+        self.separator_one = QFrame() # separates Background edit option
+        self.separator_one.setFrameShape(QFrame.Shape.HLine)
+        self.separator_two = QFrame() # separates quality control options
+        self.separator_two.setFrameShape(QFrame.Shape.HLine)
+        self.separator_three = QFrame() # not used til now just made
+        self.separator_three.setFrameShape(QFrame.Shape.HLine)
         return
     
     def _buildScrollArea(self) -> None:
-        self.tableScrollArea = QScrollArea()
-        # self.tableScrollArea.setWindowOpacity(0.0)
+        '''Should be used in _initializeUI method. This method buils scrol areas'''
+        self.tableScrollArea = QScrollArea() # provides scroll area to the table view
         self.tableScrollArea.setWidgetResizable(True)
         self.tableScrollArea.setFixedSize(Constants.VIEW_PANEL_WIDTH -20, Constants.VIEW_PANEL_HEIGHT - 20)
         self.tableScrollArea.setStyleSheet("background-color: rgba(255, 255, 255, 10);")
@@ -101,56 +103,59 @@ class MasterGrapicalUserInterface(QMainWindow):
     
     def _buildTableWidget(self) -> None:
         '''Mean't to be  called under _initailizeUI method builds the table view of the generated song data'''
-        width, height = self.tableScrollArea.width()- 20, self.tableScrollArea.height()- 20
-        self.songDetailExhibiterTable = QTableWidget()
-        self.songDetailExhibiterTable.setFixedSize(width, height)
-        self.songDetailExhibiterTable.setColumnCount(4)
+        self.songDetailExhibiterTable = QTableWidget() # holds the scraped Data
+        self.songDetailExhibiterTable.setFixedSize(self.tableScrollArea.width()- 20, self.tableScrollArea.height()- 20) # dimentions
+        self.songDetailExhibiterTable.setColumnCount(4) # column counts are always fixed
+
+        # column width Must be constants
         self.songDetailExhibiterTable.setColumnWidth(0, Constants.THUMBNAIL_SIZE)
         self.songDetailExhibiterTable.setColumnWidth(1,Constants.SONG_NAME_SIZE)
         self.songDetailExhibiterTable.setColumnWidth(2,Constants.SINGER_NAME_SIZE)
         self.songDetailExhibiterTable.setColumnWidth(3, Constants.DOWNLOAD_URL_SIZE)
-        self.songDetailExhibiterTable.setHorizontalHeaderLabels(
+        
+        self.songDetailExhibiterTable.setHorizontalHeaderLabels( # column headings
             [Constants.THUMBNAIL, Constants.SONG_NAME, Constants.SINGER_NAME, Constants.DOWNLOAD_URL]
         )
-        self.songDetailExhibiterTable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.songDetailExhibiterTable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers) # read only mode
         return
 
     def _buildButtons(self) -> None:
         # search Related
-        self.searchButton = QPushButton(Constants.SEARCH_BUTTON)
-        self.searchButton.setFixedHeight(25)
-        self.searchBySingerButton = QPushButton(Constants.SEARCH_BY_SINGER_BUTTON)
-        self.searchBySingerButton.setFixedHeight(25)
+        self.searchButton = QPushButton(Constants.SEARCH_BUTTON) # search Button
+        self.searchButton.setFixedHeight(Constants.SEARCH_SECTION_BUTTON_HEIGHT)
+
+        self.searchBySingerButton = QPushButton(Constants.SEARCH_BY_SINGER_BUTTON) # use singer name
+        self.searchBySingerButton.setFixedHeight(Constants.SEARCH_SECTION_BUTTON_HEIGHT)
 
         # Control Related
-        self.BackGroundbutton = QPushButton(Constants.CHANGE_BACKGROUND)
-        self.BackGroundbutton.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        self.BackGroundbutton = QPushButton(Constants.CHANGE_BACKGROUND) # change BackGround
+        self.BackGroundbutton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
         
-        self.setDownloadDirectory = QPushButton(Constants.SET_DOWNLOAD_DIRECTORY)
-        self.setDownloadDirectory.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        self.setDownloadDirectory = QPushButton(Constants.SET_DOWNLOAD_DIRECTORY) # change Download directory
+        self.setDownloadDirectory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
         
-        self.HighQualityEnableButton = QPushButton(Constants.SHOW_HIGH_QUALITY)
-        self.HighQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        self.HighQualityEnableButton = QPushButton(Constants.SHOW_HIGH_QUALITY) # only filter High Quality songs
+        self.HighQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
         self.HighQualityEnableButton.setCheckable(True)
         
-        self.lowQualityEnableButton = QPushButton(Constants.SHOW_LOW_QUALITY)
-        self.lowQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        self.lowQualityEnableButton = QPushButton(Constants.SHOW_LOW_QUALITY) # only filter Low Quality songs
+        self.lowQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
         self.lowQualityEnableButton.setCheckable(True)
         
-        self.showDownloadingHistory = QPushButton(Constants.SHOW_DOWNLOAD_HISTORY)
-        self.showDownloadingHistory.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        self.showDownloadingHistory = QPushButton(Constants.SHOW_DOWNLOAD_HISTORY) # shows how many songs are downloaded
+        self.showDownloadingHistory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
         
-        self.deleteDownlaodingHistory = QPushButton(Constants.DELETE_DOWNLOAD_HISTORY)
-        self.deleteDownlaodingHistory.setFixedSize(Constants.CONTROL_SECTION_WIDTH - 20, 40)
+        self.deleteDownlaodingHistory = QPushButton(Constants.DELETE_DOWNLOAD_HISTORY) # delete all the downloading history
+        self.deleteDownlaodingHistory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
         return
     
     def _buildLabels(self) -> None:
         '''Meant to be called in the _constructUI method and forms QLabels'''
-        self.default_label = QLabel()
+        self.default_label = QLabel() # holdsthe poster image
         return
     
     def _buildLineInput(self) -> None:
-        self.inputField = QLineEdit(Constants.SEARCH_HERE)
+        self.inputField = QLineEdit(Constants.SEARCH_HERE) # takes input from user
         return
 
     def _constuctUI(self) -> None:
@@ -208,21 +213,25 @@ class MasterGrapicalUserInterface(QMainWindow):
     # INTERFACING
     def alterTableView(self)-> None:
         '''Alter table method removes the table from the table view and put poster image'''
-        self.default_label.hide()
-        table_default_poster = QPixmap(Constants.TABLE_DEFAULT_LABEL)
-        table_default_poster = table_default_poster.scaled(
-            Constants.VIEW_PANEL_WIDTH - 40, Constants.VIEW_PANEL_HEIGHT - 40
-        )
-        self.default_label.setPixmap(table_default_poster)
-        self.default_label.show()
+        self.default_label.hide() # for safety purposes
+        try:
+            table_default_poster = QPixmap(Constants.TABLE_DEFAULT_LABEL)
+            table_default_poster = table_default_poster.scaled(
+                Constants.VIEW_PANEL_WIDTH - 40, Constants.VIEW_PANEL_HEIGHT - 40
+            )
+            self.default_label.setPixmap(table_default_poster)
+        except (OSError, PermissionError, ValueError, MemoryError, TypeError, FileNotFoundError): return # handles file related errors
+        self.default_label.show() # shows the image in the table view
         return
     
     def _loadStyleSheet(self) -> None:
         '''Should be called in the constructor and it loads the style sheet from qml file'''
-        file = QFile(Constants.MAIN_QML_PATH)
-        if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
-            qss = file.readAll().data().decode(Constants.PARSER_KEY)
-            self.setStyleSheet(qss)
+        try:
+            file = QFile(Constants.MAIN_QML_PATH)
+            if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
+                qss = file.readAll().data().decode(Constants.PARSER_KEY)
+                self.setStyleSheet(qss)
+        except (OSError, MemoryError, PermissionError, FileNotFoundError): return # handles loading error
         return
     pass
 
