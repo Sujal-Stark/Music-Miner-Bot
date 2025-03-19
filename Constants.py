@@ -81,3 +81,15 @@ STARTING_SCREEN_SHOW_TIME = 3 # for this much time the splash Screen will be vis
 
 #QML path
 MAIN_QML_PATH = "masterUI.qml" # Styles for Main application
+
+# TOOL_TIP_CONSTANTS
+SEARCH_BUTTON_TOOL_TIP = "Click to search"
+SEARCH_BY_SINGER_TOOL_TIP = "Enter any Singer name & search"
+BACKROUND_BUTTON_TOOL_TIP = "Change the background of Application"
+DOWNLOAD_HISTORY_BUTTON_TOOL_TIP = "Reveals all history"
+DOWNLOAD_DIRECTORY_BUTTON_TOOL_TIP = "Set any directory as downloading directory"
+LOW_QUALITY_ENABLE_BUTTON_TOOL_TIP = "Switch to 180kbps"
+HIGH_QUALITY_ENABLE_BUTTON_TOOL_TIP = "Switch to 320 kbps"
+DELETE_DOWNLOAD_HISTORY_BUTTON_TOOL_TIP = "Delete Browsing History"
+
+LABEL_POSTER_TOOL_TIP = "Search First to get your result"

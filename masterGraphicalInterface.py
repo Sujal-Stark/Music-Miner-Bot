@@ -1,8 +1,8 @@
 # this file is mainly responsible for creating the Graphical user inerface of the software using pyqt5
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QAbstractItemView, QSplashScreen
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QAbstractItemView, QToolTip, QSplashScreen
 import time
 from PyQt5.QtCore import Qt, QFile, QIODevice
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QFont
 import sys
 
 # custom import
@@ -20,6 +20,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self._addAttributes() # add widgets to the layouts
         self.alterTableView() # shows the poster in TableView
         self._loadStyleSheet() # loads the Qss
+        self._setUpToolTip() # initialize tool tips
         return
 
     def _initializeUI(self) -> None:
@@ -123,35 +124,46 @@ class MasterGrapicalUserInterface(QMainWindow):
         # search Related
         self.searchButton = QPushButton(Constants.SEARCH_BUTTON) # search Button
         self.searchButton.setFixedHeight(Constants.SEARCH_SECTION_BUTTON_HEIGHT)
+        self.searchButton.setToolTip(Constants.SEARCH_BUTTON_TOOL_TIP)
 
         self.searchBySingerButton = QPushButton(Constants.SEARCH_BY_SINGER_BUTTON) # use singer name
         self.searchBySingerButton.setFixedHeight(Constants.SEARCH_SECTION_BUTTON_HEIGHT)
+        self.searchBySingerButton.setToolTip(Constants.SEARCH_BY_SINGER_TOOL_TIP)
+        
 
         # Control Related
         self.BackGroundbutton = QPushButton(Constants.CHANGE_BACKGROUND) # change BackGround
-        self.BackGroundbutton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.BackGroundbutton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH,
+        Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.BackGroundbutton.setToolTip(Constants.BACKROUND_BUTTON_TOOL_TIP)
         
         self.setDownloadDirectory = QPushButton(Constants.SET_DOWNLOAD_DIRECTORY) # change Download directory
         self.setDownloadDirectory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.setDownloadDirectory.setToolTip(Constants.DOWNLOAD_DIRECTORY_BUTTON_TOOL_TIP)
         
         self.HighQualityEnableButton = QPushButton(Constants.SHOW_HIGH_QUALITY) # only filter High Quality songs
         self.HighQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
         self.HighQualityEnableButton.setCheckable(True)
+        self.HighQualityEnableButton.setToolTip(Constants.HIGH_QUALITY_ENABLE_BUTTON_TOOL_TIP)
         
         self.lowQualityEnableButton = QPushButton(Constants.SHOW_LOW_QUALITY) # only filter Low Quality songs
         self.lowQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
         self.lowQualityEnableButton.setCheckable(True)
+        self.lowQualityEnableButton.setToolTip(Constants.LOW_QUALITY_ENABLE_BUTTON_TOOL_TIP)
         
         self.showDownloadingHistory = QPushButton(Constants.SHOW_DOWNLOAD_HISTORY) # shows how many songs are downloaded
         self.showDownloadingHistory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.showDownloadingHistory.setToolTip(Constants.DOWNLOAD_HISTORY_BUTTON_TOOL_TIP)
         
         self.deleteDownlaodingHistory = QPushButton(Constants.DELETE_DOWNLOAD_HISTORY) # delete all the downloading history
         self.deleteDownlaodingHistory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.deleteDownlaodingHistory.setToolTip(Constants.DELETE_DOWNLOAD_HISTORY_BUTTON_TOOL_TIP)
         return
     
     def _buildLabels(self) -> None:
         '''Meant to be called in the _constructUI method and forms QLabels'''
         self.default_label = QLabel() # holdsthe poster image
+        self.default_label.setToolTip(Constants.LABEL_POSTER_TOOL_TIP)
         return
     
     def _buildLineInput(self) -> None:
@@ -232,6 +244,10 @@ class MasterGrapicalUserInterface(QMainWindow):
                 qss = file.readAll().data().decode(Constants.PARSER_KEY)
                 self.setStyleSheet(qss)
         except (OSError, MemoryError, PermissionError, FileNotFoundError): return # handles loading error
+        return
+    
+    def _setUpToolTip(self) -> None:
+        QToolTip.setFont(QFont("Georgia", 10))
         return
     pass
 
