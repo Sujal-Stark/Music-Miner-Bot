@@ -307,12 +307,13 @@ class MasterGrapicalUserInterface(QMainWindow):
 
 
 if __name__ == "__main__":
-    Application = QApplication(sys.argv)
-    StartingScreen = QPixmap(Constants.STARTING_SCREEN_PATH)
-    splashScreen = QSplashScreen(StartingScreen)
-    splashScreen.show()
-    time.sleep(Constants.STARTING_SCREEN_SHOW_TIME)
-    splashScreen.close()
-    music_Miner_Bot = MasterGrapicalUserInterface()
-    music_Miner_Bot.show()
-    Application.exec_()
+    # Application = QApplication(sys.argv)
+    # StartingScreen = QPixmap(Constants.STARTING_SCREEN_PATH)
+    # splashScreen = QSplashScreen(StartingScreen)
+    # splashScreen.show()
+    # time.sleep(Constants.STARTING_SCREEN_SHOW_TIME)
+    # splashScreen.close()
+    # music_Miner_Bot = MasterGrapicalUserInterface()
+    # music_Miner_Bot.show()
+    # Application.exec_()
+    pass
