@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout,
 import time
 from PyQt5.QtCore import Qt, QFile, QIODevice
 from PyQt5.QtGui import QIcon, QPixmap, QFont
+from icecream import ic
 import sys
 
 # custom import
@@ -18,6 +19,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self._initializeUI() # builds all the components
         self._constuctUI() # form the layouts together
         self._addAttributes() # add widgets to the layouts
+        self._setResponse()
         self.alterTableView() # shows the poster in TableView
         self._loadStyleSheet() # loads the Qss
         self._setUpToolTip() # initialize tool tips
@@ -32,6 +34,21 @@ class MasterGrapicalUserInterface(QMainWindow):
         self._buildLabels()
         self._buildLineInput()
         self._buildTableWidget()
+        self._preferences()
+        return
+
+    def _preferences(self) -> None:
+        '''Preferences help to sort out the required results for the users'''
+        self.SEARCH_BY_SINGER_ENABLE = False # enables when user wants to search singer's name
+        self.SEARCH_HIGH_QUALITY = False # enables  when user only want's high quality search results
+        self.SEARCH_LOW_QUALITY = False # enables when the user only want's low quality search Results
+        return
+
+    def _setResponse(self)-> None:
+        '''Predefines all the actions to their respected Widgets'''
+        self.searchBySingerButton.clicked.connect(lambda : self._showClickedState())
+        self.HighQualityEnableButton.clicked.connect(lambda : self._showClickedState())
+        self.lowQualityEnableButton.clicked.connect(lambda : self._showClickedState())
         return
 
     def _buildFrames(self) -> None:
@@ -127,8 +144,10 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.searchButton.setToolTip(Constants.SEARCH_BUTTON_TOOL_TIP)
 
         self.searchBySingerButton = QPushButton(Constants.SEARCH_BY_SINGER_BUTTON) # use singer name
+        self.searchBySingerButton.setObjectName(Constants.SEARCH_BY_SINGER_BUTTON)
         self.searchBySingerButton.setFixedHeight(Constants.SEARCH_SECTION_BUTTON_HEIGHT)
         self.searchBySingerButton.setToolTip(Constants.SEARCH_BY_SINGER_TOOL_TIP)
+        self.searchBySingerButton.setCheckable(True)
         
 
         # Control Related
@@ -143,13 +162,15 @@ class MasterGrapicalUserInterface(QMainWindow):
         
         self.HighQualityEnableButton = QPushButton(Constants.SHOW_HIGH_QUALITY) # only filter High Quality songs
         self.HighQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
-        self.HighQualityEnableButton.setCheckable(True)
         self.HighQualityEnableButton.setToolTip(Constants.HIGH_QUALITY_ENABLE_BUTTON_TOOL_TIP)
+        self.HighQualityEnableButton.setCheckable(True)
+        self.HighQualityEnableButton.setObjectName(Constants.SHOW_HIGH_QUALITY)
         
         self.lowQualityEnableButton = QPushButton(Constants.SHOW_LOW_QUALITY) # only filter Low Quality songs
         self.lowQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
-        self.lowQualityEnableButton.setCheckable(True)
         self.lowQualityEnableButton.setToolTip(Constants.LOW_QUALITY_ENABLE_BUTTON_TOOL_TIP)
+        self.lowQualityEnableButton.setCheckable(True)
+        self.lowQualityEnableButton.setObjectName(Constants.SHOW_LOW_QUALITY)
         
         self.showDownloadingHistory = QPushButton(Constants.SHOW_DOWNLOAD_HISTORY) # shows how many songs are downloaded
         self.showDownloadingHistory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
@@ -167,7 +188,8 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def _buildLineInput(self) -> None:
-        self.inputField = QLineEdit(Constants.SEARCH_HERE) # takes input from user
+        self.inputField = QLineEdit() # takes input from user
+        self.inputField.setPlaceholderText(Constants.SEARCH_HERE)
         return
 
     def _constuctUI(self) -> None:
@@ -249,6 +271,38 @@ class MasterGrapicalUserInterface(QMainWindow):
     def _setUpToolTip(self) -> None:
         QToolTip.setFont(QFont("Georgia", 10))
         return
+    
+    def _showClickedState(self) -> None:
+        '''Change the clicked and unclicked state for all the checkable buttons'''
+        if(self.sender().objectName() == Constants.SEARCH_BY_SINGER_BUTTON):
+            if self.searchBySingerButton.isChecked():
+                self.searchBySingerButton.setStyleSheet(Constants.SET_CHECKED_STYLE)
+                self.searchBySingerButton.setCheckable(False)
+                self.SEARCH_BY_SINGER_ENABLE = True # constrol change
+            else:
+                self.searchBySingerButton.setStyleSheet(Constants.SET_UNCHECKED_STYLE)
+                self.searchBySingerButton.setCheckable(True)
+                self.SEARCH_BY_SINGER_ENABLE = False # control changed
+        elif(self.sender().objectName() == Constants.SHOW_HIGH_QUALITY):
+            if(self.HighQualityEnableButton.isChecked()):
+                self.HighQualityEnableButton.setStyleSheet(Constants.SET_CHECKED_STYLE)
+                self.HighQualityEnableButton.setCheckable(False)
+                self.SEARCH_HIGH_QUALITY = True # control changed
+            else:
+                self.HighQualityEnableButton.setStyleSheet(Constants.SET_UNCHECKED_STYLE)
+                self.HighQualityEnableButton.setCheckable(True)
+                self.SEARCH_HIGH_QUALITY = False # control changed
+        elif(self.sender().objectName() == Constants.SHOW_LOW_QUALITY):
+            if(self.lowQualityEnableButton.isChecked()):
+                self.lowQualityEnableButton.setStyleSheet(Constants.SET_CHECKED_STYLE)
+                self.lowQualityEnableButton.setCheckable(False)
+                self.SEARCH_LOW_QUALITY = True # control change
+            else:
+                self.lowQualityEnableButton.setStyleSheet(Constants.SET_UNCHECKED_STYLE)
+                self.lowQualityEnableButton.setCheckable(True)
+                self.SEARCH_LOW_QUALITY = False # control change
+        ic(self.SEARCH_LOW_QUALITY, self.SEARCH_BY_SINGER_ENABLE, self.SEARCH_HIGH_QUALITY)
+        return
     pass
 
 
@@ -258,6 +312,7 @@ if __name__ == "__main__":
     splashScreen = QSplashScreen(StartingScreen)
     splashScreen.show()
     time.sleep(Constants.STARTING_SCREEN_SHOW_TIME)
+    splashScreen.close()
     music_Miner_Bot = MasterGrapicalUserInterface()
     music_Miner_Bot.show()
     Application.exec_()
