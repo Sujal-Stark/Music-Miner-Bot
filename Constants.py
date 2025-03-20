@@ -93,3 +93,8 @@ HIGH_QUALITY_ENABLE_BUTTON_TOOL_TIP = "Switch to 320 kbps"
 DELETE_DOWNLOAD_HISTORY_BUTTON_TOOL_TIP = "Delete Browsing History"
 
 LABEL_POSTER_TOOL_TIP = "Search First to get your result"
+
+
+# DEFAULT STYLES
+SET_CHECKED_STYLE = """QPushButton { background-color: rgb(3, 202, 230); }QPushButton:hover {background-color: rgb(3, 202, 255);}"""
+SET_UNCHECKED_STYLE = """QPushButton { background-color: rgb(7, 128, 87); }QPushButton:hover {background-color: rgb(0, 160, 110);}"""
