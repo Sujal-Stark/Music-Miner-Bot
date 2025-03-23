@@ -60,6 +60,7 @@ SHOW_HIGH_QUALITY = "Show High Quality"
 SHOW_LOW_QUALITY = "Show Low Quality"
 SHOW_DOWNLOAD_HISTORY = "Show downloading history"
 DELETE_DOWNLOAD_HISTORY = "Delete downloading history"
+RESET_VIEW_PANEL = "Reset View Panel"
 
 # table Headers and sizes meant to be used as constants
 SERIAL = "Serial"
@@ -91,6 +92,7 @@ DOWNLOAD_DIRECTORY_BUTTON_TOOL_TIP = "Set any directory as downloading directory
 LOW_QUALITY_ENABLE_BUTTON_TOOL_TIP = "Switch to 180kbps"
 HIGH_QUALITY_ENABLE_BUTTON_TOOL_TIP = "Switch to 320 kbps"
 DELETE_DOWNLOAD_HISTORY_BUTTON_TOOL_TIP = "Delete Browsing History"
+RESET_PANEL_BUTTON_TOOL_TIP = "Removes all search items from view panel"
 
 LABEL_POSTER_TOOL_TIP = "Search First to get your result"
 
