@@ -28,6 +28,7 @@ class PagalFreeSiteExplorer:
             Constants.SINGER_NAME : [] # The singer name is being stored here
         }
         self.downloadableLinks : list[str] = None # actual links to download songs is stored here, none to abort
+        self.resourceOccupiedFlag : bool = False # denotes if the resources are free or not
         return None
     
     def getParameterFromUser(self, textInput : str) -> None:
@@ -66,15 +67,17 @@ class PagalFreeSiteExplorer:
         '''Takes self.searchInWebsite() as input and provides a dictionary as output
             output format => dict {[link to download page], [song name], [singer name]. [url to the poster]}
         '''
-        for el in dataElement:
-            self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER].append( el.find(Constants.A_TAG).get_attribute_list(Constants.HREF)[0])
-            self.songDataContainer[Constants.LINK_TO_TUNE_POSTER_CONTAINER].append(el.find(Constants.IMG_TAG).get_attribute_list(Constants.SRC)[0])
-            self.songDataContainer[Constants.SONG_NAME].append(
-                str(el.find(Constants.DIV, class_ = Constants.MAIN_PAGE_SONG_TEXT).find(Constants.B_TAG).text).replace(" ", "").replace("\n", "")
-            )
-            self.songDataContainer[Constants.SINGER_NAME].append(
-                str(el.find(Constants.DIV, class_ = Constants.MAIN_PAGE_SONG_TEXT).find_all(Constants.DIV)[1].text).replace(" ", "").replace("\n", "")
-            )
+        if(self.resourceOccupiedFlag == False): # if resources are not previously occupied only then extract data
+            for el in dataElement:
+                self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER].append( el.find(Constants.A_TAG).get_attribute_list(Constants.HREF)[0])
+                self.songDataContainer[Constants.LINK_TO_TUNE_POSTER_CONTAINER].append(el.find(Constants.IMG_TAG).get_attribute_list(Constants.SRC)[0])
+                self.songDataContainer[Constants.SONG_NAME].append(
+                    str(el.find(Constants.DIV, class_ = Constants.MAIN_PAGE_SONG_TEXT).find(Constants.B_TAG).text).replace(" ", "").replace("\n", "")
+                )
+                self.songDataContainer[Constants.SINGER_NAME].append(
+                    str(el.find(Constants.DIV, class_ = Constants.MAIN_PAGE_SONG_TEXT).find_all(Constants.DIV)[1].text).replace(" ", "").replace("\n", "")
+                )
+            if(len(self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER]) > 0): self.resourceOccupiedFlag = True # resource occupied
         return self.songDataContainer
     
     def getDownloadingUrl(self, index : int) -> None:
@@ -123,6 +126,18 @@ class PagalFreeSiteExplorer:
                 else: container.append(None) # if data can't be fetched 
             except requests.exceptions: container.append(None)
         return container
+    
+    def _cleanAllMemory(self) -> None:
+        '''When data is no longer required from engine then release the data useing this method'''
+        self.songDataContainer = {
+            Constants.LINK_TO_REDIRECT_TUNE_CONTAINER : [],
+            Constants.LINK_TO_TUNE_POSTER_CONTAINER : [],
+            Constants.SONG_NAME : [],
+            Constants.SINGER_NAME : []
+        }
+        self.searchQuery : str = None
+        self.downloadableLinks : list[str] = None
+        self.resourceOccupiedFlag = False # resources are no longer occupied
     pass
 
 # main method for testing operations
@@ -130,10 +145,4 @@ if __name__ == '__main__':
     bot = PagalFreeSiteExplorer()
     bot.getParameterFromUser(textInput = input("Enter song name:\t"))
     output = bot.dataExtractFromSearchQuery(bot.searchInWebsite())
-    # ic(bot.loadImagesFromLink())
-    for index in range(len(output[Constants.SINGER_NAME])):
-        print("Sing name:--->",output[Constants.SONG_NAME][index],"\n",
-            "Singer name:--->",output[Constants.SINGER_NAME][index],"\n",
-            "Song Link:--->",output[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER][index],"\n",
-            "Poster Address:\--->",output[Constants.LINK_TO_TUNE_POSTER_CONTAINER][index],"\n"
-        )
+    pass
