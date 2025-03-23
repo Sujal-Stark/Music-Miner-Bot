@@ -1,5 +1,5 @@
 # this file is mainly responsible for creating the Graphical user inerface of the software using pyqt5
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QAbstractItemView, QToolTip, QSplashScreen
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QTableWidgetItem, QAbstractItemView, QToolTip, QSplashScreen
 import time
 from PyQt5.QtCore import Qt, QFile, QIODevice
 from PyQt5.QtGui import QIcon, QPixmap, QFont
@@ -9,6 +9,7 @@ import sys
 # custom import
 import Constants
 from ImageModifierEngine import ImageModifier
+from pagalFreeSiteExplorer import PagalFreeSiteExplorer
 
 class MasterGrapicalUserInterface(QMainWindow):
     def __init__(self) -> None:
@@ -20,13 +21,15 @@ class MasterGrapicalUserInterface(QMainWindow):
         self._constuctUI() # form the layouts together
         self._addAttributes() # add widgets to the layouts
         self._setResponse()
-        self.alterTableView() # shows the poster in TableView
+        self.setPosterAtTableView() # shows the poster in TableView
         self._loadStyleSheet() # loads the Qss
         self._setUpToolTip() # initialize tool tips
+        self.searchEngine = PagalFreeSiteExplorer() # initializing the search engine 
         return
 
     def _initializeUI(self) -> None:
         '''this function must be called inside the  constructor so that when the class is called all the uI components get's loaded in the window'''
+        self._properties()
         self._buildFrames()
         self._buildScrollArea()
         self._buildLayouts()
@@ -35,6 +38,10 @@ class MasterGrapicalUserInterface(QMainWindow):
         self._buildLineInput()
         self._buildTableWidget()
         self._preferences()
+        return
+
+    def _properties(self) -> None:
+        self.resourceFreeFlag = True # if false then no data will be passed to this class'es data from engine
         return
 
     def _preferences(self) -> None:
@@ -46,9 +53,12 @@ class MasterGrapicalUserInterface(QMainWindow):
 
     def _setResponse(self)-> None:
         '''Predefines all the actions to their respected Widgets'''
+        self.searchButton.clicked.connect(self.searchButtonAction)
         self.searchBySingerButton.clicked.connect(lambda : self._showClickedState())
+
         self.HighQualityEnableButton.clicked.connect(lambda : self._showClickedState())
         self.lowQualityEnableButton.clicked.connect(lambda : self._showClickedState())
+        self.resetViewPanel.clicked.connect(self._resetPanelAction)
         return
 
     def _buildFrames(self) -> None:
@@ -179,6 +189,10 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.deleteDownlaodingHistory = QPushButton(Constants.DELETE_DOWNLOAD_HISTORY) # delete all the downloading history
         self.deleteDownlaodingHistory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
         self.deleteDownlaodingHistory.setToolTip(Constants.DELETE_DOWNLOAD_HISTORY_BUTTON_TOOL_TIP)
+
+        self.resetViewPanel = QPushButton(Constants.RESET_VIEW_PANEL)
+        self.resetViewPanel.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.resetViewPanel.setToolTip(Constants.RESET_PANEL_BUTTON_TOOL_TIP)
         return
     
     def _buildLabels(self) -> None:
@@ -239,13 +253,14 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.controlSectionInnerLayout.addWidget(self.setDownloadDirectory, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerLayout.addWidget(self.showDownloadingHistory, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerLayout.addWidget(self.deleteDownlaodingHistory, alignment=Qt.AlignmentFlag.AlignTop)
-
+        self.controlSectionInnerLayout.addWidget(self.separator_three, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerLayout.addWidget(self.resetViewPanel, alignment = Qt.AlignmentFlag.AlignTop)
         # View panel
         self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
         return
     
     # INTERFACING
-    def alterTableView(self)-> None:
+    def setPosterAtTableView(self)-> None:
         '''Alter table method removes the table from the table view and put poster image'''
         self.default_label.hide() # for safety purposes
         try:
@@ -256,6 +271,13 @@ class MasterGrapicalUserInterface(QMainWindow):
             self.default_label.setPixmap(table_default_poster)
         except (OSError, PermissionError, ValueError, MemoryError, TypeError, FileNotFoundError): return # handles file related errors
         self.default_label.show() # shows the image in the table view
+        return
+    
+    def alterPosterView(self) -> None:
+        '''Removes the poster and show the  table containing data'''
+        self.default_label.hide()
+        self.default_label.setParent(None)
+        self.tableHolderLayout.addWidget(self.songDetailExhibiterTable, alignment = Qt.AlignmentFlag.AlignCenter)
         return
     
     def _loadStyleSheet(self) -> None:
@@ -302,6 +324,42 @@ class MasterGrapicalUserInterface(QMainWindow):
                 self.lowQualityEnableButton.setCheckable(True)
                 self.SEARCH_LOW_QUALITY = False # control change
         ic(self.SEARCH_LOW_QUALITY, self.SEARCH_BY_SINGER_ENABLE, self.SEARCH_HIGH_QUALITY)
+        return
+    
+    def searchButtonAction(self) -> None:
+        '''Works after search button is pressed. Handles searchBySinger & searchBySong Both the action'''
+        if(self.inputField.text() != "" and self.resourceFreeFlag): # no search if input field is empty
+            try:
+                if(self.SEARCH_BY_SINGER_ENABLE): # if singer name search is enabled
+                    pass
+                else: # if only song search is queried
+                    self.searchEngine.searchQuery = self.inputField.text() # sending input to the engine
+                    self.songDetailExhibiterTable.clearContents() # clearing the table
+                    self.songDetailExhibiterTable.setRowCount(0)
+                    dataDict = self.searchEngine.dataExtractFromSearchQuery(self.searchEngine.searchInWebsite()) # fetching primary data
+                    self.songDetailExhibiterTable.setRowCount(len(dataDict[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER]))
+                    for i in range(len(dataDict[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER])):
+                        button = QPushButton("Download")
+                        self.songDetailExhibiterTable.setItem(
+                            i, 0, QTableWidgetItem(dataDict[Constants.LINK_TO_TUNE_POSTER_CONTAINER][i])
+                        )
+                        self.songDetailExhibiterTable.setCellWidget(i, 1, button)
+                        self.songDetailExhibiterTable.setItem(i , 2, QTableWidgetItem(dataDict[Constants.SINGER_NAME][i]))
+                        self.songDetailExhibiterTable.setItem(i, 3, QTableWidgetItem(dataDict[Constants.SINGER_NAME][i]))
+            except (TypeError): pass
+            self.resourceFreeFlag = False # resources are occupied
+            self.alterPosterView() # table will be shown
+        return
+    
+    def _resetPanelAction(self) -> None:
+        if(self.songDetailExhibiterTable.parent()):
+            self.songDetailExhibiterTable.setParent(None)
+            self.songDetailExhibiterTable.clearContents() # table data are removed
+            self.songDetailExhibiterTable.setRowCount(0)
+            self.searchEngine._cleanAllMemory() # all resources are free
+            self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
+            self.resourceFreeFlag = True # resouces are free
+            self.default_label.show() # poster will be shown instead of table
         return
     pass
 
