@@ -2,7 +2,7 @@
 
 import requests
 from bs4 import BeautifulSoup, element
-from PyQt5.QtGui import QImage
+from PyQt5.QtGui import QImage, QPixmap
 from PIL import Image
 from io import BytesIO
 from icecream import ic
@@ -109,23 +109,22 @@ class PagalFreeSiteExplorer:
             return False
         return False
     
-    def loadImagesFromLink(self) -> list[QImage]:
-        '''Takes no input but provides the QImageObject of the song posters based upon search results.
+    def loadImagesFromLink(self, imageLink : str) -> QPixmap:
+        '''Takes imagelink as input but provides the QImageObject of the song posters based upon search results.
             returns none if any link is broken or not found
         '''
-        container = [] # stores the out going image link
-        for imageLink in self.songDataContainer[Constants.LINK_TO_TUNE_POSTER_CONTAINER]:
-            try:
-                posterReq = requests.get(imageLink)
-                if(posterReq.status_code == Constants.STATUSCODE_SUCCEED):
-                    container.append(
-                        QImage(
-                            Image.open(BytesIO(posterReq.content)).convert(Constants.RGBA_LITERAL).tobytes(Constants.RAW_LITERAL), 200, 200, QImage.Format.Format_RGBA8888
-                        )
+        try:
+            posterReq = requests.get(imageLink)
+            if(posterReq.status_code == Constants.STATUSCODE_SUCCEED):
+                image = Image.open(BytesIO(posterReq.content)).convert(Constants.RGBA_LITERAL).resize((140, 140))
+                pixmap = QPixmap.fromImage(
+                    QImage(
+                        image.tobytes(Constants.RAW_LITERAL), image.width, image.height, QImage.Format.Format_RGBA8888
                     )
-                else: container.append(None) # if data can't be fetched 
-            except requests.exceptions: container.append(None)
-        return container
+                )
+                return pixmap
+            else: return None # if data can't be fetched 
+        except requests.exceptions: return None
     
     def _cleanAllMemory(self) -> None:
         '''When data is no longer required from engine then release the data useing this method'''
