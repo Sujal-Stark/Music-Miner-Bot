@@ -66,13 +66,14 @@ RESET_VIEW_PANEL = "Reset View Panel"
 SERIAL = "Serial"
 SERIAL_SIZE = 130
 THUMBNAIL = "Thumbnail"
-THUMBNAIL_SIZE = 130
+THUMBNAIL_SIZE = 150
 SONG_NAME = "Song name"
 SONG_NAME_SIZE = 150
 SINGER_NAME = "Singer name"
 SINGER_NAME_SIZE = 150
 DOWNLOAD_URL = "Download Url"
-DOWNLOAD_URL_SIZE = 115 
+DOWNLOAD_URL_SIZE = 115
+DOWNLOAD_BUTTON_TEXT = "Downlaod"
 
 # Static file Paths
 ICON_PATH = R"static\icon.png" # Window Icon
