@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup, element
 from PyQt5.QtGui import QImage, QPixmap
 from PIL import Image
 from io import BytesIO
+import os
 from icecream import ic
 
 # custom imports
@@ -80,28 +81,27 @@ class PagalFreeSiteExplorer:
             if(len(self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER]) > 0): self.resourceOccupiedFlag = True # resource occupied
         return self.songDataContainer
     
-    def getDownloadingUrl(self, index : int) -> None:
+    def getDownloadingUrl(self, url : str) -> None:
         '''Takes one integer input from user to get the page link and retrieves 2 link for download'''
         try:
-            if self.songDataContainer:
-                pageResponse = requests.get(self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER][index])
-                if(pageResponse.status_code == 200):
-                    self.soup = BeautifulSoup(pageResponse.content.decode(Constants.PARSER_KEY), Constants.HTML_PARSER)
-                    tagContainingLink : list[element.Tag] = self.soup.find_all(Constants.A_TAG, class_ = Constants.BTN_DOWNLOAD)
-                    self.downloadableLinks = [a.get_attribute_list(key = Constants.HREF)[0] for a in tagContainingLink]
+            pageResponse = requests.get(url)
+            if(pageResponse.status_code == 200):
+                self.soup = BeautifulSoup(pageResponse.content.decode(Constants.PARSER_KEY), Constants.HTML_PARSER)
+                tagContainingLink : list[element.Tag] = self.soup.find_all(Constants.A_TAG, class_ = Constants.BTN_DOWNLOAD)
+                self.downloadableLinks = [a.get_attribute_list(key = Constants.HREF)[0] for a in tagContainingLink]
         except IndexError:
             return
         return
     
-    def downloadSongFromLink(self,urlIndex : int,  downloadIndex : int) -> bool:
+    def downloadSongFromLink(self, url : str, songName : str, directory : str, downloadIndex : int) -> bool:
         '''Takes one integer index from user as 0 or 1 0 -> 180 kbps download and 1 -> 320kbps downloads'''
         try:
-            self.getDownloadingUrl(urlIndex)
+            self.getDownloadingUrl(url)
             if(self.downloadableLinks):
                 downloadResponse = requests.get(self.downloadableLinks[downloadIndex])
-                songName : str = self.downloadableLinks[downloadIndex].split("/")[-1]
+                songName_withPath = os.path.join(directory, songName)
                 if(downloadResponse.status_code == 200):
-                    with open(fr"D:\Music Lib\{songName}", "wb") as tune:
+                    with open(songName_withPath, "wb") as tune:
                         for chunk in downloadResponse.iter_content(chunk_size = 1024):
                             tune.write(chunk)
                     return True
