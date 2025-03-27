@@ -1,7 +1,7 @@
 # this file is mainly responsible for creating the Graphical user inerface of the software using pyqt5
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QTableWidgetItem, QAbstractItemView, QToolTip, QSplashScreen
 import time
-from PyQt5.QtCore import Qt, QFile, QIODevice
+from PyQt5.QtCore import Qt, QThread, QFile, QIODevice
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from icecream import ic
 import sys
@@ -10,6 +10,7 @@ import sys
 import Constants
 from ImageModifierEngine import ImageModifier
 from pagalFreeSiteExplorer import PagalFreeSiteExplorer
+from TablePopulatorThreadClass import TableDataStreamer
 
 class MasterGrapicalUserInterface(QMainWindow):
     def __init__(self) -> None:
@@ -42,6 +43,7 @@ class MasterGrapicalUserInterface(QMainWindow):
 
     def _properties(self) -> None:
         self.resourceFreeFlag = True # if false then no data will be passed to this class'es data from engine
+        self.posterLabels : list[QPixmap] = None
         return
 
     def _preferences(self) -> None:
@@ -107,6 +109,8 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.tableScrollArea.setWidgetResizable(True)
         self.tableScrollArea.setFixedSize(Constants.VIEW_PANEL_WIDTH -20, Constants.VIEW_PANEL_HEIGHT - 20)
         self.tableScrollArea.setStyleSheet("background-color: rgba(255, 255, 255, 10);")
+        self.tableScrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.tableScrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         return
 
     def _buildLayouts(self) -> None:
@@ -134,7 +138,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.songDetailExhibiterTable = QTableWidget() # holds the scraped Data
         self.songDetailExhibiterTable.setFixedSize(self.tableScrollArea.width()- 20, self.tableScrollArea.height()- 20) # dimentions
         self.songDetailExhibiterTable.setColumnCount(4) # column counts are always fixed
-
+        self.songDetailExhibiterTable.setWordWrap(True)
         # column width Must be constants
         self.songDetailExhibiterTable.setColumnWidth(0, Constants.THUMBNAIL_SIZE)
         self.songDetailExhibiterTable.setColumnWidth(1,Constants.SONG_NAME_SIZE)
@@ -142,7 +146,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.songDetailExhibiterTable.setColumnWidth(3, Constants.DOWNLOAD_URL_SIZE)
         
         self.songDetailExhibiterTable.setHorizontalHeaderLabels( # column headings
-            [Constants.THUMBNAIL, Constants.SONG_NAME, Constants.SINGER_NAME, Constants.DOWNLOAD_URL]
+            [Constants.THUMBNAIL, Constants.DOWNLOAD_URL, Constants.SONG_NAME, Constants.SINGER_NAME]
         )
         self.songDetailExhibiterTable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers) # read only mode
         return
@@ -259,7 +263,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
         return
     
-    # INTERFACING
+    # INTERFACING    
     def setPosterAtTableView(self)-> None:
         '''Alter table method removes the table from the table view and put poster image'''
         self.default_label.hide() # for safety purposes
@@ -326,6 +330,26 @@ class MasterGrapicalUserInterface(QMainWindow):
         ic(self.SEARCH_LOW_QUALITY, self.SEARCH_BY_SINGER_ENABLE, self.SEARCH_HIGH_QUALITY)
         return
     
+    def _printStatement(self) -> None:
+        print(self.sender().property(Constants.HREF))
+
+    def _addItemToTable(self, index : int, song_name : str, singer_name : str, href : str, picture : QPixmap) -> None:
+        '''This method acts as Signal Acceptor. Accepts table Items from the Thread class(TablePopulatorThreadClass) and exhibit in the table'''
+        self.songDetailExhibiterTable.insertRow(index) # row defination
+        self.songDetailExhibiterTable.setRowHeight(index, 150)
+        if(picture): # if poster is found out only then poster will be shown
+            label = QLabel()
+            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            label.setPixmap(picture)
+            self.songDetailExhibiterTable.setCellWidget(index, 0, label)
+        button = QPushButton(Constants.DOWNLOAD_BUTTON_TEXT) # button
+        button.setProperty(Constants.HREF, href) # href holds the link for the downloading page
+        button.clicked.connect(self._printStatement)
+        self.songDetailExhibiterTable.setCellWidget(index, 1, button)
+        self.songDetailExhibiterTable.setItem(index, 2, QTableWidgetItem(song_name)) # song name
+        self.songDetailExhibiterTable.setItem(index, 3, QTableWidgetItem(singer_name)) # singer's name
+        return
+
     def searchButtonAction(self) -> None:
         '''Works after search button is pressed. Handles searchBySinger & searchBySong Both the action'''
         if(self.inputField.text() != "" and self.resourceFreeFlag): # no search if input field is empty
@@ -333,25 +357,18 @@ class MasterGrapicalUserInterface(QMainWindow):
                 if(self.SEARCH_BY_SINGER_ENABLE): # if singer name search is enabled
                     pass
                 else: # if only song search is queried
-                    self.searchEngine.searchQuery = self.inputField.text() # sending input to the engine
+                    self.alterPosterView() # table will be show
                     self.songDetailExhibiterTable.clearContents() # clearing the table
                     self.songDetailExhibiterTable.setRowCount(0)
-                    dataDict = self.searchEngine.dataExtractFromSearchQuery(self.searchEngine.searchInWebsite()) # fetching primary data
-                    self.songDetailExhibiterTable.setRowCount(len(dataDict[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER]))
-                    for i in range(len(dataDict[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER])):
-                        button = QPushButton("Download")
-                        self.songDetailExhibiterTable.setItem(
-                            i, 0, QTableWidgetItem(dataDict[Constants.LINK_TO_TUNE_POSTER_CONTAINER][i])
-                        )
-                        self.songDetailExhibiterTable.setCellWidget(i, 1, button)
-                        self.songDetailExhibiterTable.setItem(i , 2, QTableWidgetItem(dataDict[Constants.SINGER_NAME][i]))
-                        self.songDetailExhibiterTable.setItem(i, 3, QTableWidgetItem(dataDict[Constants.SINGER_NAME][i]))
+                    self.streamer = TableDataStreamer(self.inputField.text())
+                    self.streamer.dataOnFly.connect(self._addItemToTable)
+                    self.streamer.start()
             except (TypeError): pass
             self.resourceFreeFlag = False # resources are occupied
-            self.alterPosterView() # table will be shown
         return
     
     def _resetPanelAction(self) -> None:
+        '''Clears memory of the data structures and also removes the table and set the poster'''
         if(self.songDetailExhibiterTable.parent()):
             self.songDetailExhibiterTable.setParent(None)
             self.songDetailExhibiterTable.clearContents() # table data are removed
