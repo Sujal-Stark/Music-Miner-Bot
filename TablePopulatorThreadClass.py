@@ -14,7 +14,7 @@ class TableDataStreamer(QThread):
         return
     
     def run(self):
-        '''For each data entry run method sends a singal to the UI and the UI takes this as input and show in the table'''
+        '''For each data entry run method sends a singal to the UI and the UI takes this as input and show in the tablej'''
         self.engine.searchQuery = self.searchInput
         output = self.engine.dataExtractFromSearchQuery(self.engine.searchInWebsite())
         if(output):
