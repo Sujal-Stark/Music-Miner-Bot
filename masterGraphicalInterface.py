@@ -11,6 +11,7 @@ import Constants
 from ImageModifierEngine import ImageModifier
 from pagalFreeSiteExplorer import PagalFreeSiteExplorer
 from TablePopulatorThreadClass import TableDataStreamer
+from TuneDownloaderThreadForPW import TuneDownloaderThread
 
 class MasterGrapicalUserInterface(QMainWindow):
     def __init__(self) -> None:
@@ -44,6 +45,7 @@ class MasterGrapicalUserInterface(QMainWindow):
     def _properties(self) -> None:
         self.resourceFreeFlag = True # if false then no data will be passed to this class'es data from engine
         self.posterLabels : list[QPixmap] = None
+        self.DOWNLOADING_DIRECTORY = "D:\Test" # setting the downloading directory temporarily
         return
 
     def _preferences(self) -> None:
@@ -330,8 +332,15 @@ class MasterGrapicalUserInterface(QMainWindow):
         ic(self.SEARCH_LOW_QUALITY, self.SEARCH_BY_SINGER_ENABLE, self.SEARCH_HIGH_QUALITY)
         return
     
-    def _printStatement(self) -> None:
-        print(self.sender().property(Constants.HREF))
+    def _downloadSelectedSong(self) -> None:
+        sender = self.sender()
+        self.tuneDownlaoderThread = TuneDownloaderThread(
+            self.DOWNLOADING_DIRECTORY, sender.property(Constants.SONG_NAME), sender.property(Constants.HREF)
+        )
+        self.tuneDownlaoderThread.messageSignal.connect(lambda message : print(message))
+        self.tuneDownlaoderThread.start()
+        return
+
 
     def _addItemToTable(self, index : int, song_name : str, singer_name : str, href : str, picture : QPixmap) -> None:
         '''This method acts as Signal Acceptor. Accepts table Items from the Thread class(TablePopulatorThreadClass) and exhibit in the table'''
@@ -343,8 +352,10 @@ class MasterGrapicalUserInterface(QMainWindow):
             label.setPixmap(picture)
             self.songDetailExhibiterTable.setCellWidget(index, 0, label)
         button = QPushButton(Constants.DOWNLOAD_BUTTON_TEXT) # button
+        button.setStyleSheet(Constants.DOWNLOAD_BUTTON_STYLE)
         button.setProperty(Constants.HREF, href) # href holds the link for the downloading page
-        button.clicked.connect(self._printStatement)
+        button.setProperty(Constants.SONG_NAME, song_name)
+        button.clicked.connect(self._downloadSelectedSong)
         self.songDetailExhibiterTable.setCellWidget(index, 1, button)
         self.songDetailExhibiterTable.setItem(index, 2, QTableWidgetItem(song_name)) # song name
         self.songDetailExhibiterTable.setItem(index, 3, QTableWidgetItem(singer_name)) # singer's name
