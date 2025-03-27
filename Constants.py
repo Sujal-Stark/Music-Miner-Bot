@@ -101,3 +101,9 @@ LABEL_POSTER_TOOL_TIP = "Search First to get your result"
 # DEFAULT STYLES
 SET_CHECKED_STYLE = """QPushButton { background-color: rgb(3, 202, 230); }QPushButton:hover {background-color: rgb(3, 202, 255);}"""
 SET_UNCHECKED_STYLE = """QPushButton { background-color: rgb(7, 128, 87); }QPushButton:hover {background-color: rgb(0, 160, 110);}"""
+DOWNLOAD_BUTTON_STYLE = """QPushButton { background-color: rgb(7, 128, 87); }QPushButton:hover {background-color: rgb(0, 160, 110);}"""
+
+# OUTPUT MESSAGE
+DOWNLOAD_FAILED = "Sorry Download has been failed"
+INVALID_DIRECTORY = "Given Directory is invalid"
+DOWNLOAD_SUCCEED = "Downloaded"
