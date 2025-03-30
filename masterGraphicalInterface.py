@@ -1,10 +1,10 @@
 # this file is mainly responsible for creating the Graphical user inerface of the software using pyqt5
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QTableWidgetItem, QAbstractItemView, QToolTip, QSplashScreen
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QTableWidgetItem, QAbstractItemView, QToolTip, QSplashScreen, QFileDialog
 import time
 from PyQt5.QtCore import Qt, QThread, QFile, QIODevice
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from icecream import ic
-import sys
+import os
 
 # custom import
 import Constants
@@ -12,6 +12,7 @@ from ImageModifierEngine import ImageModifier
 from pagalFreeSiteExplorer import PagalFreeSiteExplorer
 from TablePopulatorThreadClass import TableDataStreamer
 from TuneDownloaderThreadForPW import TuneDownloaderThread
+from UserInformationHandler import ConfigFileHandler
 
 class MasterGrapicalUserInterface(QMainWindow):
     def __init__(self) -> None:
@@ -26,7 +27,14 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.setPosterAtTableView() # shows the poster in TableView
         self._loadStyleSheet() # loads the Qss
         self._setUpToolTip() # initialize tool tips
-        self.searchEngine = PagalFreeSiteExplorer() # initializing the search engine 
+        self._initializeHelperClassConstructor() # all useful classes are Initialised with parameters if any
+        self._generateConfigFile()
+        return
+
+    def _initializeHelperClassConstructor(self) -> None:
+        '''This method initializes all the important classes to work with in a one go'''
+        self.searchEngine = PagalFreeSiteExplorer() # initializing the search engine
+        self.configFileHander = ConfigFileHandler() # create and update Config Details
         return
 
     def _initializeUI(self) -> None:
@@ -45,7 +53,8 @@ class MasterGrapicalUserInterface(QMainWindow):
     def _properties(self) -> None:
         self.resourceFreeFlag = True # if false then no data will be passed to this class'es data from engine
         self.posterLabels : list[QPixmap] = None
-        self.DOWNLOADING_DIRECTORY = "D:\Test" # setting the downloading directory temporarily
+        self.generatedConfigLocation : str = None # if config file exists this str object will store the address
+        self.DOWNLOADING_DIRECTORY = "D:\\Music Lib" # setting the downloading directory temporarily
         return
 
     def _preferences(self) -> None:
@@ -60,6 +69,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.searchButton.clicked.connect(self.searchButtonAction)
         self.searchBySingerButton.clicked.connect(lambda : self._showClickedState())
 
+        self.setDownloadDirectory.clicked.connect(self._selectDownloadingDirectory)
         self.HighQualityEnableButton.clicked.connect(lambda : self._showClickedState())
         self.lowQualityEnableButton.clicked.connect(lambda : self._showClickedState())
         self.resetViewPanel.clicked.connect(self._resetPanelAction)
@@ -335,7 +345,7 @@ class MasterGrapicalUserInterface(QMainWindow):
     def _downloadSelectedSong(self) -> None:
         sender = self.sender()
         self.tuneDownlaoderThread = TuneDownloaderThread(
-            self.DOWNLOADING_DIRECTORY, sender.property(Constants.SONG_NAME), sender.property(Constants.HREF)
+            self.configFileHander.getDownloadingDirectory(), sender.property(Constants.SONG_NAME), sender.property(Constants.HREF)
         )
         self.tuneDownlaoderThread.messageSignal.connect(lambda message : print(message))
         self.tuneDownlaoderThread.start()
@@ -388,6 +398,17 @@ class MasterGrapicalUserInterface(QMainWindow):
             self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
             self.resourceFreeFlag = True # resouces are free
             self.default_label.show() # poster will be shown instead of table
+        return
+    
+    def _generateConfigFile(self) -> None:
+        self.generatedConfigLocation = self.configFileHander.generateConfigFile() # configFileLocation is set
+        return
+
+    def _selectDownloadingDirectory(self) -> None:
+        if(os.path.exists(self.generatedConfigLocation)):
+            explorer = QFileDialog.getExistingDirectory(caption = Constants.SELECT_DIRECTORY)
+            self.configFileHander.setDownloadingDirectory(explorer)
+        else: pass
         return
     pass
 
