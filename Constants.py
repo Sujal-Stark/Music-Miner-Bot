@@ -48,6 +48,9 @@ VIEW_PANEL_HEIGHT = CONTROL_SECTION_HEIGHT
 
 # Widget Related Sconstants
 
+# QFILEDIALOG CONSTANTS
+SELECT_DIRECTORY = "Select Directory"
+
 # SEARCH RELATED BUTTONS
 SEARCH_BUTTON = "Search"
 SEARCH_BY_SINGER_BUTTON =  "Search by singer's Name"
@@ -107,3 +110,8 @@ DOWNLOAD_BUTTON_STYLE = """QPushButton { background-color: rgb(7, 128, 87); }QPu
 DOWNLOAD_FAILED = "Sorry Download has been failed"
 INVALID_DIRECTORY = "Given Directory is invalid"
 DOWNLOAD_SUCCEED = "Downloaded"
+
+# CONFIG FILE CONSTANTS
+FILE_NAME = "config.json"
+DOWNLOADING_DIRECTORY_LOCATION = "Downloading Directory"
+USER_NAME = "User Name"
