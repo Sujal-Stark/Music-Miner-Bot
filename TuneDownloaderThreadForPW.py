@@ -9,13 +9,16 @@ import Constants
 
 class TuneDownloaderThread(QThread):
     messageSignal = pyqtSignal(str) # sends message to the main UI
-    def __init__(self, downloadingDirectory : str, songName : str, url : str):
-        self.downloadingDirectory = downloadingDirectory
-        self.songName = songName
-        self.url = url
+    def __init__(self):
         self.engine = PagalFreeSiteExplorer() # this engine will download song
         super().__init__()
 
+    def getInstructions(self, downloadingDirectory : str, songName : str, url : str) -> None:
+        self.downloadingDirectory = downloadingDirectory
+        self.songName = songName
+        self.url = url
+        return
+    
     def run(self):
         if (os.path.exists(self.downloadingDirectory) and os.path.isdir(self.downloadingDirectory)):
             if self.engine.downloadSongFromLink(self.url, self.songName, self.downloadingDirectory, 1):

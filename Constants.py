@@ -14,7 +14,9 @@ SRC = "src" # HTML tag
 B_TAG = "b" # HTML tag
 MAIN_PAGE_SONG_TEXT = "main_page_category_music_txt" # CSS selector
 BTN_DOWNLOAD = "btn-download" # css Selector
-
+KBPS_320 = "320Kbps"
+KBPS_128 = "128Kbps"
+MP3_EXTENSION = ".mp3"
 
 # WEB SITE PARAMTERS
 PAGALFREESITEURL = r"https://pagalfree.com/"
@@ -63,7 +65,7 @@ SHOW_HIGH_QUALITY = "Show High Quality"
 SHOW_LOW_QUALITY = "Show Low Quality"
 SHOW_DOWNLOAD_HISTORY = "Show downloading history"
 DELETE_DOWNLOAD_HISTORY = "Delete downloading history"
-RESET_VIEW_PANEL = "Reset View Panel"
+RESET_VIEW_PANEL = "Delete"
 
 # table Headers and sizes meant to be used as constants
 SERIAL = "Serial"
@@ -74,9 +76,10 @@ SONG_NAME = "Song name"
 SONG_NAME_SIZE = 150
 SINGER_NAME = "Singer name"
 SINGER_NAME_SIZE = 150
-DOWNLOAD_URL = "Download Url"
+DOWNLOAD_URL = "Download Here"
 DOWNLOAD_URL_SIZE = 115
 DOWNLOAD_BUTTON_TEXT = "Downlaod"
+ROW_HEIGHT = 150
 
 # Static file Paths
 ICON_PATH = R"static\icon.png" # Window Icon

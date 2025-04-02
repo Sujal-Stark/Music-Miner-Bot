@@ -69,6 +69,12 @@ class PagalFreeSiteExplorer:
             output format => dict {[link to download page], [song name], [singer name]. [url to the poster]}
         '''
         if(self.resourceOccupiedFlag == False): # if resources are not previously occupied only then extract data
+            self.songDataContainer = {
+                Constants.LINK_TO_REDIRECT_TUNE_CONTAINER : [],
+                Constants.LINK_TO_TUNE_POSTER_CONTAINER : [],
+                Constants.SONG_NAME : [],
+                Constants.SINGER_NAME : []
+            } # makes sure that data set is empty
             for el in dataElement:
                 self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER].append( el.find(Constants.A_TAG).get_attribute_list(Constants.HREF)[0])
                 self.songDataContainer[Constants.LINK_TO_TUNE_POSTER_CONTAINER].append(el.find(Constants.IMG_TAG).get_attribute_list(Constants.SRC)[0])
@@ -98,6 +104,7 @@ class PagalFreeSiteExplorer:
         try:
             self.getDownloadingUrl(url)
             if(self.downloadableLinks):
+                songName = songName + Constants.MP3_EXTENSION if(not songName.endswith(Constants.MP3_EXTENSION)) else songName # check for extension and corrects it
                 downloadResponse = requests.get(self.downloadableLinks[downloadIndex])
                 songName_withPath = os.path.join(directory, songName)
                 if(downloadResponse.status_code == 200):

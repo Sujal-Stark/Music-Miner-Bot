@@ -1,7 +1,6 @@
 # this file is mainly responsible for creating the Graphical user inerface of the software using pyqt5
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QTableWidgetItem, QAbstractItemView, QToolTip, QSplashScreen, QFileDialog
-import time
-from PyQt5.QtCore import Qt, QThread, QFile, QIODevice
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QTableWidgetItem, QAbstractItemView, QToolTip, QFileDialog
+from PyQt5.QtCore import Qt, QFile, QIODevice
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from icecream import ic
 import os
@@ -23,11 +22,11 @@ class MasterGrapicalUserInterface(QMainWindow):
         self._initializeUI() # builds all the components
         self._constuctUI() # form the layouts together
         self._addAttributes() # add widgets to the layouts
-        self._setResponse()
         self.setPosterAtTableView() # shows the poster in TableView
         self._loadStyleSheet() # loads the Qss
         self._setUpToolTip() # initialize tool tips
         self._initializeHelperClassConstructor() # all useful classes are Initialised with parameters if any
+        self._setResponse() # all Actions and Signals are bind with UI Elements
         self._generateConfigFile()
         return
 
@@ -35,6 +34,8 @@ class MasterGrapicalUserInterface(QMainWindow):
         '''This method initializes all the important classes to work with in a one go'''
         self.searchEngine = PagalFreeSiteExplorer() # initializing the search engine
         self.configFileHander = ConfigFileHandler() # create and update Config Details
+        self.streamer = TableDataStreamer() # Populate the table with Song data
+        self.tuneDownlaoderThread = TuneDownloaderThread() # Download a particular song
         return
 
     def _initializeUI(self) -> None:
@@ -66,13 +67,17 @@ class MasterGrapicalUserInterface(QMainWindow):
 
     def _setResponse(self)-> None:
         '''Predefines all the actions to their respected Widgets'''
-        self.searchButton.clicked.connect(self.searchButtonAction)
-        self.searchBySingerButton.clicked.connect(lambda : self._showClickedState())
+        self.searchButton.clicked.connect(self.searchButtonAction) #Start Searching internet, Retrieve data and show it
+        self.searchBySingerButton.clicked.connect(lambda : self._showClickedState()) # NOT IN WORKING STATE
 
-        self.setDownloadDirectory.clicked.connect(self._selectDownloadingDirectory)
-        self.HighQualityEnableButton.clicked.connect(lambda : self._showClickedState())
-        self.lowQualityEnableButton.clicked.connect(lambda : self._showClickedState())
-        self.resetViewPanel.clicked.connect(self._resetPanelAction)
+        self.setDownloadDirectory.clicked.connect(self._selectDownloadingDirectory) # To choose Downloading Directory
+        self.HighQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show High Quality Songs
+        self.lowQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show Low Quality Songs
+        self.deleteButton.clicked.connect(self._resetPanelAction) # Delete The Search Result
+
+        # Signal Response Addition
+        self.streamer.dataOnFly.connect(self._addItemToTable) # Accept data from Populator Thread
+        self.tuneDownlaoderThread.messageSignal.connect(lambda message : print(message)) # Shows download Status
         return
 
     def _buildFrames(self) -> None:
@@ -147,20 +152,20 @@ class MasterGrapicalUserInterface(QMainWindow):
     
     def _buildTableWidget(self) -> None:
         '''Mean't to be  called under _initailizeUI method builds the table view of the generated song data'''
-        self.songDetailExhibiterTable = QTableWidget() # holds the scraped Data
-        self.songDetailExhibiterTable.setFixedSize(self.tableScrollArea.width()- 20, self.tableScrollArea.height()- 20) # dimentions
-        self.songDetailExhibiterTable.setColumnCount(4) # column counts are always fixed
-        self.songDetailExhibiterTable.setWordWrap(True)
+        self.mainTable = QTableWidget() # holds the scraped Data
+        self.mainTable.setFixedSize(self.tableScrollArea.width()- 20, self.tableScrollArea.height()- 20) # dimentions
+        self.mainTable.setColumnCount(4) # column counts are always fixed
+        self.mainTable.setWordWrap(True)
         # column width Must be constants
-        self.songDetailExhibiterTable.setColumnWidth(0, Constants.THUMBNAIL_SIZE)
-        self.songDetailExhibiterTable.setColumnWidth(1,Constants.SONG_NAME_SIZE)
-        self.songDetailExhibiterTable.setColumnWidth(2,Constants.SINGER_NAME_SIZE)
-        self.songDetailExhibiterTable.setColumnWidth(3, Constants.DOWNLOAD_URL_SIZE)
+        self.mainTable.setColumnWidth(0, Constants.THUMBNAIL_SIZE) # HOLDS PIXMAP POSTER
+        self.mainTable.setColumnWidth(1,Constants.SONG_NAME_SIZE) # SONG NAME WITH BIT RATE
+        self.mainTable.setColumnWidth(2,Constants.SINGER_NAME_SIZE) # SINGER NAME
+        self.mainTable.setColumnWidth(3, Constants.DOWNLOAD_URL_SIZE) # BUTTON 
         
-        self.songDetailExhibiterTable.setHorizontalHeaderLabels( # column headings
+        self.mainTable.setHorizontalHeaderLabels( # column headings
             [Constants.THUMBNAIL, Constants.DOWNLOAD_URL, Constants.SONG_NAME, Constants.SINGER_NAME]
         )
-        self.songDetailExhibiterTable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers) # read only mode
+        self.mainTable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers) # read only mode
         return
 
     def _buildButtons(self) -> None:
@@ -206,9 +211,9 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.deleteDownlaodingHistory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
         self.deleteDownlaodingHistory.setToolTip(Constants.DELETE_DOWNLOAD_HISTORY_BUTTON_TOOL_TIP)
 
-        self.resetViewPanel = QPushButton(Constants.RESET_VIEW_PANEL)
-        self.resetViewPanel.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
-        self.resetViewPanel.setToolTip(Constants.RESET_PANEL_BUTTON_TOOL_TIP)
+        self.deleteButton = QPushButton(Constants.RESET_VIEW_PANEL) # Removes the Seaarch Result From table
+        self.deleteButton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.deleteButton.setToolTip(Constants.RESET_PANEL_BUTTON_TOOL_TIP)
         return
     
     def _buildLabels(self) -> None:
@@ -270,7 +275,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.controlSectionInnerLayout.addWidget(self.showDownloadingHistory, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerLayout.addWidget(self.deleteDownlaodingHistory, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerLayout.addWidget(self.separator_three, alignment=Qt.AlignmentFlag.AlignTop)
-        self.controlSectionInnerLayout.addWidget(self.resetViewPanel, alignment = Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerLayout.addWidget(self.deleteButton, alignment = Qt.AlignmentFlag.AlignTop)
         # View panel
         self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
         return
@@ -291,9 +296,10 @@ class MasterGrapicalUserInterface(QMainWindow):
     
     def alterPosterView(self) -> None:
         '''Removes the poster and show the  table containing data'''
-        self.default_label.hide()
-        self.default_label.setParent(None)
-        self.tableHolderLayout.addWidget(self.songDetailExhibiterTable, alignment = Qt.AlignmentFlag.AlignCenter)
+        if(self.mainTable.parent() == None): # only psot the table if it is not posted
+            self.default_label.hide()
+            self.default_label.setParent(None)
+            self.tableHolderLayout.addWidget(self.mainTable, alignment = Qt.AlignmentFlag.AlignCenter)
         return
     
     def _loadStyleSheet(self) -> None:
@@ -321,6 +327,7 @@ class MasterGrapicalUserInterface(QMainWindow):
                 self.searchBySingerButton.setStyleSheet(Constants.SET_UNCHECKED_STYLE)
                 self.searchBySingerButton.setCheckable(True)
                 self.SEARCH_BY_SINGER_ENABLE = False # control changed
+        
         elif(self.sender().objectName() == Constants.SHOW_HIGH_QUALITY):
             if(self.HighQualityEnableButton.isChecked()):
                 self.HighQualityEnableButton.setStyleSheet(Constants.SET_CHECKED_STYLE)
@@ -330,6 +337,7 @@ class MasterGrapicalUserInterface(QMainWindow):
                 self.HighQualityEnableButton.setStyleSheet(Constants.SET_UNCHECKED_STYLE)
                 self.HighQualityEnableButton.setCheckable(True)
                 self.SEARCH_HIGH_QUALITY = False # control changed
+        
         elif(self.sender().objectName() == Constants.SHOW_LOW_QUALITY):
             if(self.lowQualityEnableButton.isChecked()):
                 self.lowQualityEnableButton.setStyleSheet(Constants.SET_CHECKED_STYLE)
@@ -339,88 +347,101 @@ class MasterGrapicalUserInterface(QMainWindow):
                 self.lowQualityEnableButton.setStyleSheet(Constants.SET_UNCHECKED_STYLE)
                 self.lowQualityEnableButton.setCheckable(True)
                 self.SEARCH_LOW_QUALITY = False # control change
-        ic(self.SEARCH_LOW_QUALITY, self.SEARCH_BY_SINGER_ENABLE, self.SEARCH_HIGH_QUALITY)
         return
     
     def _downloadSelectedSong(self) -> None:
+        '''uses An Thread in the background and downloads the asked song in the Chosen directory'''
         sender = self.sender()
-        self.tuneDownlaoderThread = TuneDownloaderThread(
-            self.configFileHander.getDownloadingDirectory(), sender.property(Constants.SONG_NAME), sender.property(Constants.HREF)
-        )
-        self.tuneDownlaoderThread.messageSignal.connect(lambda message : print(message))
+        self.tuneDownlaoderThread.getInstructions(
+            self.configFileHander.getDownloadingDirectory(),
+            sender.property(Constants.SONG_NAME),
+            sender.property(Constants.HREF)
+        ) # takes infortation like name directory and link
         self.tuneDownlaoderThread.start()
         return
 
 
     def _addItemToTable(self, index : int, song_name : str, singer_name : str, href : str, picture : QPixmap) -> None:
         '''This method acts as Signal Acceptor. Accepts table Items from the Thread class(TablePopulatorThreadClass) and exhibit in the table'''
-        self.songDetailExhibiterTable.insertRow(index) # row defination
-        self.songDetailExhibiterTable.setRowHeight(index, 150)
+        self.mainTable.insertRow(index) # row defination
+        self.mainTable.setRowHeight(index, Constants.ROW_HEIGHT)
         if(picture): # if poster is found out only then poster will be shown
             label = QLabel()
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             label.setPixmap(picture)
-            self.songDetailExhibiterTable.setCellWidget(index, 0, label)
+            self.mainTable.setCellWidget(index, 0, label)
+        
         button = QPushButton(Constants.DOWNLOAD_BUTTON_TEXT) # button
         button.setStyleSheet(Constants.DOWNLOAD_BUTTON_STYLE)
         button.setProperty(Constants.HREF, href) # href holds the link for the downloading page
         button.setProperty(Constants.SONG_NAME, song_name)
-        button.clicked.connect(self._downloadSelectedSong)
-        self.songDetailExhibiterTable.setCellWidget(index, 1, button)
-        self.songDetailExhibiterTable.setItem(index, 2, QTableWidgetItem(song_name)) # song name
-        self.songDetailExhibiterTable.setItem(index, 3, QTableWidgetItem(singer_name)) # singer's name
+        button.clicked.connect(self._downloadSelectedSong) # Temporary Button that's why can't Put this action in response method
+        
+        self.mainTable.setCellWidget(index, 1, button)
+        self.mainTable.setItem(index, 2, QTableWidgetItem(song_name)) # song name
+        self.mainTable.setItem(index, 3, QTableWidgetItem(singer_name)) # singer's name
         return
 
     def searchButtonAction(self) -> None:
         '''Works after search button is pressed. Handles searchBySinger & searchBySong Both the action'''
-        if(self.inputField.text() != "" and self.resourceFreeFlag): # no search if input field is empty
+        sender_ObjectName = self.sender().objectName()
+        if(self.inputField.text() != "" and (
+            sender_ObjectName == Constants.SHOW_HIGH_QUALITY or sender_ObjectName == Constants.SHOW_LOW_QUALITY or self.resourceFreeFlag
+        )): # no search if input field is empty
             try:
                 if(self.SEARCH_BY_SINGER_ENABLE): # if singer name search is enabled
                     pass
                 else: # if only song search is queried
+                    self._clearTable()
                     self.alterPosterView() # table will be show
-                    self.songDetailExhibiterTable.clearContents() # clearing the table
-                    self.songDetailExhibiterTable.setRowCount(0)
-                    self.streamer = TableDataStreamer(self.inputField.text())
-                    self.streamer.dataOnFly.connect(self._addItemToTable)
+                    controlSignalList = {
+                        self.streamer.SEARCH_BY_SINGER : self.SEARCH_BY_SINGER_ENABLE,
+                        self.streamer.FILTER_HIGH_QUALITY : self.SEARCH_HIGH_QUALITY,
+                        self.streamer.FILTER_LOW_QUALITY : self.SEARCH_LOW_QUALITY
+                    }
+                    self.streamer.getInputs(self.inputField.text(), controlSignalList) # provides input to populate table
                     self.streamer.start()
             except (TypeError): pass
             self.resourceFreeFlag = False # resources are occupied
         return
     
+    def applyQualityFiler(self) -> None:
+        '''Again Rearranges the data in the table using background Threads according to user preference'''
+        self._showClickedState() # set and reset control varibles and button states
+        self.searchButtonAction() # re-arrange data
+        return
+
+    def _clearTable(self) -> None:
+        self.mainTable.clearContents() # clearing the table
+        self.mainTable.setRowCount(0) # cleaning the table
+        return
+
     def _resetPanelAction(self) -> None:
         '''Clears memory of the data structures and also removes the table and set the poster'''
-        if(self.songDetailExhibiterTable.parent()):
-            self.songDetailExhibiterTable.setParent(None)
-            self.songDetailExhibiterTable.clearContents() # table data are removed
-            self.songDetailExhibiterTable.setRowCount(0)
-            self.searchEngine._cleanAllMemory() # all resources are free
-            self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
+        if(self.mainTable.parent()):
+            self.mainTable.setParent(None)
+            self._clearTable()
             self.resourceFreeFlag = True # resouces are free
+            self.searchEngine._cleanAllMemory() # all resources are free
+            self.streamer.releaseResources() # all the resources will be released
+            self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
             self.default_label.show() # poster will be shown instead of table
         return
     
     def _generateConfigFile(self) -> None:
+        '''IF Software doesn.t have any config file then This method generate config file'''
         self.generatedConfigLocation = self.configFileHander.generateConfigFile() # configFileLocation is set
         return
 
     def _selectDownloadingDirectory(self) -> None:
+        '''Changes the downloading directory as per user's Choice'''
         if(os.path.exists(self.generatedConfigLocation)):
             explorer = QFileDialog.getExistingDirectory(caption = Constants.SELECT_DIRECTORY)
-            self.configFileHander.setDownloadingDirectory(explorer)
+            if(explorer != ""): self.configFileHander.setDownloadingDirectory(explorer)
         else: pass
         return
     pass
 
 
 if __name__ == "__main__":
-    # Application = QApplication(sys.argv)
-    # StartingScreen = QPixmap(Constants.STARTING_SCREEN_PATH)
-    # splashScreen = QSplashScreen(StartingScreen)
-    # splashScreen.show()
-    # time.sleep(Constants.STARTING_SCREEN_SHOW_TIME)
-    # splashScreen.close()
-    # music_Miner_Bot = MasterGrapicalUserInterface()
-    # music_Miner_Bot.show()
-    # Application.exec_()
     pass
