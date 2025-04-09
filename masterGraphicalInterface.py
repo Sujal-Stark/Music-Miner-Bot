@@ -19,13 +19,13 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.setWindowTitle(Constants.SOFTWARE_TITLE) # application name
         self.setWindowIcon(QIcon(Constants.ICON_PATH)) # icon for the application
         self.setFixedSize(Constants.SOFTWARE_WIDTH, Constants.SOFTWARE_HEIGHT) # application max size
+        self._initializeHelperClassConstructor() # all useful classes are Initialised with parameters if any
         self._initializeUI() # builds all the components
         self._constuctUI() # form the layouts together
         self._addAttributes() # add widgets to the layouts
         self.setPosterAtTableView() # shows the poster in TableView
         self._loadStyleSheet() # loads the Qss
         self._setUpToolTip() # initialize tool tips
-        self._initializeHelperClassConstructor() # all useful classes are Initialised with parameters if any
         self._setResponse() # all Actions and Signals are bind with UI Elements
         self._generateConfigFile()
         return
@@ -36,6 +36,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.configFileHander = ConfigFileHandler() # create and update Config Details
         self.streamer = TableDataStreamer() # Populate the table with Song data
         self.tuneDownlaoderThread = TuneDownloaderThread() # Download a particular song
+        self.imageModifierEngine = ImageModifier() # handles UI image related Actions
         return
 
     def _initializeUI(self) -> None:
@@ -87,6 +88,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.masterLayoutFrame.setFixedSize(Constants.SOFTWARE_WIDTH, Constants.SOFTWARE_HEIGHT)
         self.masterLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
         self.masterLayoutFrame.setObjectName("master_layout_frame")
+        self._resizeGivenWallpaper()
         self.masterLayoutFrame.setStyleSheet("""
             #master_layout_frame{
                 background-image: url(./static/arora1.jpg);
@@ -280,7 +282,15 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
         return
     
-    # INTERFACING    
+    # INTERFACING
+    def _resizeGivenWallpaper(self) -> None:
+        '''For the back ground of the application this method resizes the currently selected image from the static path and saves it. If any error occurred then sends a signal to the application'''
+        if(loc:= self.configFileHander.getCurrentWallpaperLocation()):
+            self.imageModifierEngine.resizeImage(loc)
+        else:
+            pass # signal will be added later
+        return
+    
     def setPosterAtTableView(self)-> None:
         '''Alter table method removes the table from the table view and put poster image'''
         self.default_label.hide() # for safety purposes
