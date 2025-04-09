@@ -33,10 +33,10 @@ SINGER_NAME = "singer name" # dictionary key
 
 # SOFTWARE DIMENTION RELATED
 SOFTWARE_TITLE = "Music-Miner-Bot" # shows as the name
-SOFTWARE_WIDTH = 860 # main window length
+SOFTWARE_WIDTH = 900 # main window length
 SOFTWARE_HEIGHT = 700 # main window height
 # Search Section Width and height
-SEARCH_SECTION_WIDTH = 820
+SEARCH_SECTION_WIDTH = 860
 SEARCH_SECTION_HEIGHT = 80
 SEARCH_SECTION_BUTTON_HEIGHT = 25
 # control section Width and Height
@@ -45,7 +45,7 @@ CONTROL_SECTION_HEIGHT = 535
 CONTROL_SECTION_BUTTON_WIDTH = CONTROL_SECTION_WIDTH - 20
 CONTROL_SECTION_BUTTON_HEIGHT = 40
 # View panel Height and Width
-VIEW_PANEL_WIDTH = 610
+VIEW_PANEL_WIDTH = 650
 VIEW_PANEL_HEIGHT = CONTROL_SECTION_HEIGHT
 
 # Widget Related Sconstants
