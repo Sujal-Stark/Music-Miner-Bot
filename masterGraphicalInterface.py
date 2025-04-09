@@ -112,6 +112,10 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.viewPanelLayoutFrame = QFrame() # provides shape to the ViewPanellayout
         self.viewPanelLayoutFrame.setFixedSize(Constants.VIEW_PANEL_WIDTH, Constants.VIEW_PANEL_HEIGHT)
         self.viewPanelLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
+
+        self.informationLayoutFrame = QFrame() # provides shape to information layout
+        self.informationLayoutFrame.setFixedSize(Constants.INFORMATION_SECTION_WIDTH, Constants.INFORMATION_SECTION_HEIGHT)
+        self.informationLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
         
         # Horizontal Separators
         self.separator_one = QFrame() # separates Background edit option
@@ -150,6 +154,8 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.viewPanelLayout = QHBoxLayout() # stores the song details
         self.viewPanelInnerLayout = QHBoxLayout() # stores the table Scroll Widget
         self.tableHolderLayout = QHBoxLayout() # holds the table
+
+        self.informationLayout = QHBoxLayout() # shows the signals given by methods
         return
     
     def _buildTableWidget(self) -> None:
@@ -258,6 +264,10 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.viewPanelLayoutFrame.setLayout(self.viewPanelInnerLayout)
         self.viewPanelInnerLayout.addWidget(self.tableScrollArea)
         self.tableScrollArea.setLayout(self.tableHolderLayout)
+
+        # INFORMATION HOLDER
+        self.bodyLayout.addLayout(self.informationLayout)
+        self.informationLayout.addWidget(self.informationLayoutFrame)
         return
     
     def _addAttributes(self):
