@@ -20,7 +20,8 @@ class ConfigFileHandler:
         return [
             {
                 Constants.DOWNLOADING_DIRECTORY_LOCATION : "",
-                Constants.USER_NAME : ""
+                Constants.USER_NAME : "",
+                Constants.WALLPAPER_PATH : ""
             }
         ]
 
@@ -60,6 +61,19 @@ class ConfigFileHandler:
                     config_information = json.load(configFile)
                     if(config_information): location = config_information[0][Constants.DOWNLOADING_DIRECTORY_LOCATION]
                 return location # if got perfect data
+            except(MemoryError, OSError, JSONDecodeError): return None
+        else: return None
+
+    def getCurrentWallpaperLocation(self) -> str:
+        '''If config.json file exist's then this methods return the currently used wallpaper file location to the UI module'''
+        filePath = os.path.join(os.getcwd(), Constants.FILE_NAME)
+        if(os.path.exists(filePath)):
+            try:
+                location = None # return value
+                with open(filePath, "r") as configFile:
+                    information = json.load(configFile)
+                    if(information) : location = information[0][Constants.WALLPAPER_PATH]
+                return location # if data retrieved
             except(MemoryError, OSError, JSONDecodeError): return None
         else: return None
     
