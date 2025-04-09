@@ -9,7 +9,7 @@ class ImageModifier:
         '''Resizes the image on the given path according to the Width and Height. Weather the image is larger or smaller than the given size this method will resize it to the given size'''
         try:
             with Image.open(imagePath) as img:
-                if(img.size[0] != width and img.size[1] != height):# only works if the image size and given size doesn't match
+                if(img.size[0] != width or img.size[1] != height):# only works if the image size and given size doesn't match
                     img = img.resize((width, height)).save(imagePath)
         except (UnidentifiedImageError, OSError, MemoryError, TypeError, FileNotFoundError, ValueError):
             return False
