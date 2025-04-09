@@ -34,7 +34,7 @@ SINGER_NAME = "singer name" # dictionary key
 # SOFTWARE DIMENTION RELATED
 SOFTWARE_TITLE = "Music-Miner-Bot" # shows as the name
 SOFTWARE_WIDTH = 860 # main window length
-SOFTWARE_HEIGHT = 660 # main window height
+SOFTWARE_HEIGHT = 700 # main window height
 # Search Section Width and height
 SEARCH_SECTION_WIDTH = 820
 SEARCH_SECTION_HEIGHT = 80
@@ -118,3 +118,4 @@ DOWNLOAD_SUCCEED = "Downloaded"
 FILE_NAME = "config.json"
 DOWNLOADING_DIRECTORY_LOCATION = "Downloading Directory"
 USER_NAME = "User Name"
+WALLPAPER_PATH = "Wall Paper Path"
