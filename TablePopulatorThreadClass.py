@@ -7,6 +7,7 @@ import  Constants
 
 class TableDataStreamer(QThread):
     dataOnFly = pyqtSignal(int, str, str, str, QPixmap) # sends singal to the main thread so that objects can be passed on
+    outputSignal = pyqtSignal(str) # any operation related signal will be forwarded to the main GUI
     def __init__(self):
         self.engine = PagalFreeSiteExplorer() # this engine scrape out the song from the web site
         self._controlSignalDeclaration()
@@ -58,7 +59,11 @@ class TableDataStreamer(QThread):
         if(not self.DOES_DATA_EXISTS):
             self.engine.searchQuery = self.searchInput
             self.output_object = None
-            self.output_object = self.engine.dataExtractFromSearchQuery(self.engine.searchInWebsite())
+            if(isinstance(searchOutput := self.engine.searchInWebsite(), list)):
+                self.output_object = self.engine.dataExtractFromSearchQuery(searchOutput)
+            else:
+                self.outputSignal.emit(searchOutput) # Returns message signal to the UI
+                return
             self.DOES_DATA_EXISTS = True # now data exit's no need to read again
         if(self.output_object):
             items = len(self.output_object[Constants.SONG_NAME])
@@ -93,5 +98,6 @@ class TableDataStreamer(QThread):
                         self.output_object[Constants.LINK_TO_TUNE_POSTER_CONTAINER][i],
                         self.output_object[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER][i]
                     )
+            self.outputSignal.emit(Constants.SEARCH_COMPLETED) # sends this signal after rendering to notify the user
         else: return
     pass
