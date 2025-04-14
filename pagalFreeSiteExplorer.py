@@ -1,6 +1,7 @@
 # this file is responsible for navigating in pagalFreeWebsite, search song, getting links and downloading all the songs and other related operations
 
 import requests
+from requests.exceptions import ConnectionError
 from bs4 import BeautifulSoup, element
 from PyQt5.QtGui import QImage, QPixmap
 from PIL import Image
@@ -54,14 +55,17 @@ class PagalFreeSiteExplorer:
         '''searches the user query in the website and returns a web element list.
             should be used as a argument for self.dataExtractFromSearchQuery()
         '''
-        searchRequest = requests.get(self.BASE + Constants.SEARCH_END_POINT + self.searchQuery)
-        if (searchRequest.status_code == Constants.STATUSCODE_SUCCEED):
-            self.soup = BeautifulSoup(
-                searchRequest.content.decode(Constants.PARSER_KEY), Constants.HTML_PARSER
-            )
-            return self.soup.find_all(Constants.DIV, id = Constants.ID_CATAGORY_CONTENT)
-        else:
-            return [Constants.NOT_FOUND_MESSAGE]
+        try:
+            searchRequest = requests.get(self.BASE + Constants.SEARCH_END_POINT + self.searchQuery)
+            if (searchRequest.status_code == Constants.STATUSCODE_SUCCEED):
+                self.soup = BeautifulSoup(
+                    searchRequest.content.decode(Constants.PARSER_KEY), Constants.HTML_PARSER
+                )
+                return self.soup.find_all(Constants.DIV, id = Constants.ID_CATAGORY_CONTENT)
+            else:
+                return Constants.NOT_FOUND_MESSAGE
+        except ConnectionError:
+            return Constants.INTERNET_CONNECTION_OFF_ERROR
     
     # separates search query elemnts and sent them in a dictionary form
     def dataExtractFromSearchQuery(self, dataElement : list[element.Tag]) -> dict:
@@ -95,8 +99,8 @@ class PagalFreeSiteExplorer:
                 self.soup = BeautifulSoup(pageResponse.content.decode(Constants.PARSER_KEY), Constants.HTML_PARSER)
                 tagContainingLink : list[element.Tag] = self.soup.find_all(Constants.A_TAG, class_ = Constants.BTN_DOWNLOAD)
                 self.downloadableLinks = [a.get_attribute_list(key = Constants.HREF)[0] for a in tagContainingLink]
-        except IndexError:
-            return
+        except IndexError: return
+        except ConnectionError: return
         return
     
     def downloadSongFromLink(self, url : str, songName : str, directory : str, downloadIndex : int) -> bool:
@@ -112,9 +116,8 @@ class PagalFreeSiteExplorer:
                         for chunk in downloadResponse.iter_content(chunk_size = 1024):
                             tune.write(chunk)
                     return True
-        except IndexError:
-            return False
-        return False
+        except IndexError: return False # internal mistake
+        except ConnectionError: return False # Probably internet connection is off
     
     def loadImagesFromLink(self, imageLink : str) -> QPixmap:
         '''Takes imagelink as input but provides the QImageObject of the song posters based upon search results.
