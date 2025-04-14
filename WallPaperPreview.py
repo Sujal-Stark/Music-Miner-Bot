@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QHBoxLayout, QFrame, QFileDialog, QPushButton, QLabel
 from PyQt5.QtCore import Qt, QFile, QIODevice, pyqtSignal
 from PyQt5.QtGui import QPixmap, QIcon
-
+import os
 # Custom Imports
 import Constants
 from DummyWindow import DummyPreview
@@ -40,6 +40,7 @@ class SelectWallpaperUI(QDialog):
 
     def _setResponses(self) -> None:
         self.selectFromDevice.clicked.connect(self._setPreviewWithDeviceImage)
+        self.useInApplication.clicked.connect(self._closeWindow)
         return
 
     def _buildPreviewWallpaper(self) -> None:
@@ -95,15 +96,15 @@ class SelectWallpaperUI(QDialog):
 
         # custom wallpaper Labels
         self.wallpaper_arora : ClickableLabel = self._generateWallpaperLabel(Constants.WALLPAPER_ARORA)
-        self.wallpaper_arora.location_signal.connect(self.previewUI.resizeGivenWallpaper)
+        self.wallpaper_arora.location_signal.connect(self._passWallpaperLocation)
         self.wallpaper_black_hole : ClickableLabel = self._generateWallpaperLabel(Constants.WALLPAPER_BLACK_HOLE)
-        self.wallpaper_black_hole.location_signal.connect(self.previewUI.resizeGivenWallpaper)
+        self.wallpaper_black_hole.location_signal.connect(self._passWallpaperLocation)
         self.desert_wallpaper_label = self._generateWallpaperLabel(Constants.WALLPAPER_DESERT)
-        self.desert_wallpaper_label.location_signal.connect(self.previewUI.resizeGivenWallpaper)
+        self.desert_wallpaper_label.location_signal.connect(self._passWallpaperLocation)
         self.dragon_wallpaper_label = self._generateWallpaperLabel(Constants.WALLPAPER_DRAGON)
-        self.dragon_wallpaper_label.location_signal.connect(self.previewUI.resizeGivenWallpaper)
+        self.dragon_wallpaper_label.location_signal.connect(self._passWallpaperLocation)
         self.planet_wallpaper_label = self._generateWallpaperLabel(Constants.WALLPAPER_PLANET)
-        self.planet_wallpaper_label.location_signal.connect(self.previewUI.resizeGivenWallpaper)
+        self.planet_wallpaper_label.location_signal.connect(self._passWallpaperLocation)
         return
 
     def _buildPushButtons(self) -> None:
@@ -176,16 +177,23 @@ class SelectWallpaperUI(QDialog):
         else: label.setText(Constants.UNABLE_TO_LOAD) 
         return label
     
+    def _passWallpaperLocation(self, loc : str = None):
+        if(loc):
+            self.selectedFile_Name = loc
+            self.previewUI.resizeGivenWallpaper(loc)
+        return
+
     def _setPreviewWithDeviceImage(self) -> None:
         file_Name = QFileDialog.getOpenFileName(
             self, caption= Constants.SELECT_FROM_DEVICE, filter="Image Files (*.png *.jpg *.jpeg *.bmp *.gif)"
         )
-        if(file_Name): self.previewUI.resizeGivenWallpaper(file_Name[0])
+        if(file_Name and os.path.exists(file_Name[0])): 
+            self.previewUI.resizeGivenWallpaper(file_Name[0])
+            self.selectedFile_Name = file_Name[0]
         return
     
     def _closeWindow(self) -> str:
-        if(self.selectedFile_Name):
-            self.fileSelectedSignal.emit(self.selectedFile_Name)
+        if(self.selectedFile_Name): self.fileSelectedSignal.emit(self.selectedFile_Name)
         return self.close()
     pass
 

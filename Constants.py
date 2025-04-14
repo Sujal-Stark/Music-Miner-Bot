@@ -17,6 +17,8 @@ BTN_DOWNLOAD = "btn-download" # css Selector
 KBPS_320 = "320Kbps"
 KBPS_128 = "128Kbps"
 MP3_EXTENSION = ".mp3"
+WELCOME = "Welcome!!!"
+UNABLE_TO_LOAD =  "Unable to load"
 
 # WEB SITE PARAMTERS
 PAGALFREESITEURL = r"https://pagalfree.com/"
@@ -76,9 +78,9 @@ SERIAL_SIZE = 130
 THUMBNAIL = "Thumbnail"
 THUMBNAIL_SIZE = 150
 SONG_NAME = "Song name"
-SONG_NAME_SIZE = 150
+SONG_NAME_SIZE = 170
 SINGER_NAME = "Singer name"
-SINGER_NAME_SIZE = 150
+SINGER_NAME_SIZE = 170
 DOWNLOAD_URL = "Download Here"
 DOWNLOAD_URL_SIZE = 115
 DOWNLOAD_BUTTON_TEXT = "Downlaod"
@@ -112,13 +114,59 @@ SET_CHECKED_STYLE = """QPushButton { background-color: rgb(3, 202, 230); }QPushB
 SET_UNCHECKED_STYLE = """QPushButton { background-color: rgb(7, 128, 87); }QPushButton:hover {background-color: rgb(0, 160, 110);}"""
 DOWNLOAD_BUTTON_STYLE = """QPushButton { background-color: rgb(7, 128, 87); }QPushButton:hover {background-color: rgb(0, 160, 110);}"""
 
-# OUTPUT MESSAGE
-DOWNLOAD_FAILED = "Sorry Download has been failed"
-INVALID_DIRECTORY = "Given Directory is invalid"
-DOWNLOAD_SUCCEED = "Downloaded"
 
 # CONFIG FILE CONSTANTS
 FILE_NAME = "config.json"
 DOWNLOADING_DIRECTORY_LOCATION = "Downloading Directory"
 USER_NAME = "User Name"
 WALLPAPER_PATH = "Wall Paper Path"
+
+# MESSAGE FOR USER
+DOWNLOAD_FAILED = "Sorry Download has been failed"
+INVALID_DIRECTORY = "Given Directory is invalid"
+DOWNLOAD_SUCCEED = "Downloaded"
+SEARCH_MSG = "Searching"
+SEARCH_COMPLETED = "Completed"
+CLEAN_REQ_MESSAGE = "Clean View panel"
+UNEXPECTED_ERROR_MESSAGE = "Sorry!! Unexpected Error occurred"
+INTERNET_CONNECTION_OFF_ERROR = "Turn on System's Internet Connection to browse"
+DOWNLOAD_CONTINUES = "Downloading..."
+
+
+
+
+############### CONSTANTS FOR WALLPAPPER PREVIEW ##################
+WALLPAPER_PREVIEW_STYLE_PATH = "WallPaperPreviewStyle.qml" # Style for Image Preview Window
+WALLPAPER_PREVIEW_TITLE = "Select Wallpaper" # main ttile for the window
+WALLPAPER_PREVIEW_WIDTH = 600 # fixed width of the window
+WALLPAPER_PREVIEW_HEIGHT = 600 # fixed height for the window
+
+# FRAMES
+WALLPAPER_PREVIEW_MAIN_FRAME_WIDTH = WALLPAPER_PREVIEW_WIDTH - 10
+WALLPAPER_PREVIEW_MAIN_FRAME_HEIGHT = WALLPAPER_PREVIEW_HEIGHT - 10
+
+# PUSH BUTTONS
+SELECT_FROM_DEVICE = "Select from Device"
+USE = "Use as Wallpaper"
+WALLPAPER_PREVIEW_BUTTON_WIDTH = 150
+WALLPAPER_PREVIEW_BUTTON_HEIGHT = 40
+
+# LABELS
+SCREEN_PREVIEW = "Preview of the Application"
+CUSTOM_WALLPAPER = "Custom Wallpapers"
+
+# static wallpaper location
+WALLPAPER_ARORA = "./static/arora1.jpg"
+WALLPAPER_BLACK_HOLE = "./static/blackHole.jpeg"
+WALLPAPER_DESERT = "./static/desert.jpeg"
+WALLPAPER_DRAGON = "./static/dragon.jpeg"
+WALLPAPER_PLANET = "./static/planet.jpeg"
+
+#  CLICKABLE LABEL CONSTANTS
+LOCATION_PROP = "Location"
+
+#################   DUMMY FILE    ####################
+TEMP_PATH = "/temp/"
+DUMMY_FILE_STYLE_PATH = "DummyFile_style.qml"
+DUMMY_WINDOW_WIDTH = 540
+DUMMY_WINDOW_HEIGHT = 300

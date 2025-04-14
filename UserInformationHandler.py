@@ -35,6 +35,40 @@ class ConfigFileHandler:
             except (OSError, MemoryError): return None
         else: return os.path.join(os.getcwd(), Constants.FILE_NAME) # if the file either exists
     
+    def setUserName(self, userName : str) -> bool:
+        '''Set the user given name as User name for the Application'''
+        filePath = os.path.join(os.getcwd(), Constants.FILE_NAME)
+        if(os.path.exists(filePath)): # if file exists
+            try:
+                config_information = None
+                with open(filePath, "r") as configFile: # reading current data
+                    config_information = json.load(configFile)
+                if(config_information): # if config data is not malicious
+                    with open(filePath, "w") as fileObj:
+                        config_information[0][Constants.USER_NAME] = userName # setting data
+                        json.dump(config_information, fileObj) # saving data
+                    return True
+                else: return False
+            except(MemoryError, OSError, JSONDecodeError): return False
+        else: return False
+
+    def setWallpaperLocation(self, location : str) -> bool:
+        filePath = os.path.join(os.getcwd(), Constants.FILE_NAME)
+        if(os.path.exists(filePath) and  os.path.exists(location)): # if File Exists
+            try:
+                configInfo = None
+                with open(filePath, "r") as configFile:
+                    configInfo = json.load(configFile)
+                if(configInfo):
+                    with open(filePath, "w") as configFile:
+                        configInfo[0][Constants.WALLPAPER_PATH] = location
+                        json.dump(configInfo, configFile)
+                    return True
+                else: return False
+            except(MemoryError, OSError, JSONDecodeError): return False
+        else: return False
+    
+    
     def setDownloadingDirectory(self, downloadingDirectory : str) -> bool:
         '''Set the given name as Downloading directory in the config File'''
         filePath = os.path.join(os.getcwd(), Constants.FILE_NAME)
@@ -77,22 +111,8 @@ class ConfigFileHandler:
             except(MemoryError, OSError, JSONDecodeError): return None
         else: return None
     
-    def setUserName(self, userName : str) -> bool:
-        '''Set the user given name as User name for the Application'''
-        filePath = os.path.join(os.getcwd(), Constants.FILE_NAME)
-        if(os.path.exists(filePath)): # if file exists
-            try:
-                with open(filePath, "r") as configFile: # reading current data
-                    config_information = json.load(configFile)
-                    if(config_information): # if config data is not malicious
-                        with open(filePath, "w") as fileObj:
-                            config_information[0][Constants.USER_NAME] = userName # setting data
-                            json.dump(config_information, fileObj) # saving data
-                            return True
-                    else: return False
-            except(memoryview, OSError, JSONDecodeError): return False
-        else: return False
     pass
+    
 
 if __name__ == '__main__':
     configHandler = ConfigFileHandler()

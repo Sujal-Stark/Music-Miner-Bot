@@ -1,6 +1,6 @@
 # this file is mainly responsible for creating the Graphical user inerface of the software using pyqt5
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QTableWidgetItem, QAbstractItemView, QToolTip, QFileDialog
-from PyQt5.QtCore import Qt, QFile, QIODevice
+from PyQt5.QtCore import Qt, QFile, QIODevice, pyqtSlot
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from icecream import ic
 import os
@@ -12,6 +12,7 @@ from pagalFreeSiteExplorer import PagalFreeSiteExplorer
 from TablePopulatorThreadClass import TableDataStreamer
 from TuneDownloaderThreadForPW import TuneDownloaderThread
 from UserInformationHandler import ConfigFileHandler
+from WallPaperPreview import SelectWallpaperUI
 
 class MasterGrapicalUserInterface(QMainWindow):
     def __init__(self) -> None:
@@ -28,6 +29,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self._setUpToolTip() # initialize tool tips
         self._setResponse() # all Actions and Signals are bind with UI Elements
         self._generateConfigFile()
+        self._configFileExistAction()
         return
 
     def _initializeHelperClassConstructor(self) -> None:
@@ -37,6 +39,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.streamer = TableDataStreamer() # Populate the table with Song data
         self.tuneDownlaoderThread = TuneDownloaderThread() # Download a particular song
         self.imageModifierEngine = ImageModifier() # handles UI image related Actions
+        self.wallpaperPreview = SelectWallpaperUI()
         return
 
     def _initializeUI(self) -> None:
@@ -56,7 +59,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.resourceFreeFlag = True # if false then no data will be passed to this class'es data from engine
         self.posterLabels : list[QPixmap] = None
         self.generatedConfigLocation : str = None # if config file exists this str object will store the address
-        self.DOWNLOADING_DIRECTORY = "D:\\Music Lib" # setting the downloading directory temporarily
+        # self.DOWNLOADING_DIRECTORY = "D:\\Music Lib" # setting the downloading directory temporarily
         return
 
     def _preferences(self) -> None:
@@ -71,6 +74,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.searchButton.clicked.connect(self.searchButtonAction) #Start Searching internet, Retrieve data and show it
         self.searchBySingerButton.clicked.connect(lambda : self._showClickedState()) # NOT IN WORKING STATE
 
+        self.BackGroundbutton.clicked.connect(self._openPreviewWindow) # user will select one wallpaper to set as back ground
         self.setDownloadDirectory.clicked.connect(self._selectDownloadingDirectory) # To choose Downloading Directory
         self.HighQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show High Quality Songs
         self.lowQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show Low Quality Songs
@@ -78,7 +82,10 @@ class MasterGrapicalUserInterface(QMainWindow):
 
         # Signal Response Addition
         self.streamer.dataOnFly.connect(self._addItemToTable) # Accept data from Populator Thread
-        self.tuneDownlaoderThread.messageSignal.connect(lambda message : print(message)) # Shows download Status
+        self.streamer.outputSignal.connect(self._setMessageForuser) # Shows information to the user
+        self.tuneDownlaoderThread.messageSignal.connect(self._setMessageForuser) # Shows download Status
+        self.tuneDownlaoderThread.threadFinishedSignal.connect(self.tuneDownlaoderThread.cleanMemory) # cleans the thread class variables
+        self.wallpaperPreview.fileSelectedSignal.connect(self._setWallpaper) # set the wallpaper for back ground
         return
 
     def _buildFrames(self) -> None:
@@ -88,10 +95,8 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.masterLayoutFrame.setFixedSize(Constants.SOFTWARE_WIDTH, Constants.SOFTWARE_HEIGHT)
         self.masterLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
         self.masterLayoutFrame.setObjectName("master_layout_frame")
-        self._resizeGivenWallpaper()
         self.masterLayoutFrame.setStyleSheet("""
             #master_layout_frame{
-                background-image: url(./static/arora1.jpg);
                 background-repeat: repeat;
                 background-position: center;
             }
@@ -112,10 +117,6 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.viewPanelLayoutFrame = QFrame() # provides shape to the ViewPanellayout
         self.viewPanelLayoutFrame.setFixedSize(Constants.VIEW_PANEL_WIDTH, Constants.VIEW_PANEL_HEIGHT)
         self.viewPanelLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
-
-        self.informationLayoutFrame = QFrame() # provides shape to information layout
-        self.informationLayoutFrame.setFixedSize(Constants.INFORMATION_SECTION_WIDTH, Constants.INFORMATION_SECTION_HEIGHT)
-        self.informationLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
         
         # Horizontal Separators
         self.separator_one = QFrame() # separates Background edit option
@@ -226,8 +227,14 @@ class MasterGrapicalUserInterface(QMainWindow):
     
     def _buildLabels(self) -> None:
         '''Meant to be called in the _constructUI method and forms QLabels'''
-        self.default_label = QLabel() # holdsthe poster image
-        self.default_label.setToolTip(Constants.LABEL_POSTER_TOOL_TIP)
+        self.default_label = QLabel() # holds the poster image
+        
+        self.default_label.setToolTip(Constants.LABEL_POSTER_TOOL_TIP) # shows tool tip for each buttons
+        
+        self.infoLabel = QLabel(Constants.WELCOME) # holds information
+        self.infoLabel.setFixedSize(Constants.INFORMATION_SECTION_WIDTH, 40)
+        self.infoLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.infoLabel.setStyleSheet("QLabel{color : #FFFFFF}")
         return
     
     def _buildLineInput(self) -> None:
@@ -267,7 +274,6 @@ class MasterGrapicalUserInterface(QMainWindow):
 
         # INFORMATION HOLDER
         self.bodyLayout.addLayout(self.informationLayout)
-        self.informationLayout.addWidget(self.informationLayoutFrame)
         return
     
     def _addAttributes(self):
@@ -290,12 +296,21 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.controlSectionInnerLayout.addWidget(self.deleteButton, alignment = Qt.AlignmentFlag.AlignTop)
         # View panel
         self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
+
+        # information Section
+        self.informationLayout.addWidget(self.infoLabel, alignment = Qt.AlignmentFlag.AlignCenter)
         return
     
     # INTERFACING
-    def _resizeGivenWallpaper(self) -> None:
+    @pyqtSlot()
+    def _setMessageForuser(self, msg : str) -> None:
+        self.infoLabel.setText(msg)
+        return
+
+    def _resizeGivenWallpaper(self, loc : str = None) -> None:
         '''For the back ground of the application this method resizes the currently selected image from the static path and saves it. If any error occurred then sends a signal to the application'''
-        if(loc:= self.configFileHander.getCurrentWallpaperLocation()):
+        if(loc == None): loc = self.configFileHander.getCurrentWallpaperLocation()
+        if(loc):
             self.imageModifierEngine.resizeImage(loc)
         else:
             pass # signal will be added later
@@ -372,12 +387,15 @@ class MasterGrapicalUserInterface(QMainWindow):
     def _downloadSelectedSong(self) -> None:
         '''uses An Thread in the background and downloads the asked song in the Chosen directory'''
         sender = self.sender()
+        self._setMessageForuser(Constants.DOWNLOAD_CONTINUES)
+        self.tuneDownlaoderThread = TuneDownloaderThread()
         self.tuneDownlaoderThread.getInstructions(
             self.configFileHander.getDownloadingDirectory(),
             sender.property(Constants.SONG_NAME),
             sender.property(Constants.HREF)
         ) # takes infortation like name directory and link
         self.tuneDownlaoderThread.start()
+        ic("Downloading")
         return
 
 
@@ -408,12 +426,11 @@ class MasterGrapicalUserInterface(QMainWindow):
         if(self.inputField.text() != "" and (
             sender_ObjectName == Constants.SHOW_HIGH_QUALITY or sender_ObjectName == Constants.SHOW_LOW_QUALITY or self.resourceFreeFlag
         )): # no search if input field is empty
+            self._setMessageForuser(Constants.SEARCH_MSG) # Showing Info
             try:
                 if(self.SEARCH_BY_SINGER_ENABLE): # if singer name search is enabled
                     pass
                 else: # if only song search is queried
-                    self._clearTable()
-                    self.alterPosterView() # table will be show
                     controlSignalList = {
                         self.streamer.SEARCH_BY_SINGER : self.SEARCH_BY_SINGER_ENABLE,
                         self.streamer.FILTER_HIGH_QUALITY : self.SEARCH_HIGH_QUALITY,
@@ -421,9 +438,11 @@ class MasterGrapicalUserInterface(QMainWindow):
                     }
                     self.streamer.getInputs(self.inputField.text(), controlSignalList) # provides input to populate table
                     self.streamer.start()
-            except (TypeError): pass
+                    self._clearTable()
+                    self.alterPosterView() # table will be show
+            except (TypeError): self._setMessageForuser(Constants.UNEXPECTED_ERROR_MESSAGE) # showing error
             self.resourceFreeFlag = False # resources are occupied
-        return
+        else: self._setMessageForuser(Constants.CLEAN_REQ_MESSAGE)
     
     def applyQualityFiler(self) -> None:
         '''Again Rearranges the data in the table using background Threads according to user preference'''
@@ -432,6 +451,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
 
     def _clearTable(self) -> None:
+        '''Delete all rows from a table and removes all widgets in it OverAll TC O(n*m)'''
         self.mainTable.clearContents() # clearing the table
         self.mainTable.setRowCount(0) # cleaning the table
         return
@@ -460,6 +480,27 @@ class MasterGrapicalUserInterface(QMainWindow):
             if(explorer != ""): self.configFileHander.setDownloadingDirectory(explorer)
         else: pass
         return
+
+    def _openPreviewWindow(self) -> None:
+        self.wallpaperPreview.show()
+        return
+
+    def _setWallpaper(self, loc : str = None) -> None:
+        if(os.path.exists(loc)):
+            self._resizeGivenWallpaper(loc)
+            style = "#master_layout_frame{background-image: url(" + loc + ");}"
+            self.masterLayoutFrame.setStyleSheet(style)
+            self.configFileHander.setWallpaperLocation(loc)
+        return
+    
+    def _configFileExistAction(self)-> None:
+        if(os.path.exists(os.path.join(os.getcwd(), Constants.FILE_NAME))):
+            style = "#master_layout_frame{background-image: url(" + self.configFileHander.getCurrentWallpaperLocation() + ");}"
+            self.masterLayoutFrame.setStyleSheet(style)
+        else:
+            self.masterLayoutFrame.setStyleSheet(
+                "#master_layout_frame{background-image: url(./static/arora1.jpg);}"
+            )
     pass
 
 

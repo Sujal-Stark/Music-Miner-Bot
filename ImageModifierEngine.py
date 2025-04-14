@@ -15,6 +15,6 @@ class ImageModifier:
         except (UnidentifiedImageError, OSError, MemoryError, TypeError, FileNotFoundError, ValueError):
             return False
         return True
-    
+    pass
 if __name__ == '__main__':
     ImageModifier.resizeImage("./static/icon.png", 128, 128)
