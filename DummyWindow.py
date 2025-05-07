@@ -13,11 +13,11 @@ class DummyPreview(QWidget):
         self.masterLayout = QVBoxLayout(self)
         self.setFixedSize(Constants.DUMMY_WINDOW_WIDTH, Constants.DUMMY_WINDOW_HEIGHT)
         self.factor = factor
-        self._initializeUI()
-        self._constuctUI()
-        self._addAttributes()
-        self.resizeGivenWallpaper("D:\\Programming Library\\Personal Projects\\Music-Miner-Bot\\static\\arora1.jpg")
-        self._loadStyleSheet()
+        self._initializeUI() # initialises all the UI material
+        self._constuctUI() # apply ui material in window
+        self._addAttributes() # addning all Widgets
+        self.resizeGivenWallpaper("./static/arora1.jpg") # relative path is given instead of real path
+        self._loadStyleSheet() # Applying Style in The UI
         return
     
     def _initializeUI(self) -> None:
@@ -30,6 +30,7 @@ class DummyPreview(QWidget):
 
     def _buildFrames(self) -> None:
         '''This method must be called inside initializeUI method to load all the frames using in the UI, no relevent extternal use'''
+        # main Frame that holds master Layout
         self.masterLayoutInnerFrame = QFrame()
         self.masterLayoutInnerFrame.setFrameShape(QFrame.Shape.StyledPanel)
         self.masterLayoutInnerFrame.setObjectName("master_inner_layout_frame")
@@ -40,30 +41,38 @@ class DummyPreview(QWidget):
             }
         """)
         
+        # Search Zone
         self.searchSectionLayoutFrame = QFrame()
         self.searchSectionLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
 
+        # Control Button Area
         self.controlSectionLayoutFrame = QFrame()
         self.controlSectionLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
 
+        # Table Widget Area
         self.viewPanelLayoutFrame = QFrame()
         self.viewPanelLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
         return
 
     def _buildLayouts(self) -> None:
         '''Must be called inside _initializeUI method. it is used to build the Layouts'''
+
+        # main Layout 
         self.bodyLayout = QVBoxLayout()
         
-        self.searchSectionLayout = QHBoxLayout()
+        # search Zone
+        self.searchSectionLayout = QHBoxLayout() # Holder
         self.searchSectionInnerLayout =  QVBoxLayout()
-        self.searchFieldLayout = QHBoxLayout()
-        self.searchRelatedButtonLayout = QHBoxLayout()
+        self.searchFieldLayout = QHBoxLayout()  # Search Bar
+        self.searchRelatedButtonLayout = QHBoxLayout() # Buttons
         
-        self.actionLayout = QHBoxLayout()
+        self.actionLayout = QHBoxLayout() # Control Section + View Section
 
+        # control Section
         self.controlSectionLayout = QVBoxLayout()
         self.controlSectionInnerLayout = QVBoxLayout()
 
+        # view Section
         self.viewPanelLayout = QHBoxLayout()
         self.viewPanelInnerLayout = QHBoxLayout()
         self.tableHolderLayout = QHBoxLayout()
@@ -93,6 +102,7 @@ class DummyPreview(QWidget):
     
     def _buildLineInput(self) -> None:
         self.inputField = QLineEdit()
+        self.inputField.setDisabled(True) # for preview purpose no need to take input
         return
 
     def _constuctUI(self) -> None:
@@ -155,6 +165,7 @@ class DummyPreview(QWidget):
         return
     
     def _clearTempDirectory(self) -> None:
+        '''After Completing wallpaper Changing operation use this method to keep Temp folder Clean.'''
         for tempFile in os.listdir("./temp"):
             os.remove(os.path.join("./temp", tempFile))
         return
@@ -162,10 +173,10 @@ class DummyPreview(QWidget):
     def _loadStyleSheet(self) -> None:
         '''Should be called in the constructor and it loads the style sheet from qml file'''
         try:
-            file = QFile(Constants.DUMMY_FILE_STYLE_PATH)
+            file = QFile(Constants.DUMMY_FILE_STYLE_PATH) # Creating File Objects
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
-                qss = file.readAll().data().decode(Constants.PARSER_KEY)
-                self.setStyleSheet(qss)
+                qss = file.readAll().data().decode(Constants.PARSER_KEY) # extracting Style
+                self.setStyleSheet(qss) # adding Style
         except (OSError, MemoryError, PermissionError, FileNotFoundError): return # handles loading error
         return
     pass
