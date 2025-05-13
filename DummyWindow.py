@@ -20,6 +20,11 @@ class DummyPreview(QWidget):
         self._loadStyleSheet() # Applying Style in The UI
         return
     
+    def show(self):
+        # show method is overriden to reset the wallpaper to arora1.jpg
+        self.resizeGivenWallpaper("./static/arora1.jpg")
+        return super().show()
+
     def _initializeUI(self) -> None:
         '''this function must be called inside the  constructor so that when the class is called all the uI components get's loaded in the window'''
         self._buildFrames()
