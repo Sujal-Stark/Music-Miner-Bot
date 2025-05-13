@@ -13,6 +13,8 @@ class ConfigFileHandler:
     
     def _properties(self) -> None:
         '''Initializes all necessary properties'''
+        self.configFilePath = Constants.FILE_NAME # Full Location Of Config File
+        self.colorJsonPath = Constants.COLOR_FILE_REL_PATH # Full location of colorJson File
         return
 
     def _generateSchema(self) -> dict:
@@ -25,15 +27,16 @@ class ConfigFileHandler:
             }
         ]
 
-    def generateConfigFile(self) -> str:
+    def generateConfigFile(self) -> bool:
         '''If Application doesn't Have it's config.json file. This method will create the json file'''
-        if(not os.path.exists(os.path.join(os.getcwd(), Constants.FILE_NAME))):
+        path = os.path.join(os.getcwd(), Constants.FILE_NAME)
+        if(not os.path.exists(path)):
             try:
-                with open(os.path.join(os.getcwd(), Constants.FILE_NAME), "x") as file: 
+                with open(path, "x") as file: 
                     json.dump(self._generateSchema(), file ) # dump the empty schema in the file
-                return os.path.join(os.getcwd(), Constants.FILE_NAME) # file created
-            except (OSError, MemoryError): return None
-        else: return os.path.join(os.getcwd(), Constants.FILE_NAME) # if the file either exists
+                return True # file created
+            except (OSError, MemoryError): return False
+        else: False # if the file either exists
     
     def setUserName(self, userName : str) -> bool:
         '''Set the user given name as User name for the Application'''
@@ -111,6 +114,55 @@ class ConfigFileHandler:
             except(MemoryError, OSError, JSONDecodeError): return None
         else: return None
     
+    ####### COLOR FILE HANDLING #######
+    def _generateColorLogSchema(self) -> dict:
+        '''Generates the basic color Schemes for the application UI'''
+        return {
+            Constants.BUTTON_COLOR_CONFIG : [7, 128, 87],
+            Constants.LABEL_COLOR_CONFIG : None,
+            Constants.FRAME_COLOR_CONFIG : None
+        }
+    
+    def generateColorFile(self) -> bool:
+        '''If Application doesn't have color.json file this method will create the file'''
+        path = os.path.join(os.getcwd(), Constants.COLOR_FILE_REL_PATH) # full path creation
+        if(not os.path.exists(path)):
+            try:
+                with open(path, "x") as file:
+                    json.dump(self._generateColorLogSchema(), file) # dump the default Schema in the file
+                return True
+            except (OSError, MemoryError): return False
+        else: return False
+
+    def setColorValueIntoFile(self, key : str, value : list) -> bool:
+        '''Parameters: key -> a string value that refers to a key in related config file. value -> a tuple of 3 integers ranging from 0 - 255. Operation: This method takes the key and value & store inside Color.json File permanently, until next change.
+        Returns True if succeed.
+    '''
+        path : str = os.path.join(os.getcwd(), self.colorJsonPath) # full path
+        if(os.path.exists(path)):
+            try:
+                colorData = None # set initially to none for error handling
+                with open(path, "r") as colorfile:
+                    colorData = json.load(colorfile) # fetching data
+                if(colorData):
+                    colorData[key] = value # adding changes
+                    with open(path, "w") as writeColorFile:
+                        json.dump(colorData, writeColorFile) # setting changes
+                    return True
+            except(OSError, MemoryError, JSONDecodeError): return False
+        else: return False
+
+    def getColorValueFromFile(self, key : str) -> tuple:
+        '''Parameters: key -> a string value that refers to a key in related config file. Operation: Takes the Key and fetch the co responding User chosen value from the colors.json file'''
+        path : str = os.path.join(os.getcwd(), self.colorJsonPath) # full path
+        if(os.path.exists(path)):
+            try:
+                jsonData : dict = None # set initially to none for error handling
+                with open(path, "r") as colorReadFile:
+                    jsonData = json.load(colorReadFile) # loading Data
+                if(jsonData): return jsonData[key] # delivering req value
+            except(MemoryError, OSError, JSONDecodeError): return None
+        else: return None
     pass
     
 
