@@ -162,4 +162,5 @@ cython_debug/
 #.idea/
 randoms.py
 config.json
+colors.json
 temp
