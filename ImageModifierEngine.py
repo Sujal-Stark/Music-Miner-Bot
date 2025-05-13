@@ -1,6 +1,8 @@
 # This file will be responsible for generating image objects and providing them to GUI class or other class need of using image for the design purpose or representation purpose for the application
 
 from PIL import Image, UnidentifiedImageError
+import os
+
 import Constants
 
 class ImageModifier:
@@ -15,6 +17,24 @@ class ImageModifier:
         except (UnidentifiedImageError, OSError, MemoryError, TypeError, FileNotFoundError, ValueError):
             return False
         return True
+    
+    @staticmethod
+    def computeAVGColor(imagePath : str) -> list:
+        output : tuple = ()
+        if(imagePath == None): return output
+        if(not os.path.exists(imagePath)): 
+           imagePath : str = os.getcwd() + imagePath
+        if(os.path.exists(imagePath)):
+            try:
+                with Image.open(imagePath) as image:
+                    pixels = image.getdata()
+                    pixelcount = image.width * image.height
+                    RGB = list(map(lambda c : (sum(c)// pixelcount), zip(*pixels)))
+                    output = RGB[0 : 3]
+            except (OSError, MemoryError, TypeError, FileNotFoundError, ValueError, UnidentifiedImageError):
+                print("Error")
+        else: pass
+        return output
     pass
 if __name__ == '__main__':
     ImageModifier.resizeImage("./static/icon.png", 128, 128)
