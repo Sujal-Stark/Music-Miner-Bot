@@ -19,7 +19,11 @@ class ImageModifier:
         return True
     
     @staticmethod
-    def computeAVGColor(imagePath : str) -> list:
+    def computeAVGColor(imagePath : str) -> list[int, int, int]:
+        '''
+            Input > imagePath : str  --- valid path of an Image
+            Output > List[int, int, int] R(avg), G(avg), B(avg)
+        '''
         output : tuple = ()
         if(imagePath == None): return output
         if(not os.path.exists(imagePath)): 
