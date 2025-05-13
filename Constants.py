@@ -37,6 +37,7 @@ SINGER_NAME = "singer name" # dictionary key
 SOFTWARE_TITLE = "Music-Miner-Bot" # shows as the name
 SOFTWARE_WIDTH = 900 # main window length
 SOFTWARE_HEIGHT = 720 # main window height
+MASTER_FRAME_OBJECT_NAME = "master_layout_frame"
 # Search Section Width and height
 SEARCH_SECTION_WIDTH = 860
 SEARCH_SECTION_HEIGHT = 80
@@ -110,8 +111,6 @@ LABEL_POSTER_TOOL_TIP = "Search First to get your result"
 
 
 # DEFAULT STYLES
-SET_CHECKED_STYLE = """QPushButton { background-color: rgb(3, 202, 230); }QPushButton:hover {background-color: rgb(3, 202, 255);}"""
-SET_UNCHECKED_STYLE = """QPushButton { background-color: rgb(7, 128, 87); }QPushButton:hover {background-color: rgb(0, 160, 110);}"""
 DOWNLOAD_BUTTON_STYLE = """QPushButton { background-color: rgb(7, 128, 87); }QPushButton:hover {background-color: rgb(0, 160, 110);}"""
 
 
@@ -120,6 +119,13 @@ FILE_NAME = "config.json"
 DOWNLOADING_DIRECTORY_LOCATION = "Downloading Directory"
 USER_NAME = "User Name"
 WALLPAPER_PATH = "Wall Paper Path"
+
+# COLOR FILE CONSTANTS
+COLOR_FILE_REL_PATH = "colors.json"
+BUTTON_COLOR_CONFIG = "Button_Color"
+LABEL_COLOR_CONFIG = "Label_Color"
+FRAME_COLOR_CONFIG = "Frame_Color"
+
 
 # MESSAGE FOR USER
 DOWNLOAD_FAILED = "Sorry Download has been failed"
