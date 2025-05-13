@@ -23,6 +23,11 @@ class SelectWallpaperUI(QDialog):
         self._loadStyleSheet()
         return
     
+    def show(self):
+        # show method is Overriden so that Each time this window is used the preview UI becomes ready again
+        self.previewUI.show()
+        return super().show()
+    
     def _initializeUI(self) -> None:
         '''Initialiss all the attributes and layouts used in this UI'''
         self._buildPreviewWallpaper()
@@ -194,6 +199,7 @@ class SelectWallpaperUI(QDialog):
     
     def _closeWindow(self) -> str:
         if(self.selectedFile_Name): self.fileSelectedSignal.emit(self.selectedFile_Name)
+        self.previewUI.close()
         return self.close()
     pass
 
