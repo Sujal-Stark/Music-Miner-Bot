@@ -1,7 +1,7 @@
 /* ========== Global Styles ========== */
 * {
-    font-family: "Georgia", "sans serif";
-    font-size: "14px";
+    font-family: "Georgia", "Arial", "sans serif";
+    font-size: "15px";
 }
 
 /* ========== Window Background ========== */
