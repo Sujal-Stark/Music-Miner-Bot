@@ -20,16 +20,20 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.setWindowTitle(Constants.SOFTWARE_TITLE) # application name
         self.setWindowIcon(QIcon(Constants.ICON_PATH)) # icon for the application
         self.setFixedSize(Constants.SOFTWARE_WIDTH, Constants.SOFTWARE_HEIGHT) # application max size
-        self._initializeHelperClassConstructor() # all useful classes are Initialised with parameters if any
+
         self._initializeUI() # builds all the components
         self._constuctUI() # form the layouts together
         self._addAttributes() # add widgets to the layouts
         self.setPosterAtTableView() # shows the poster in TableView
         self._loadStyleSheet() # loads the Qss
+        
+        self._initializeHelperClassConstructor() # all useful classes are Initialised with parameters if any
         self._setUpToolTip() # initialize tool tips
         self._setResponse() # all Actions and Signals are bind with UI Elements
-        self._generateConfigFile()
-        self._configFileExistAction()
+        
+        self._generateConfigFiles() # Through out system all files regarding user preferences and choices will be generated
+        self._configFileExistAction() # use Config file styles and data
+        self._colorFileExistsAction() # use Colors file styles and data
         return
 
     def _initializeHelperClassConstructor(self) -> None:
@@ -39,7 +43,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.streamer = TableDataStreamer() # Populate the table with Song data
         self.tuneDownlaoderThread = TuneDownloaderThread() # Download a particular song
         self.imageModifierEngine = ImageModifier() # handles UI image related Actions
-        self.wallpaperPreview = SelectWallpaperUI()
+        self.wallpaperPreview = SelectWallpaperUI() # creates a separate window to preview wallpaper
         return
 
     def _initializeUI(self) -> None:
@@ -57,9 +61,7 @@ class MasterGrapicalUserInterface(QMainWindow):
 
     def _properties(self) -> None:
         self.resourceFreeFlag = True # if false then no data will be passed to this class'es data from engine
-        self.posterLabels : list[QPixmap] = None
         self.generatedConfigLocation : str = None # if config file exists this str object will store the address
-        # self.DOWNLOADING_DIRECTORY = "D:\\Music Lib" # setting the downloading directory temporarily
         return
 
     def _preferences(self) -> None:
@@ -71,10 +73,12 @@ class MasterGrapicalUserInterface(QMainWindow):
 
     def _setResponse(self)-> None:
         '''Predefines all the actions to their respected Widgets'''
+        # search section buttons
         self.searchButton.clicked.connect(self.searchButtonAction) #Start Searching internet, Retrieve data and show it
         self.searchBySingerButton.clicked.connect(lambda : self._showClickedState()) # NOT IN WORKING STATE
 
-        self.BackGroundbutton.clicked.connect(self._openPreviewWindow) # user will select one wallpaper to set as back ground
+        # control section buttons
+        self.BackGroundbutton.clicked.connect(self.wallpaperPreview.show) # user will select one wallpaper to set as back ground
         self.setDownloadDirectory.clicked.connect(self._selectDownloadingDirectory) # To choose Downloading Directory
         self.HighQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show High Quality Songs
         self.lowQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show Low Quality Songs
@@ -94,7 +98,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.masterLayoutFrame = QFrame()
         self.masterLayoutFrame.setFixedSize(Constants.SOFTWARE_WIDTH, Constants.SOFTWARE_HEIGHT)
         self.masterLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.masterLayoutFrame.setObjectName("master_layout_frame")
+        self.masterLayoutFrame.setObjectName(Constants.MASTER_FRAME_OBJECT_NAME)
         self.masterLayoutFrame.setStyleSheet("""
             #master_layout_frame{
                 background-repeat: repeat;
@@ -303,7 +307,7 @@ class MasterGrapicalUserInterface(QMainWindow):
     
     # INTERFACING
     @pyqtSlot()
-    def _setMessageForuser(self, msg : str) -> None:
+    def _setMessageForuser(self, msg : str = None) -> None:
         self.infoLabel.setText(msg)
         return
 
@@ -345,7 +349,6 @@ class MasterGrapicalUserInterface(QMainWindow):
                 qss = file.readAll().data().decode(Constants.PARSER_KEY)
                 self.setStyleSheet(qss)
         except (OSError, MemoryError, PermissionError, FileNotFoundError): return # handles loading error
-        return
     
     def _setUpToolTip(self) -> None:
         QToolTip.setFont(QFont("Georgia", 10))
@@ -355,31 +358,25 @@ class MasterGrapicalUserInterface(QMainWindow):
         '''Change the clicked and unclicked state for all the checkable buttons'''
         if(self.sender().objectName() == Constants.SEARCH_BY_SINGER_BUTTON):
             if self.searchBySingerButton.isChecked():
-                self.searchBySingerButton.setStyleSheet(Constants.SET_CHECKED_STYLE)
                 self.searchBySingerButton.setCheckable(False)
                 self.SEARCH_BY_SINGER_ENABLE = True # constrol change
             else:
-                self.searchBySingerButton.setStyleSheet(Constants.SET_UNCHECKED_STYLE)
                 self.searchBySingerButton.setCheckable(True)
                 self.SEARCH_BY_SINGER_ENABLE = False # control changed
         
         elif(self.sender().objectName() == Constants.SHOW_HIGH_QUALITY):
             if(self.HighQualityEnableButton.isChecked()):
-                self.HighQualityEnableButton.setStyleSheet(Constants.SET_CHECKED_STYLE)
                 self.HighQualityEnableButton.setCheckable(False)
                 self.SEARCH_HIGH_QUALITY = True # control changed
             else:
-                self.HighQualityEnableButton.setStyleSheet(Constants.SET_UNCHECKED_STYLE)
                 self.HighQualityEnableButton.setCheckable(True)
                 self.SEARCH_HIGH_QUALITY = False # control changed
         
         elif(self.sender().objectName() == Constants.SHOW_LOW_QUALITY):
             if(self.lowQualityEnableButton.isChecked()):
-                self.lowQualityEnableButton.setStyleSheet(Constants.SET_CHECKED_STYLE)
                 self.lowQualityEnableButton.setCheckable(False)
                 self.SEARCH_LOW_QUALITY = True # control change
             else:
-                self.lowQualityEnableButton.setStyleSheet(Constants.SET_UNCHECKED_STYLE)
                 self.lowQualityEnableButton.setCheckable(True)
                 self.SEARCH_LOW_QUALITY = False # control change
         return
@@ -468,21 +465,18 @@ class MasterGrapicalUserInterface(QMainWindow):
             self.default_label.show() # poster will be shown instead of table
         return
     
-    def _generateConfigFile(self) -> None:
-        '''IF Software doesn.t have any config file then This method generate config file'''
-        self.generatedConfigLocation = self.configFileHander.generateConfigFile() # configFileLocation is set
+    def _generateConfigFiles(self) -> None:
+        '''IF Software doesn't have any config data file then This method generate config file'''
+        self.configFileHander.generateConfigFile() # configFileLocation is set
+        self.configFileHander.generateColorFile() # generates colors.json file
         return
 
     def _selectDownloadingDirectory(self) -> None:
         '''Changes the downloading directory as per user's Choice'''
-        if(os.path.exists(self.generatedConfigLocation)):
-            explorer = QFileDialog.getExistingDirectory(caption = Constants.SELECT_DIRECTORY)
-            if(explorer != ""): self.configFileHander.setDownloadingDirectory(explorer)
+        if(os.path.exists(os.path.join(os.getcwd(), Constants.FILE_NAME))):
+            downloadingPath = QFileDialog.getExistingDirectory(caption = Constants.SELECT_DIRECTORY)
+            if(downloadingPath != ""): self.configFileHander.setDownloadingDirectory(downloadingPath)
         else: pass
-        return
-
-    def _openPreviewWindow(self) -> None:
-        self.wallpaperPreview.show()
         return
 
     def _setWallpaper(self, loc : str = None) -> None:
@@ -491,7 +485,17 @@ class MasterGrapicalUserInterface(QMainWindow):
             style = "#master_layout_frame{background-image: url(" + loc + ");}"
             self.masterLayoutFrame.setStyleSheet(style)
             self.configFileHander.setWallpaperLocation(loc)
+            self._changeButtonColor(
+                    self.imageModifierEngine.computeAVGColor(loc)
+            )
         return
+    
+    def _changeButtonColor(self, color : list = None) -> bool:
+        if(color == None and len(color) != 3): return False # no action needed for invalid Input
+        if(not isinstance(color, list)): color = list(color)
+        self.configFileHander.setColorValueIntoFile(Constants.BUTTON_COLOR_CONFIG, color) # saving color value
+        if(color): self._alterColorStyle(self.generateSupportingColor(color))
+        return True
     
     def _configFileExistAction(self)-> None:
         if(os.path.exists(os.path.join(os.getcwd(), Constants.FILE_NAME))):
@@ -501,6 +505,54 @@ class MasterGrapicalUserInterface(QMainWindow):
             self.masterLayoutFrame.setStyleSheet(
                 "#master_layout_frame{background-image: url(./static/arora1.jpg);}"
             )
+        return
+    
+    def _colorFileExistsAction(self) -> None:
+        '''If color file exists then this method fetch user preferences from file and inject in the UI style'''
+        if(os.path.exists(os.path.join(os.getcwd(), Constants.COLOR_FILE_REL_PATH))):
+            color = self.configFileHander.getColorValueFromFile(Constants.BUTTON_COLOR_CONFIG)
+            if(color): self._alterColorStyle(self.generateSupportingColor(color))
+        return
+    
+    def _alterColorStyle(self, colorList : list[list]) -> bool:
+        '''Parameters: colorList -> list[str], unpack the string values and set them as Back ground color and text color in the main UI, maintaining other Styles same'''
+        self.setStyleSheet(
+            "QWidget {" + 
+                "font-family: Georgia, Arial, sans-serif;" +
+            "}" +
+            "QPushButton {" + 
+                f"background-color:rgb{tuple(colorList[0])};" + 
+                f"color:rgb{tuple(colorList[1])};" +
+                "border-radius: 5px;" +
+                "border: 1px solid rgb(255, 255, 255);" + 
+            "}" + 
+            "QPushButton:hover {" +
+                f"background-color: rgb{tuple(colorList[2])};"
+            "}"
+            "QPushButton:pressed {" + 
+                f"background-color: rgb{tuple(colorList[3])};" +
+            "}"
+            "QFrame {" + 
+                "border: 1px solid rgb(100, 100, 100);"
+                "border-radius: 5px;"
+            "}"
+        )
+        self.update()
+        return False
+
+    def generateSupportingColor(self, color : tuple[int, int, int]) -> list[list]:
+        '''Parameters: color: tuple[int, int, int] - RGB values (0-255).
+            Returns: list[str]: [
+                background color,   text (inverse) color,   hover effect color, clicked effect color
+            ]
+        '''
+        hoverColor : list = [min(i + 20, 255) for i in color] # RGB color value to animate hover effect
+        clickedColor : list = [min(i + 40, 255) for i in color] # RGB color value to animate clicked effect
+        inverseColor : list = [(255 - i) for i in color] # inverse color for text
+        
+        colorList : list = [color, inverseColor, hoverColor, clickedColor]
+        return colorList
+
     pass
 
 
