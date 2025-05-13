@@ -10,7 +10,7 @@ import Constants
 
 class TuneDownloaderThread(QThread):
     messageSignal = pyqtSignal(str) # sends message to the main UI
-    threadFinishedSignal = pyqtSignal(bool) # Returns true if the thread action is finished
+    threadFinishedSignal = pyqtSignal(bool)  # Returns true if the thread action is finished
     def __init__(self):
         self.engine = PagalFreeSiteExplorer() # this engine will download song
         super().__init__()
@@ -20,14 +20,16 @@ class TuneDownloaderThread(QThread):
         self.songName = songName
         self.url = url
         return
-    
+
     def run(self):
         if (os.path.exists(self.downloadingDirectory) and os.path.isdir(self.downloadingDirectory)):
-            if self.engine.downloadSongFromLink(self.url, self.songName, self.downloadingDirectory, 1):
-                self.messageSignal.emit(Constants.DOWNLOAD_SUCCEED)
+            downloadingIndex = 0 # default value is set to 0 and low quality song will be downloaded
+            if(Constants.KBPS_128 in self.songName): downloadingIndex = 0
+            if(Constants.KBPS_320 in self.songName): downloadingIndex = 1
+            if self.engine.downloadSongFromLink(self.url, self.songName, self.downloadingDirectory, downloadingIndex):
+                self.threadFinishedSignal.emit(True)
             else: self.messageSignal.emit(Constants.DOWNLOAD_FAILED) # Download Fails for internal error
         else: self.messageSignal.emit(Constants.INVALID_DIRECTORY) # Current downloading directory doesn't exist
-        self.threadFinishedSignal.emit(True)
         super().run()
     
     def cleanMemory(self):

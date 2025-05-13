@@ -392,7 +392,6 @@ class MasterGrapicalUserInterface(QMainWindow):
             sender.property(Constants.HREF)
         ) # takes infortation like name directory and link
         self.tuneDownlaoderThread.start()
-        ic("Downloading")
         return
 
 
@@ -552,7 +551,6 @@ class MasterGrapicalUserInterface(QMainWindow):
         
         colorList : list = [color, inverseColor, hoverColor, clickedColor]
         return colorList
-
     pass
 
 

@@ -50,7 +50,7 @@ class TableDataStreamer(QThread):
         return
     
     def emitData(self, index : int, songName : str, singerName : str, imageLink : str, href : str):
-        posterImage = self.engine.loadImagesFromLink(imageLink)
+        if(imageLink): posterImage = self.engine.loadImagesFromLink(imageLink)
         self.dataOnFly.emit(index, songName, singerName, href, posterImage) # sends data to the UI
         return
 
