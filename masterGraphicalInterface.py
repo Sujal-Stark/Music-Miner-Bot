@@ -31,13 +31,13 @@ class MasterGrapicalUserInterface(QMainWindow):
         self._setUpToolTip() # initialize tool tips
         self._setResponse() # all Actions and Signals are bind with UI Elements
         
-        self._generateConfigFiles() # Through out system all files regarding user preferences and choices will be generated
+        self._generateConfigFiles() # Throughout system all files regarding user preferences and choices will be generated
         self._configFileExistAction() # use Config file styles and data
         self._colorFileExistsAction() # use Colors file styles and data
         return
 
     def _initializeHelperClassConstructor(self) -> None:
-        '''This method initializes all the important classes to work with in a one go'''
+        """This method initializes all the important classes to work with in a one go"""
         self.searchEngine = PagalFreeSiteExplorer() # initializing the search engine
         self.configFileHander = ConfigFileHandler() # create and update Config Details
         self.streamer = TableDataStreamer() # Populate the table with Song data
@@ -47,7 +47,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
 
     def _initializeUI(self) -> None:
-        '''this function must be called inside the  constructor so that when the class is called all the uI components get's loaded in the window'''
+        """this function must be called inside the  constructor so that when the class is called all the uI components gets loaded in the window"""
         self._properties()
         self._buildFrames()
         self._buildScrollArea()
@@ -65,20 +65,20 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
 
     def _preferences(self) -> None:
-        '''Preferences help to sort out the required results for the users'''
+        """Preferences help to sort out the required results for the users"""
         self.SEARCH_BY_SINGER_ENABLE = False # enables when user wants to search singer's name
         self.SEARCH_HIGH_QUALITY = False # enables  when user only want's high quality search results
         self.SEARCH_LOW_QUALITY = False # enables when the user only want's low quality search Results
         return
 
     def _setResponse(self)-> None:
-        '''Predefines all the actions to their respected Widgets'''
+        """Predefines all the actions to their respected Widgets"""
         # search section buttons
         self.searchButton.clicked.connect(self.searchButtonAction) #Start Searching internet, Retrieve data and show it
         self.searchBySingerButton.clicked.connect(lambda : self._showClickedState()) # NOT IN WORKING STATE
 
         # control section buttons
-        self.BackGroundbutton.clicked.connect(self.wallpaperPreview.show) # user will select one wallpaper to set as back ground
+        self.BackGroundbutton.clicked.connect(self.wallpaperPreview.show) # user will select one wallpaper to set as background
         self.setDownloadDirectory.clicked.connect(self._selectDownloadingDirectory) # To choose Downloading Directory
         self.HighQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show High Quality Songs
         self.lowQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show Low Quality Songs
@@ -86,14 +86,14 @@ class MasterGrapicalUserInterface(QMainWindow):
 
         # Signal Response Addition
         self.streamer.dataOnFly.connect(self._addItemToTable) # Accept data from Populator Thread
-        self.streamer.outputSignal.connect(self._setMessageForuser) # Shows information to the user
-        self.tuneDownlaoderThread.messageSignal.connect(self._setMessageForuser) # Shows download Status
+        self.streamer.outputSignal.connect(self._setMessageForUser) # Shows information to the user
+        self.tuneDownlaoderThread.messageSignal.connect(self._setMessageForUser) # Shows download Status
         self.tuneDownlaoderThread.threadFinishedSignal.connect(self.downloadingFinishedSignalAction) # cleans the thread class variables
-        self.wallpaperPreview.fileSelectedSignal.connect(self._setWallpaper) # set the wallpaper for back ground
+        self.wallpaperPreview.fileSelectedSignal.connect(self._setWallpaper) # set the wallpaper for background
         return
 
     def _buildFrames(self) -> None:
-        '''This method must be called inside initializeUI method to load all the frames using in the UI, no relevent extternal use'''
+        """This method must be called inside initializeUI method to load all the frames using in the UI, no relevent extternal use"""
         # holds an masterLayout and holds an image for the GUI
         self.masterLayoutFrame = QFrame()
         self.masterLayoutFrame.setFixedSize(Constants.SOFTWARE_WIDTH, Constants.SOFTWARE_HEIGHT)
@@ -132,7 +132,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def _buildScrollArea(self) -> None:
-        '''Should be used in _initializeUI method. This method buils scrol areas'''
+        """Should be used in _initializeUI method. This method buils scrol areas"""
         self.tableScrollArea = QScrollArea() # provides scroll area to the table view
         self.tableScrollArea.setWidgetResizable(True)
         self.tableScrollArea.setFixedSize(Constants.VIEW_PANEL_WIDTH -20, Constants.VIEW_PANEL_HEIGHT - 20)
@@ -142,7 +142,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
 
     def _buildLayouts(self) -> None:
-        '''Must be called inside _initializeUI method. it is used to build the Layouts'''
+        """Must be called inside _initializeUI method. it is used to build the Layouts"""
         self.masterLayout = QVBoxLayout() # master layout for centeral widget
         self.bodyLayout = QVBoxLayout() # boy layout holds all functioning layouts
         
@@ -164,7 +164,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def _buildTableWidget(self) -> None:
-        '''Mean't to be  called under _initailizeUI method builds the table view of the generated song data'''
+        """Meant to be  called under _initailizeUI method builds the table view of the generated song data"""
         self.mainTable = QTableWidget() # holds the scraped Data
         self.mainTable.setFixedSize(self.tableScrollArea.width()- 20, self.tableScrollArea.height()- 20) # dimentions
         self.mainTable.setColumnCount(4) # column counts are always fixed
@@ -281,7 +281,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def _addAttributes(self):
-        '''Packs all the widgets in their holder layouts'''
+        """Packs all the widgets in their holder layouts"""
         # search Section
         self.searchFieldLayout.addWidget(self.inputField, Qt.AlignmentFlag.AlignCenter)
         self.searchRelatedButtonLayout.addWidget(self.searchBySingerButton, Qt.AlignmentFlag.AlignCenter)
@@ -307,12 +307,12 @@ class MasterGrapicalUserInterface(QMainWindow):
     
     # INTERFACING
     @pyqtSlot()
-    def _setMessageForuser(self, msg : str = None) -> None:
+    def _setMessageForUser(self, msg : str = None) -> None:
         self.infoLabel.setText(msg)
         return
 
     def _resizeGivenWallpaper(self, loc : str = None) -> None:
-        '''For the back ground of the application this method resizes the currently selected image from the static path and saves it. If any error occurred then sends a signal to the application'''
+        """For the background of the application this method resizes the currently selected image from the static path and saves it. If any error occurred then sends a signal to the application"""
         if(loc == None): loc = self.configFileHander.getCurrentWallpaperLocation()
         if(loc):
             self.imageModifierEngine.resizeImage(loc)
@@ -321,7 +321,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def setPosterAtTableView(self)-> None:
-        '''Alter table method removes the table from the table view and put poster image'''
+        """Alter table method removes the table from the table view and put poster image"""
         self.default_label.hide() # for safety purposes
         try:
             table_default_poster = QPixmap(Constants.TABLE_DEFAULT_LABEL)
@@ -334,8 +334,8 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def alterPosterView(self) -> None:
-        '''Removes the poster and show the  table containing data'''
-        if(self.mainTable.parent() == None): # only psot the table if it is not posted
+        """Removes the poster and show the  table containing data"""
+        if self.mainTable.parent() is None: # only psot the table if it is not posted
             self.default_label.hide()
             self.default_label.setParent(None)
             self.tableHolderLayout.addWidget(self.mainTable, alignment = Qt.AlignmentFlag.AlignCenter)
@@ -355,8 +355,8 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def _showClickedState(self) -> None:
-        '''Change the clicked and unclicked state for all the checkable buttons'''
-        if(self.sender().objectName() == Constants.SEARCH_BY_SINGER_BUTTON):
+        """Change the clicked and unclicked state for all the checkable buttons"""
+        if self.sender().objectName() == Constants.SEARCH_BY_SINGER_BUTTON:
             if self.searchBySingerButton.isChecked():
                 self.searchBySingerButton.setCheckable(False)
                 self.SEARCH_BY_SINGER_ENABLE = True # constrol change
@@ -364,16 +364,16 @@ class MasterGrapicalUserInterface(QMainWindow):
                 self.searchBySingerButton.setCheckable(True)
                 self.SEARCH_BY_SINGER_ENABLE = False # control changed
         
-        elif(self.sender().objectName() == Constants.SHOW_HIGH_QUALITY):
-            if(self.HighQualityEnableButton.isChecked()):
+        elif self.sender().objectName() == Constants.SHOW_HIGH_QUALITY:
+            if self.HighQualityEnableButton.isChecked():
                 self.HighQualityEnableButton.setCheckable(False)
                 self.SEARCH_HIGH_QUALITY = True # control changed
             else:
                 self.HighQualityEnableButton.setCheckable(True)
                 self.SEARCH_HIGH_QUALITY = False # control changed
         
-        elif(self.sender().objectName() == Constants.SHOW_LOW_QUALITY):
-            if(self.lowQualityEnableButton.isChecked()):
+        elif self.sender().objectName() == Constants.SHOW_LOW_QUALITY:
+            if self.lowQualityEnableButton.isChecked():
                 self.lowQualityEnableButton.setCheckable(False)
                 self.SEARCH_LOW_QUALITY = True # control change
             else:
@@ -382,24 +382,24 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def _downloadSelectedSong(self) -> None:
-        '''uses An Thread in the background and downloads the asked song in the Chosen directory'''
+        """uses An Thread in the background and downloads the asked song in the Chosen directory"""
         sender = self.sender()
-        self._setMessageForuser(Constants.DOWNLOAD_CONTINUES)
+        self._setMessageForUser(Constants.DOWNLOAD_CONTINUES)
         self.tuneDownlaoderThread = TuneDownloaderThread()
         self.tuneDownlaoderThread.getInstructions(
             self.configFileHander.getDownloadingDirectory(),
             sender.property(Constants.SONG_NAME),
             sender.property(Constants.HREF)
-        ) # takes infortation like name directory and link
+        ) # takes information like name directory and link
         self.tuneDownlaoderThread.start()
         return
 
 
     def _addItemToTable(self, index : int, song_name : str, singer_name : str, href : str, picture : QPixmap) -> None:
-        '''This method acts as Signal Acceptor. Accepts table Items from the Thread class(TablePopulatorThreadClass) and exhibit in the table'''
+        """This method acts as Signal Acceptor. Accepts table Items from the Thread class(TablePopulatorThreadClass) and exhibit in the table"""
         self.mainTable.insertRow(index) # row defination
         self.mainTable.setRowHeight(index, Constants.ROW_HEIGHT)
-        if(picture): # if poster is found out only then poster will be shown
+        if picture: # if poster is found out only then poster will be shown
             label = QLabel()
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             label.setPixmap(picture)
@@ -417,14 +417,14 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
 
     def searchButtonAction(self) -> None:
-        '''Works after search button is pressed. Handles searchBySinger & searchBySong Both the action'''
+        """Works after search button is pressed. Handles searchBySinger & searchBySong Both the action"""
         sender_ObjectName = self.sender().objectName()
         if(self.inputField.text() != "" and (
             sender_ObjectName == Constants.SHOW_HIGH_QUALITY or sender_ObjectName == Constants.SHOW_LOW_QUALITY or self.resourceFreeFlag
         )): # no search if input field is empty
-            self._setMessageForuser(Constants.SEARCH_MSG) # Showing Info
+            self._setMessageForUser(Constants.SEARCH_MSG) # Showing Info
             try:
-                if(self.SEARCH_BY_SINGER_ENABLE): # if singer name search is enabled
+                if self.SEARCH_BY_SINGER_ENABLE: # if singer name search is enabled
                     pass
                 else: # if only song search is queried
                     controlSignalList = {
@@ -436,25 +436,25 @@ class MasterGrapicalUserInterface(QMainWindow):
                     self.streamer.start()
                     self._clearTable()
                     self.alterPosterView() # table will be show
-            except (TypeError): self._setMessageForuser(Constants.UNEXPECTED_ERROR_MESSAGE) # showing error
+            except (TypeError): self._setMessageForUser(Constants.UNEXPECTED_ERROR_MESSAGE) # showing error
             self.resourceFreeFlag = False # resources are occupied
-        else: self._setMessageForuser(Constants.CLEAN_REQ_MESSAGE)
+        else: self._setMessageForUser(Constants.CLEAN_REQ_MESSAGE)
     
     def applyQualityFiler(self) -> None:
-        '''Again Rearranges the data in the table using background Threads according to user preference'''
+        """Again Rearranges the data in the table using background Threads according to user preference"""
         self._showClickedState() # set and reset control varibles and button states
         self.searchButtonAction() # re-arrange data
         return
 
     def _clearTable(self) -> None:
-        '''Delete all rows from a table and removes all widgets in it OverAll TC O(n*m)'''
+        """Delete all rows from a table and removes all widgets in it OverAll TC O(n*m)"""
         self.mainTable.clearContents() # clearing the table
         self.mainTable.setRowCount(0) # cleaning the table
         return
 
     def _resetPanelAction(self) -> None:
-        '''Clears memory of the data structures and also removes the table and set the poster'''
-        if(self.mainTable.parent()):
+        """Clears memory of the data structures and also removes the table and set the poster"""
+        if self.mainTable.parent():
             self.mainTable.setParent(None)
             self._clearTable()
             self.resourceFreeFlag = True # resouces are free
@@ -465,21 +465,21 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def _generateConfigFiles(self) -> None:
-        '''IF Software doesn't have any config data file then This method generate config file'''
+        """IF Software doesn't have any config data file then This method generate config file"""
         self.configFileHander.generateConfigFile() # configFileLocation is set
         self.configFileHander.generateColorFile() # generates colors.json file
         return
 
     def _selectDownloadingDirectory(self) -> None:
-        '''Changes the downloading directory as per user's Choice'''
-        if(os.path.exists(os.path.join(os.getcwd(), Constants.FILE_NAME))):
+        """Changes the downloading directory as per user's Choice"""
+        if os.path.exists(os.path.join(os.getcwd(), Constants.FILE_NAME)):
             downloadingPath = QFileDialog.getExistingDirectory(caption = Constants.SELECT_DIRECTORY)
-            if(downloadingPath != ""): self.configFileHander.setDownloadingDirectory(downloadingPath)
+            if downloadingPath != "": self.configFileHander.setDownloadingDirectory(downloadingPath)
         else: pass
         return
 
     def _setWallpaper(self, loc : str = None) -> None:
-        if(os.path.exists(loc)):
+        if os.path.exists(loc):
             self._resizeGivenWallpaper(loc)
             style = "#master_layout_frame{background-image: url(" + loc + ");}"
             self.masterLayoutFrame.setStyleSheet(style)
@@ -490,14 +490,14 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def _changeButtonColor(self, color : list = None) -> bool:
-        if(color == None and len(color) != 3): return False # no action needed for invalid Input
-        if(not isinstance(color, list)): color = list(color)
+        if color is None or len(color) != 3: return False # no action needed for invalid Input
+        if not isinstance(color, list): color = list(color)
         self.configFileHander.setColorValueIntoFile(Constants.BUTTON_COLOR_CONFIG, color) # saving color value
-        if(color): self._alterColorStyle(self.generateSupportingColor(color))
+        if color: self._alterColorStyle(self.generateSupportingColor(color))
         return True
     
     def _configFileExistAction(self)-> None:
-        if(os.path.exists(os.path.join(os.getcwd(), Constants.FILE_NAME))):
+        if os.path.exists(os.path.join(os.getcwd(), Constants.FILE_NAME)):
             style = "#master_layout_frame{background-image: url(" + self.configFileHander.getCurrentWallpaperLocation() + ");}"
             self.masterLayoutFrame.setStyleSheet(style)
         else:
@@ -507,14 +507,14 @@ class MasterGrapicalUserInterface(QMainWindow):
         return
     
     def _colorFileExistsAction(self) -> None:
-        '''If color file exists then this method fetch user preferences from file and inject in the UI style'''
-        if(os.path.exists(os.path.join(os.getcwd(), Constants.COLOR_FILE_REL_PATH))):
+        """If color file exists then this method fetch user preferences from file and inject in the UI style"""
+        if os.path.exists(os.path.join(os.getcwd(), Constants.COLOR_FILE_REL_PATH)):
             color = self.configFileHander.getColorValueFromFile(Constants.BUTTON_COLOR_CONFIG)
-            if(color): self._alterColorStyle(self.generateSupportingColor(color))
+            if color: self._alterColorStyle(self.generateSupportingColor(color))
         return
     
     def _alterColorStyle(self, colorList : list[list]) -> bool:
-        '''Parameters: colorList -> list[str], unpack the string values and set them as Back ground color and text color in the main UI, maintaining other Styles same'''
+        """Parameters: colorList -> list[str], unpack the string values and set them as Background color and text color in the main UI, maintaining other Styles same"""
         self.setStyleSheet(
             "QWidget {" + 
                 "font-family: Georgia, Arial, sans-serif;" +
@@ -540,11 +540,11 @@ class MasterGrapicalUserInterface(QMainWindow):
         return False
 
     def generateSupportingColor(self, color : tuple[int, int, int]) -> list[list]:
-        '''Parameters: color: tuple[int, int, int] - RGB values (0-255).
+        """Parameters: color: tuple[int, int, int] - RGB values (0-255).
             Returns: list[str]: [
                 background color,   text (inverse) color,   hover effect color, clicked effect color
             ]
-        '''
+        """
         hoverColor : list = [min(i + 20, 255) for i in color] # RGB color value to animate hover effect
         clickedColor : list = [min(i + 40, 255) for i in color] # RGB color value to animate clicked effect
         inverseColor : list = [(255 - i) for i in color] # inverse color for text
@@ -554,7 +554,7 @@ class MasterGrapicalUserInterface(QMainWindow):
     
     def downloadingFinishedSignalAction(self, completed : bool):
         if(completed):
-            self._setMessageForuser(Constants.DOWNLOAD_SUCCEED)
+            self._setMessageForUser(Constants.DOWNLOAD_SUCCEED)
             self.tuneDownlaoderThread.cleanMemory()
         return
     pass
