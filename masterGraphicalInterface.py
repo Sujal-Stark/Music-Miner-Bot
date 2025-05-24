@@ -88,7 +88,7 @@ class MasterGrapicalUserInterface(QMainWindow):
         self.streamer.dataOnFly.connect(self._addItemToTable) # Accept data from Populator Thread
         self.streamer.outputSignal.connect(self._setMessageForuser) # Shows information to the user
         self.tuneDownlaoderThread.messageSignal.connect(self._setMessageForuser) # Shows download Status
-        self.tuneDownlaoderThread.threadFinishedSignal.connect(self.tuneDownlaoderThread.cleanMemory) # cleans the thread class variables
+        self.tuneDownlaoderThread.threadFinishedSignal.connect(self.downloadingFinishedSignalAction) # cleans the thread class variables
         self.wallpaperPreview.fileSelectedSignal.connect(self._setWallpaper) # set the wallpaper for back ground
         return
 
@@ -551,6 +551,12 @@ class MasterGrapicalUserInterface(QMainWindow):
         
         colorList : list = [color, inverseColor, hoverColor, clickedColor]
         return colorList
+    
+    def downloadingFinishedSignalAction(self, completed : bool):
+        if(completed):
+            self._setMessageForuser(Constants.DOWNLOAD_SUCCEED)
+            self.tuneDownlaoderThread.cleanMemory()
+        return
     pass
 
 

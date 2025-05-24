@@ -22,15 +22,20 @@ class TuneDownloaderThread(QThread):
         return
 
     def run(self):
+        super().run()
         if (os.path.exists(self.downloadingDirectory) and os.path.isdir(self.downloadingDirectory)):
             downloadingIndex = 0 # default value is set to 0 and low quality song will be downloaded
             if(Constants.KBPS_128 in self.songName): downloadingIndex = 0
             if(Constants.KBPS_320 in self.songName): downloadingIndex = 1
             if self.engine.downloadSongFromLink(self.url, self.songName, self.downloadingDirectory, downloadingIndex):
                 self.threadFinishedSignal.emit(True)
-            else: self.messageSignal.emit(Constants.DOWNLOAD_FAILED) # Download Fails for internal error
-        else: self.messageSignal.emit(Constants.INVALID_DIRECTORY) # Current downloading directory doesn't exist
-        super().run()
+                return
+            else: 
+                self.messageSignal.emit(Constants.DOWNLOAD_FAILED) # Download Fails for internal error
+                return
+        else: 
+            self.messageSignal.emit(Constants.INVALID_DIRECTORY) # Current downloading directory doesn't exist
+            return
     
     def cleanMemory(self):
         '''nullify all the Variables after the thread is finished'''
