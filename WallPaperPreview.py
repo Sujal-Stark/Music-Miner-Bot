@@ -162,7 +162,6 @@ class SelectWallpaperUI(QDialog):
 
     # INTERFACEING
     def _loadStyleSheet(self) -> None:
-        '''Should be called in the constructor and it loads the style sheet from qml file'''
         try:
             file = QFile(Constants.WALLPAPER_PREVIEW_STYLE_PATH)
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):

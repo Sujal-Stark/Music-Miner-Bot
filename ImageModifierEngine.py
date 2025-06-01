@@ -7,28 +7,32 @@ import Constants
 
 class ImageModifier:
     @staticmethod
-    def resizeImage(imagePath : str, width : int = Constants.SOFTWARE_WIDTH, height : int = Constants.SOFTWARE_HEIGHT, dPath : str = None) -> bool:
-        '''Resizes the image on the given path according to the Width and Height. Weather the image is larger or smaller than the given size this method will resize it to the given size'''
+    def resizeImage(
+            imagePath: str, width: int = Constants.SOFTWARE_WIDTH, height: int = Constants.SOFTWARE_HEIGHT,
+            dPath: str = None
+    ) -> bool:
+        """Resizes the image on the given path according to the Width and Height. Weather the image is larger
+         or smaller than the given size this method will resize it to the given size"""
         try:
             with Image.open(imagePath) as img:
-                if(img.size[0] != width or img.size[1] != height):# only works if the image size and given size doesn't match
-                    if(dPath): imagePath = dPath
-                    img = img.resize((width, height)).save(imagePath)
+                if img.size[0] != width or img.size[1] != height:# only works if the image size and given size doesn't match
+                    if dPath: imagePath = dPath
+                    img.resize((width, height)).save(imagePath)
         except (UnidentifiedImageError, OSError, MemoryError, TypeError, FileNotFoundError, ValueError):
             return False
         return True
     
     @staticmethod
     def computeAVGColor(imagePath : str) -> list[int, int, int]:
-        '''
+        """
             Input > imagePath : str  --- valid path of an Image
             Output > List[int, int, int] R(avg), G(avg), B(avg)
-        '''
+        """
         output : tuple = ()
-        if(imagePath == None): return output
-        if(not os.path.exists(imagePath)): 
+        if imagePath is None: return output
+        if not os.path.exists(imagePath):
            imagePath : str = os.getcwd() + imagePath
-        if(os.path.exists(imagePath)):
+        if os.path.exists(imagePath):
             try:
                 with Image.open(imagePath) as image:
                     pixels = image.getdata()

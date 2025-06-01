@@ -6,10 +6,10 @@ from pagalFreeSiteExplorer import PagalFreeSiteExplorer
 import  Constants
 
 class TableDataStreamer(QThread):
-    dataOnFly = pyqtSignal(int, str, str, str, QPixmap) # sends singal to the main thread so that objects can be passed on
+    dataOnFly = pyqtSignal(int, str, str, str, QPixmap) # sends signal to the main thread so that objects can be passed on
     outputSignal = pyqtSignal(str) # any operation related signal will be forwarded to the main GUI
     def __init__(self):
-        self.engine = PagalFreeSiteExplorer() # this engine scrape out the song from the web site
+        self.engine = PagalFreeSiteExplorer() # this engine scrape out the song from the website
         self._controlSignalDeclaration()
         self._properties()
         super().__init__()
@@ -26,52 +26,52 @@ class TableDataStreamer(QThread):
         return
 
     def getInputs(self, searchInput : str, controlSignals : dict) -> None:
-        '''Asks for search Input and other control signals so that it can Search Song Efficiently
+        """Asks for search Input and other control signals so that it can Search Song Efficiently
             Control Signals ---->
             "Search By Singer" : boolean,
             "Filter High Quality" : boolean,
             "Filter Low Quality" : boolean
-        '''
+        """
         self.searchInput = searchInput  # ionput from the user interface
         self.controlInputs  = controlSignals # control signals will specify how to extract data
         return
 
     def _properties(self) -> None:
-        '''Instantiate all the necessary variables and Data strucutures at once'''
+        """Instantiate all the necessary variables and Data structures at once"""
         self.DOES_DATA_EXISTS: bool = False # if it's true that means no need to extract data from the first only filtering should be done
         self.output_object : dict = None # The output Given by Engine Will be Given here
         return
 
     def releaseResources(self) -> None:
-        '''Call this method to Reset all the data structures in there Initial state ready for next search'''
+        """Call this method to Reset all the data structures in there Initial state ready for next search"""
         self.DOES_DATA_EXISTS = False
         self.output_object = None
         self.engine._cleanAllMemory()
         return
     
     def emitData(self, index : int, songName : str, singerName : str, imageLink : str, href : str):
-        if(imageLink): posterImage = self.engine.loadImagesFromLink(imageLink)
+        if imageLink: posterImage = self.engine.loadImagesFromLink(imageLink)
         self.dataOnFly.emit(index, songName, singerName, href, posterImage) # sends data to the UI
         return
 
     def getResults(self) -> None:
-        '''For each data entry run method sends a singal to the UI and the UI takes this as input and show in the table'''
-        if(not self.DOES_DATA_EXISTS):
+        """For each data entry run method sends a singal to the UI and the UI takes this as input and show in the table"""
+        if not self.DOES_DATA_EXISTS:
             self.engine.searchQuery = self.searchInput
             self.output_object = None
-            if(isinstance(searchOutput := self.engine.searchInWebsite(), list)):
+            if isinstance(searchOutput := self.engine.searchInWebsite(), list):
                 self.output_object = self.engine.dataExtractFromSearchQuery(searchOutput)
             else:
                 self.outputSignal.emit(searchOutput) # Returns message signal to the UI
                 return
             self.DOES_DATA_EXISTS = True # now data exit's no need to read again
-        if(self.output_object):
+        if self.output_object:
             items = len(self.output_object[Constants.SONG_NAME])
             index = 0
             # Only Filters High Quality Song
-            if(self.controlInputs[self.FILTER_HIGH_QUALITY] and self.controlInputs[self.FILTER_LOW_QUALITY] == False):
+            if self.controlInputs[self.FILTER_HIGH_QUALITY] and self.controlInputs[self.FILTER_LOW_QUALITY] == False:
                 for i in range(items):
-                    if(Constants.KBPS_320 in str(self.output_object[Constants.SONG_NAME][i])):
+                    if Constants.KBPS_320 in str(self.output_object[Constants.SONG_NAME][i]):
                         self.emitData(
                             index, self.output_object[Constants.SONG_NAME][i], self.output_object[Constants.SINGER_NAME][i],
                             self.output_object[Constants.LINK_TO_TUNE_POSTER_CONTAINER][i],
@@ -80,9 +80,9 @@ class TableDataStreamer(QThread):
                         index += 1
             
             # only Filters Low Quality Song
-            elif(self.controlInputs[self.FILTER_LOW_QUALITY] and self.controlInputs[self.FILTER_HIGH_QUALITY] == False):
+            elif self.controlInputs[self.FILTER_LOW_QUALITY] and self.controlInputs[self.FILTER_HIGH_QUALITY] == False:
                 for i in range(items):
-                    if(Constants.KBPS_128 in str(self.output_object[Constants.SONG_NAME][i])):
+                    if Constants.KBPS_128 in str(self.output_object[Constants.SONG_NAME][i]):
                         self.emitData(
                             index, self.output_object[Constants.SONG_NAME][i], self.output_object[Constants.SINGER_NAME][i],
                             self.output_object[Constants.LINK_TO_TUNE_POSTER_CONTAINER][i],

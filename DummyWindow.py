@@ -14,19 +14,20 @@ class DummyPreview(QWidget):
         self.setFixedSize(Constants.DUMMY_WINDOW_WIDTH, Constants.DUMMY_WINDOW_HEIGHT)
         self.factor = factor
         self._initializeUI() # initialises all the UI material
-        self._constuctUI() # apply ui material in window
-        self._addAttributes() # addning all Widgets
+        self._constructUI() # apply ui material in window
+        self._addAttributes() # adding all Widgets
         self.resizeGivenWallpaper("./static/arora1.jpg") # relative path is given instead of real path
         self._loadStyleSheet() # Applying Style in The UI
         return
     
     def show(self):
-        # show method is overriden to reset the wallpaper to arora1.jpg
+        # show method is overridden to reset the wallpaper to arora1.jpg
         self.resizeGivenWallpaper("./static/arora1.jpg")
         return super().show()
 
     def _initializeUI(self) -> None:
-        '''this function must be called inside the  constructor so that when the class is called all the uI components get's loaded in the window'''
+        """this function must be called inside the  constructor so that when the class is called all the uI components
+         gets loaded in the window"""
         self._buildFrames()
         self._buildLayouts()
         self._buildButtons()
@@ -34,7 +35,8 @@ class DummyPreview(QWidget):
         return
 
     def _buildFrames(self) -> None:
-        '''This method must be called inside initializeUI method to load all the frames using in the UI, no relevent extternal use'''
+        """This method must be called inside initializeUI method to load all the frames using in the UI, no relevant
+         external use"""
         # main Frame that holds master Layout
         self.masterLayoutInnerFrame = QFrame()
         self.masterLayoutInnerFrame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -60,7 +62,7 @@ class DummyPreview(QWidget):
         return
 
     def _buildLayouts(self) -> None:
-        '''Must be called inside _initializeUI method. it is used to build the Layouts'''
+        """Must be called inside _initializeUI method. it is used to build the Layouts"""
 
         # main Layout 
         self.bodyLayout = QVBoxLayout()
@@ -90,7 +92,7 @@ class DummyPreview(QWidget):
         self.searchBySingerButton = QPushButton()
 
         # Control Related
-        self.BackGroundbutton = QPushButton()
+        self.BackGroundButton = QPushButton()
         
         self.setDownloadDirectory = QPushButton()
         
@@ -110,8 +112,8 @@ class DummyPreview(QWidget):
         self.inputField.setDisabled(True) # for preview purpose no need to take input
         return
 
-    def _constuctUI(self) -> None:
-        '''This method must be run after the _buildFrames method inside the constructor to form the GUI using the components'''
+    def _constructUI(self) -> None:
+        """This method must be run after the _buildFrames method inside the constructor to form the GUI using the components"""
         #MAIN WINDOW
         self.masterLayout.addWidget(self.masterLayoutInnerFrame, Qt.AlignmentFlag.AlignCenter)
         self.masterLayoutInnerFrame.setLayout(self.bodyLayout)
@@ -138,14 +140,14 @@ class DummyPreview(QWidget):
         return
     
     def _addAttributes(self):
-        '''Packs all the widgets in their holder layouts'''
+        """Packs all the widgets in their holder layouts"""
         # search Section
         self.searchFieldLayout.addWidget(self.inputField, Qt.AlignmentFlag.AlignCenter)
         self.searchRelatedButtonLayout.addWidget(self.searchBySingerButton, Qt.AlignmentFlag.AlignCenter)
         self.searchRelatedButtonLayout.addWidget(self.searchButton, Qt.AlignmentFlag.AlignCenter)
 
         # Control Section
-        self.controlSectionInnerLayout.addWidget(self.BackGroundbutton, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerLayout.addWidget(self.BackGroundButton, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerLayout.addWidget(self.HighQualityEnableButton, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerLayout.addWidget(self.lowQualityEnableButton, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerLayout.addWidget(self.setDownloadDirectory, alignment=Qt.AlignmentFlag.AlignTop)
@@ -156,7 +158,8 @@ class DummyPreview(QWidget):
     
     # INTERFACING
     def resizeGivenWallpaper(self, loc : str = None) -> None:
-        '''For the back ground of the application this method resizes the currently selected image from the static path and saves it. If any error occurred then sends a signal to the application'''
+        """For the background of the application this method resizes the currently selected image from the static path
+         and saves it. If any error occurred then sends a signal to the application"""
         if(loc):
             self._clearTempDirectory()
             loc = loc.replace("\\", "/")
@@ -170,13 +173,12 @@ class DummyPreview(QWidget):
         return
     
     def _clearTempDirectory(self) -> None:
-        '''After Completing wallpaper Changing operation use this method to keep Temp folder Clean.'''
+        """After Completing wallpaper Changing operation use this method to keep Temp folder Clean."""
         for tempFile in os.listdir("./temp"):
             os.remove(os.path.join("./temp", tempFile))
         return
     
     def _loadStyleSheet(self) -> None:
-        '''Should be called in the constructor and it loads the style sheet from qml file'''
         try:
             file = QFile(Constants.DUMMY_FILE_STYLE_PATH) # Creating File Objects
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):

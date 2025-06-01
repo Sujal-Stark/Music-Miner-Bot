@@ -5,10 +5,10 @@ from PyQt5.QtCore import QTimer
 import time, sys
 
 # custom import
-from masterGraphicalInterface import MasterGrapicalUserInterface
+from masterGraphicalInterface import MasterGraphicalUserInterface
 import Constants
 
-def endScreen(splash : QSplashScreen, window : MasterGrapicalUserInterface):
+def endScreen(splash : QSplashScreen, window : MasterGraphicalUserInterface):
     splash.finish(window)
     window.show()
     return
@@ -18,6 +18,6 @@ if __name__ == "__main__":
     StartingScreen = QPixmap(Constants.STARTING_SCREEN_PATH)
     splashScreen = QSplashScreen(StartingScreen)
     splashScreen.show()
-    music_Miner_Bot = MasterGrapicalUserInterface()
+    music_Miner_Bot = MasterGraphicalUserInterface()
     QTimer.singleShot(Constants.STARTING_SCREEN_SHOW_TIME, lambda : endScreen(splashScreen, music_Miner_Bot))
     Application.exec_()

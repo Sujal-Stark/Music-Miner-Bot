@@ -20,7 +20,7 @@ class PagalFreeSiteExplorer:
     # declare properties
     def _setProperties(self) -> None:
         '''this method is called internally while initialising the class object to instantiate necessary data structures and variable or objects'''
-        self.BASE = Constants.PAGALFREESITEURL # base url for pagalfree website
+        self.BASE = Constants.PAGAL_FREE_SITE_URL # base url for pagalfree website
         self.searchQuery : str = None # the name of the song shall be stored here, input given by user
         self.soup : BeautifulSoup = None # soup content
         self.songDataContainer = {

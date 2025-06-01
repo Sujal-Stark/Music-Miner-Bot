@@ -11,34 +11,44 @@ import Constants
 class TuneDownloaderThread(QThread):
     messageSignal = pyqtSignal(str) # sends message to the main UI
     threadFinishedSignal = pyqtSignal(bool)  # Returns true if the thread action is finished
+
+    # Constructor
     def __init__(self):
         self.engine = PagalFreeSiteExplorer() # this engine will download song
+
+        # user given information
+        self.downloadingDirectory = None
+        self.songName = None
+        self.url = None
+
         super().__init__()
+        return
 
     def getInstructions(self, downloadingDirectory : str, songName : str, url : str) -> None:
+        """Should be run before start method so that these parameters can be used by the run method"""
         self.downloadingDirectory = downloadingDirectory
         self.songName = songName
         self.url = url
         return
 
     def run(self):
-        super().run()
-        if (os.path.exists(self.downloadingDirectory) and os.path.isdir(self.downloadingDirectory)):
+        if os.path.exists(self.downloadingDirectory) and os.path.isdir(self.downloadingDirectory):
             downloadingIndex = 0 # default value is set to 0 and low quality song will be downloaded
-            if(Constants.KBPS_128 in self.songName): downloadingIndex = 0
-            if(Constants.KBPS_320 in self.songName): downloadingIndex = 1
+            if Constants.KBPS_128 in self.songName: downloadingIndex = 0 # 128 Kbps
+            if Constants.KBPS_320 in self.songName: downloadingIndex = 1 # 320 kbps
+
             if self.engine.downloadSongFromLink(self.url, self.songName, self.downloadingDirectory, downloadingIndex):
-                self.threadFinishedSignal.emit(True)
+                self.threadFinishedSignal.emit(True) # Thread Finished successfully
                 return
-            else: 
-                self.messageSignal.emit(Constants.DOWNLOAD_FAILED) # Download Fails for internal error
+            else:
+                self.messageSignal.emit(Constants.DOWNLOAD_FAILED) #internal error
                 return
-        else: 
-            self.messageSignal.emit(Constants.INVALID_DIRECTORY) # Current downloading directory doesn't exist
-            return
+        else:
+            self.messageSignal.emit(Constants.INVALID_DIRECTORY) # downloading directory doesn't exist
+        return
     
     def cleanMemory(self):
-        '''nullify all the Variables after the thread is finished'''
+        """nullify all the Variables after the thread is finished"""
         self.downloadingDirectory = None
         self.songName = None
         self.url = None

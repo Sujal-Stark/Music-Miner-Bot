@@ -20,20 +20,18 @@ MP3_EXTENSION = ".mp3"
 WELCOME = "Welcome!!!"
 UNABLE_TO_LOAD =  "Unable to load"
 
-# WEB SITE PARAMTERS
-PAGALFREESITEURL = r"https://pagalfree.com/"
+# WEB SITE PARAMETERS
+PAGAL_FREE_SITE_URL = r"https://pagalfree.com/"
 SEARCH_DELIMITER = "%20" # replaces the space key
 SEARCH_END_POINT = "search/" # end point for search operation in site
 ID_CATAGORY_CONTENT = "category_content"
 
-# PROSSESSING ALGORTITHM RELATED CONSTANTS
+# POSSESSING ALGORITHM RELATED CONSTANTS
 NOT_FOUND_MESSAGE = "NOT FOUND"
 LINK_TO_REDIRECT_TUNE_CONTAINER = "link_to_redirect_tune_container" # dictionary key
 LINK_TO_TUNE_POSTER_CONTAINER = "link_to_tune_poster_container" # dictionary key
-SONG_NAME = "song name" # dictionary key
-SINGER_NAME = "singer name" # dictionary key
 
-# SOFTWARE DIMENTION RELATED
+# SOFTWARE DIMENSION RELATED
 SOFTWARE_TITLE = "Music-Miner-Bot" # shows as the name
 SOFTWARE_WIDTH = 900 # main window length
 SOFTWARE_HEIGHT = 720 # main window height
@@ -54,9 +52,9 @@ VIEW_PANEL_HEIGHT = CONTROL_SECTION_HEIGHT
 INFORMATION_SECTION_WIDTH = 860
 INFORMATION_SECTION_HEIGHT = 40
 
-# Widget Related Sconstants
+# Widget Related Constants
 
-# QFILEDIALOG CONSTANTS
+# ALERTDIALOG CONSTANTS
 SELECT_DIRECTORY = "Select Directory"
 
 # SEARCH RELATED BUTTONS
@@ -99,7 +97,7 @@ MAIN_QML_PATH = "masterUI.qml" # Styles for Main application
 # TOOL_TIP_CONSTANTS
 SEARCH_BUTTON_TOOL_TIP = "Click to search"
 SEARCH_BY_SINGER_TOOL_TIP = "Enter any Singer name & search"
-BACKROUND_BUTTON_TOOL_TIP = "Change the background of Application"
+BACKGROUND_BUTTON_TOOL_TIP = "Change the background of Application"
 DOWNLOAD_HISTORY_BUTTON_TOOL_TIP = "Reveals all history"
 DOWNLOAD_DIRECTORY_BUTTON_TOOL_TIP = "Set any directory as downloading directory"
 LOW_QUALITY_ENABLE_BUTTON_TOOL_TIP = "Switch to 180kbps"
