@@ -199,36 +199,48 @@ class MasterGraphicalUserInterface(QMainWindow):
 
         # Control Related
         self.BackGroundButton = QPushButton(Constants.CHANGE_BACKGROUND) # change BackGround
-        self.BackGroundButton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH,
-                                           Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.BackGroundButton.setFixedSize(
+            Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT
+        )
         self.BackGroundButton.setToolTip(Constants.BACKGROUND_BUTTON_TOOL_TIP)
         
         self.setDownloadDirectory = QPushButton(Constants.SET_DOWNLOAD_DIRECTORY) # change Download directory
-        self.setDownloadDirectory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.setDownloadDirectory.setFixedSize(
+            Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT
+        )
         self.setDownloadDirectory.setToolTip(Constants.DOWNLOAD_DIRECTORY_BUTTON_TOOL_TIP)
         
         self.HighQualityEnableButton = QPushButton(Constants.SHOW_HIGH_QUALITY) # only filter High Quality songs
-        self.HighQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.HighQualityEnableButton.setFixedSize(
+            Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT
+        )
         self.HighQualityEnableButton.setToolTip(Constants.HIGH_QUALITY_ENABLE_BUTTON_TOOL_TIP)
         self.HighQualityEnableButton.setCheckable(True)
         self.HighQualityEnableButton.setObjectName(Constants.SHOW_HIGH_QUALITY)
         
         self.lowQualityEnableButton = QPushButton(Constants.SHOW_LOW_QUALITY) # only filter Low Quality songs
-        self.lowQualityEnableButton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.lowQualityEnableButton.setFixedSize(
+            Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT
+        )
         self.lowQualityEnableButton.setToolTip(Constants.LOW_QUALITY_ENABLE_BUTTON_TOOL_TIP)
         self.lowQualityEnableButton.setCheckable(True)
         self.lowQualityEnableButton.setObjectName(Constants.SHOW_LOW_QUALITY)
         
         self.showDownloadingHistory = QPushButton(Constants.SHOW_DOWNLOAD_HISTORY) # shows how many songs are downloaded
-        self.showDownloadingHistory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.showDownloadingHistory.setFixedSize(
+            Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT
+        )
         self.showDownloadingHistory.setToolTip(Constants.DOWNLOAD_HISTORY_BUTTON_TOOL_TIP)
         
         self.deleteDownloadingHistory = QPushButton(Constants.DELETE_DOWNLOAD_HISTORY) # delete all the downloading history
-        self.deleteDownloadingHistory.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.deleteDownloadingHistory.setFixedSize(
+            Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT
+        )
         self.deleteDownloadingHistory.setToolTip(Constants.DELETE_DOWNLOAD_HISTORY_BUTTON_TOOL_TIP)
 
         self.deleteButton = QPushButton(Constants.RESET_VIEW_PANEL) # Removes the Search Result From table
-        self.deleteButton.setFixedSize(Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT)
+        self.deleteButton.setFixedSize(
+            Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT        )
         self.deleteButton.setToolTip(Constants.RESET_PANEL_BUTTON_TOOL_TIP)
         return
     
@@ -242,6 +254,22 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.infoLabel.setFixedSize(Constants.INFORMATION_SECTION_WIDTH, 40)
         self.infoLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.infoLabel.setStyleSheet("QLabel{color : #FFFFFF}")
+
+        # indicator buttons
+        self.highQualityEnableLabel = QLabel("H") # indicates state of High Quality Search
+        self.highQualityEnableLabel.setFixedWidth(Constants.INDICATOR_WIDTH)
+        self.highQualityEnableLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.highQualityEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
+
+        self.lowQualityEnableLabel = QLabel("L") # indicate state of Low quality search
+        self.lowQualityEnableLabel.setFixedWidth(Constants.INDICATOR_WIDTH)
+        self.lowQualityEnableLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lowQualityEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
+
+        self.searchForSignerEnableLabel = QLabel("S") # indicate state of Singer related Search
+        self.searchForSignerEnableLabel.setFixedWidth(Constants.INDICATOR_WIDTH)
+        self.searchForSignerEnableLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.searchForSignerEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
         return
     
     def _buildLineInput(self) -> None:
@@ -286,6 +314,9 @@ class MasterGraphicalUserInterface(QMainWindow):
     def _addAttributes(self):
         """Packs all the widgets in their holder layouts"""
         # search Section
+        self.searchFieldLayout.addWidget(self.highQualityEnableLabel, Qt.AlignmentFlag.AlignLeft) # indicator
+        self.searchFieldLayout.addWidget(self.lowQualityEnableLabel, Qt.AlignmentFlag.AlignLeft) # indicator
+        self.searchFieldLayout.addWidget(self.searchForSignerEnableLabel, Qt.AlignmentFlag.AlignLeft) # indicator
         self.searchFieldLayout.addWidget(self.inputField, Qt.AlignmentFlag.AlignCenter)
         self.searchRelatedButtonLayout.addWidget(self.searchBySingerButton, Qt.AlignmentFlag.AlignCenter)
         self.searchRelatedButtonLayout.addWidget(self.searchButton, Qt.AlignmentFlag.AlignCenter)
@@ -364,25 +395,31 @@ class MasterGraphicalUserInterface(QMainWindow):
             if self.searchBySingerButton.isChecked():
                 self.searchBySingerButton.setCheckable(False)
                 self.SEARCH_BY_SINGER_ENABLE = True # control change
+                self.searchForSignerEnableLabel.setStyleSheet(self.indicatorEnabledStyle())
             else:
                 self.searchBySingerButton.setCheckable(True)
                 self.SEARCH_BY_SINGER_ENABLE = False # control changed
+                self.searchForSignerEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
         
         elif self.sender().objectName() == Constants.SHOW_HIGH_QUALITY:
             if self.HighQualityEnableButton.isChecked():
                 self.HighQualityEnableButton.setCheckable(False)
                 self.SEARCH_HIGH_QUALITY = True # control changed
+                self.highQualityEnableLabel.setStyleSheet(self.indicatorEnabledStyle())
             else:
                 self.HighQualityEnableButton.setCheckable(True)
                 self.SEARCH_HIGH_QUALITY = False # control changed
+                self.highQualityEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
         
         elif self.sender().objectName() == Constants.SHOW_LOW_QUALITY:
             if self.lowQualityEnableButton.isChecked():
                 self.lowQualityEnableButton.setCheckable(False)
                 self.SEARCH_LOW_QUALITY = True # control change
+                self.lowQualityEnableLabel.setStyleSheet(self.indicatorEnabledStyle())
             else:
                 self.lowQualityEnableButton.setCheckable(True)
                 self.SEARCH_LOW_QUALITY = False # control change
+                self.lowQualityEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
         return
     
     def _downloadSelectedSong(self) -> None:
@@ -436,20 +473,17 @@ class MasterGraphicalUserInterface(QMainWindow):
             sender_ObjectName == Constants.SHOW_LOW_QUALITY or
             self.resourceFreeFlag
         )): # no search if input field is empty
-            self._setMessageForUser(Constants.SEARCH_MSG) # Showing Info
             try:
-                if self.SEARCH_BY_SINGER_ENABLE: # if singer name search is enabled
-                    pass
-                else: # if only song search is queried
-                    controlSignalList = {
-                        self.streamer.SEARCH_BY_SINGER : self.SEARCH_BY_SINGER_ENABLE,
-                        self.streamer.FILTER_HIGH_QUALITY : self.SEARCH_HIGH_QUALITY,
-                        self.streamer.FILTER_LOW_QUALITY : self.SEARCH_LOW_QUALITY
-                    }
-                    self.streamer.getInputs(self.inputField.text(), controlSignalList) # provides input to populate table
-                    self.streamer.start()
-                    self._clearTable()
-                    self.alterPosterView() # table will be show
+                controlSignalList = {
+                    self.streamer.SEARCH_BY_SINGER: self.SEARCH_BY_SINGER_ENABLE,
+                    self.streamer.FILTER_HIGH_QUALITY: self.SEARCH_HIGH_QUALITY,
+                    self.streamer.FILTER_LOW_QUALITY: self.SEARCH_LOW_QUALITY
+                }
+                self.streamer.getInputs(self.inputField.text(), controlSignalList)  # provides input to populate table
+                self._setMessageForUser(Constants.SEARCH_MSG) # Showing Info
+                self.streamer.start()
+                self._clearTable()
+                self.alterPosterView()  # table will be shown
             except TypeError: self._setMessageForUser(Constants.UNEXPECTED_ERROR_MESSAGE) # showing error
             self.resourceFreeFlag = False # resources are occupied
         else: self._setMessageForUser(Constants.CLEAN_REQ_MESSAGE)
@@ -573,6 +607,26 @@ class MasterGraphicalUserInterface(QMainWindow):
             self._setMessageForUser(Constants.DOWNLOAD_SUCCEED)
             self.tuneDownloaderThread.cleanMemory()
         return
+
+    @staticmethod
+    def indicatorEnabledStyle() -> str:
+        return """
+            QLabel {
+                color: #ffffff;
+                background-color: #15e661;
+                border-radius : 5px;
+            }
+        """
+
+    @staticmethod
+    def inidicatorDisableStyle() -> str:
+        return """
+            QLabel {
+                color: #000000;
+                background-color: #ffffff;
+                border-radius : 5px;
+            }
+        """
     pass
 
 
