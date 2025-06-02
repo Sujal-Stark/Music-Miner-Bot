@@ -24,12 +24,12 @@ class SelectWallpaperUI(QDialog):
         return
     
     def show(self):
-        # show method is Overriden so that Each time this window is used the preview UI becomes ready again
+        # show method is Overridden so that Each time this window is used the preview UI becomes ready again
         self.previewUI.show()
         return super().show()
     
     def _initializeUI(self) -> None:
-        '''Initialiss all the attributes and layouts used in this UI'''
+        """Initialise all the attributes and layouts used in this UI"""
         self._buildPreviewWallpaper()
         self._setProperties()
         self._buildLayouts()
@@ -53,7 +53,7 @@ class SelectWallpaperUI(QDialog):
         return
 
     def _buildLayouts(self)-> None:
-        '''Creates all the layouts used in this UI'''
+        """Creates all the layouts used in this UI"""
         # main Layout
         self.innerMasterLayout = QVBoxLayout()
 
@@ -160,7 +160,7 @@ class SelectWallpaperUI(QDialog):
         self.selectionInnerLayout.addWidget(self.selectFromDevice, alignment = Qt.AlignmentFlag.AlignRight)
         return
 
-    # INTERFACEING
+    # INTERFACING
     def _loadStyleSheet(self) -> None:
         try:
             file = QFile(Constants.WALLPAPER_PREVIEW_STYLE_PATH)
@@ -169,12 +169,13 @@ class SelectWallpaperUI(QDialog):
                 self.setStyleSheet(qss)
         except (OSError, MemoryError, PermissionError, FileNotFoundError): return # doesn't change anything if   file not found
         return
-    
+
+    @staticmethod
     def _generateWallpaperLabel(self, location : str = None):
         label = ClickableLabel()
         label.setFixedSize(100, 100)
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        if(location):
+        if location:
             label.setProperty(Constants.LOCATION_PROP, location)
             pixmap = QPixmap(location).scaled(label.size())
             label.setPixmap(pixmap)
@@ -182,7 +183,7 @@ class SelectWallpaperUI(QDialog):
         return label
     
     def _passWallpaperLocation(self, loc : str = None):
-        if(loc):
+        if loc:
             self.selectedFile_Name = loc
             self.previewUI.resizeGivenWallpaper(loc)
         return
@@ -191,13 +192,13 @@ class SelectWallpaperUI(QDialog):
         file_Name = QFileDialog.getOpenFileName(
             self, caption= Constants.SELECT_FROM_DEVICE, filter="Image Files (*.png *.jpg *.jpeg *.bmp *.gif)"
         )
-        if(file_Name and os.path.exists(file_Name[0])): 
+        if file_Name and os.path.exists(file_Name[0]):
             self.previewUI.resizeGivenWallpaper(file_Name[0])
             self.selectedFile_Name = file_Name[0]
         return
     
-    def _closeWindow(self) -> str:
-        if(self.selectedFile_Name): self.fileSelectedSignal.emit(self.selectedFile_Name)
+    def _closeWindow(self) -> bool:
+        if self.selectedFile_Name: self.fileSelectedSignal.emit(self.selectedFile_Name)
         self.previewUI.close()
         return self.close()
     pass
@@ -207,7 +208,7 @@ class ClickableLabel(QLabel):
     
     def mousePressEvent(self, ev):
         super().mousePressEvent(ev)
-        if(ev.button() == Qt.MouseButton.LeftButton):
+        if ev.button() == Qt.MouseButton.LeftButton:
             self.location_signal.emit(self.property(Constants.LOCATION_PROP))
             return
     pass

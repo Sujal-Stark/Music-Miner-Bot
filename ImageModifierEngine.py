@@ -23,7 +23,7 @@ class ImageModifier:
         return True
     
     @staticmethod
-    def computeAVGColor(imagePath : str) -> list[int, int, int]:
+    def computeAVGColor(imagePath : str) -> tuple[int, int, int] | tuple:
         """
             Input > imagePath : str  --- valid path of an Image
             Output > List[int, int, int] R(avg), G(avg), B(avg)
@@ -36,10 +36,10 @@ class ImageModifier:
             try:
                 with Image.open(imagePath) as image:
                     pixels = image.getdata()
-                    pixelcount = image.width * image.height
-                    RGB = list(map(lambda c : (sum(c)// pixelcount), zip(*pixels)))
-                    output = RGB[0 : 3]
-            except (OSError, MemoryError, TypeError, FileNotFoundError, ValueError, UnidentifiedImageError):
+                    pixelCount = image.width * image.height
+                    RGB = list(map(lambda c : (sum(c)// pixelCount), zip(*pixels)))
+                    output = tuple(RGB[0 : 3])
+            except (OSError, MemoryError, TypeError, FileNotFoundError, ValueError):
                 print("Error")
         else: pass
         return output

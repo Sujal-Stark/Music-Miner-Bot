@@ -2,7 +2,7 @@
 from PyQt5.QtWidgets import QApplication, QSplashScreen
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import QTimer
-import time, sys
+import sys
 
 # custom import
 from masterGraphicalInterface import MasterGraphicalUserInterface

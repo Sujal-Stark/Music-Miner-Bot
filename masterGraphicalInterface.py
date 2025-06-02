@@ -300,6 +300,7 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.controlSectionInnerLayout.addWidget(self.deleteDownloadingHistory, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerLayout.addWidget(self.separator_three, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerLayout.addWidget(self.deleteButton, alignment = Qt.AlignmentFlag.AlignTop)
+
         # View panel
         self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
 

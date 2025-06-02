@@ -1,8 +1,8 @@
-# this file is mainly responsible for creating the Graphical user inerface of the software using pyqt5
+# this file is mainly responsible for creating the Graphical user interface of the software using pyqt5
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit
 from PyQt5.QtCore import Qt, QFile, QIODevice
-from PyQt5.QtGui import QPixmap, QPalette, QBrush
-import os, icecream
+import os
+
 # custom import
 import Constants
 from ImageModifierEngine import ImageModifier
@@ -10,7 +10,7 @@ from ImageModifierEngine import ImageModifier
 class DummyPreview(QWidget):
     def __init__(self, factor : int = 2) -> None:
         super().__init__()
-        self.masterLayout = QVBoxLayout(self)
+        self.masterDummyLayout = QVBoxLayout(self)
         self.setFixedSize(Constants.DUMMY_WINDOW_WIDTH, Constants.DUMMY_WINDOW_HEIGHT)
         self.factor = factor
         self._initializeUI() # initialises all the UI material
@@ -38,10 +38,10 @@ class DummyPreview(QWidget):
         """This method must be called inside initializeUI method to load all the frames using in the UI, no relevant
          external use"""
         # main Frame that holds master Layout
-        self.masterLayoutInnerFrame = QFrame()
-        self.masterLayoutInnerFrame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.masterLayoutInnerFrame.setObjectName("master_inner_layout_frame")
-        self.masterLayoutInnerFrame.setStyleSheet("""
+        self.masterDummyLayoutInnerFrame = QFrame()
+        self.masterDummyLayoutInnerFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.masterDummyLayoutInnerFrame.setObjectName("master_inner_layout_frame")
+        self.masterDummyLayoutInnerFrame.setStyleSheet("""
             #master_inner_layout_frame{
                 background-repeat: repeat;
                 background-position: center;
@@ -49,61 +49,54 @@ class DummyPreview(QWidget):
         """)
         
         # Search Zone
-        self.searchSectionLayoutFrame = QFrame()
-        self.searchSectionLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.searchSectionDummyLayoutFrame = QFrame()
+        self.searchSectionDummyLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
 
         # Control Button Area
-        self.controlSectionLayoutFrame = QFrame()
-        self.controlSectionLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.controlSectionDummyLayoutFrame = QFrame()
+        self.controlSectionDummyLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
 
         # Table Widget Area
-        self.viewPanelLayoutFrame = QFrame()
-        self.viewPanelLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.viewPanelDummyLayoutFrame = QFrame()
+        self.viewPanelDummyLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
         return
 
     def _buildLayouts(self) -> None:
         """Must be called inside _initializeUI method. it is used to build the Layouts"""
 
         # main Layout 
-        self.bodyLayout = QVBoxLayout()
+        self.bodyDummyLayout = QVBoxLayout()
         
         # search Zone
-        self.searchSectionLayout = QHBoxLayout() # Holder
-        self.searchSectionInnerLayout =  QVBoxLayout()
-        self.searchFieldLayout = QHBoxLayout()  # Search Bar
-        self.searchRelatedButtonLayout = QHBoxLayout() # Buttons
+        self.searchSectionDummyLayout = QHBoxLayout() # Holder
+        self.searchSectionInnerDummyLayout =  QVBoxLayout()
+        self.searchFieldDummyLayout = QHBoxLayout()  # Search Bar
+        self.searchRelatedButtonDummyLayout = QHBoxLayout() # Buttons
         
-        self.actionLayout = QHBoxLayout() # Control Section + View Section
+        self.actionDummyLayout = QHBoxLayout() # Control Section + View Section
 
         # control Section
-        self.controlSectionLayout = QVBoxLayout()
-        self.controlSectionInnerLayout = QVBoxLayout()
+        self.controlSectionDummyLayout = QVBoxLayout()
+        self.controlSectionInnerDummyLayout = QVBoxLayout()
 
         # view Section
-        self.viewPanelLayout = QHBoxLayout()
-        self.viewPanelInnerLayout = QHBoxLayout()
-        self.tableHolderLayout = QHBoxLayout()
+        self.viewPanelDummyLayout = QHBoxLayout()
+        self.viewPanelInnerDummyLayout = QHBoxLayout()
+        self.tableHolderDummyLayout = QHBoxLayout()
         return
     
     def _buildButtons(self) -> None:
         # search Related
         self.searchButton = QPushButton()
-
         self.searchBySingerButton = QPushButton()
 
         # Control Related
         self.BackGroundButton = QPushButton()
-        
         self.setDownloadDirectory = QPushButton()
-        
         self.HighQualityEnableButton = QPushButton()
-        
         self.lowQualityEnableButton = QPushButton()
-        
         self.showDownloadingHistory = QPushButton()
-        
-        self.deleteDownlaodingHistory = QPushButton()
-
+        self.deleteDownloadingHistory = QPushButton()
         self.deleteButton = QPushButton()
         return
     
@@ -115,69 +108,70 @@ class DummyPreview(QWidget):
     def _constructUI(self) -> None:
         """This method must be run after the _buildFrames method inside the constructor to form the GUI using the components"""
         #MAIN WINDOW
-        self.masterLayout.addWidget(self.masterLayoutInnerFrame, Qt.AlignmentFlag.AlignCenter)
-        self.masterLayoutInnerFrame.setLayout(self.bodyLayout)
+        self.masterDummyLayout.addWidget(self.masterDummyLayoutInnerFrame, Qt.AlignmentFlag.AlignCenter)
+        self.masterDummyLayoutInnerFrame.setLayout(self.bodyDummyLayout)
         
         #INPUT SECTION
-        self.bodyLayout.addLayout(self.searchSectionLayout, 10)
-        self.searchSectionLayout.addWidget(self.searchSectionLayoutFrame, Qt.AlignmentFlag.AlignCenter)
-        self.searchSectionLayoutFrame.setLayout(self.searchSectionInnerLayout)
-        self.searchSectionInnerLayout.addLayout(self.searchFieldLayout, 50)
-        self.searchSectionInnerLayout.addLayout(self.searchRelatedButtonLayout, 50)
+        self.bodyDummyLayout.addLayout(self.searchSectionDummyLayout, 10)
+        self.searchSectionDummyLayout.addWidget(self.searchSectionDummyLayoutFrame, Qt.AlignmentFlag.AlignCenter)
+        self.searchSectionDummyLayoutFrame.setLayout(self.searchSectionInnerDummyLayout)
+        self.searchSectionInnerDummyLayout.addLayout(self.searchFieldDummyLayout, 50)
+        self.searchSectionInnerDummyLayout.addLayout(self.searchRelatedButtonDummyLayout, 50)
 
         #ACTION SECTION
-        self.bodyLayout.addLayout(self.actionLayout, 90)
+        self.bodyDummyLayout.addLayout(self.actionDummyLayout, 90)
 
         #CONTROL PANEL
-        self.actionLayout.addLayout(self.controlSectionLayout, 20)
-        self.controlSectionLayout.addWidget(self.controlSectionLayoutFrame, Qt.AlignmentFlag.AlignCenter)
-        self.controlSectionLayoutFrame.setLayout(self.controlSectionInnerLayout)
+        self.actionDummyLayout.addLayout(self.controlSectionDummyLayout, 20)
+        self.controlSectionDummyLayout.addWidget(self.controlSectionDummyLayoutFrame, Qt.AlignmentFlag.AlignCenter)
+        self.controlSectionDummyLayoutFrame.setLayout(self.controlSectionInnerDummyLayout)
 
         #VIEW PANEL
-        self.actionLayout.addLayout(self.viewPanelLayout, 80)
-        self.viewPanelLayout.addWidget(self.viewPanelLayoutFrame, Qt.AlignmentFlag.AlignCenter)
-        self.viewPanelLayoutFrame.setLayout(self.viewPanelInnerLayout)
+        self.actionDummyLayout.addLayout(self.viewPanelDummyLayout, 80)
+        self.viewPanelDummyLayout.addWidget(self.viewPanelDummyLayoutFrame, Qt.AlignmentFlag.AlignCenter)
+        self.viewPanelDummyLayoutFrame.setLayout(self.viewPanelInnerDummyLayout)
         return
     
     def _addAttributes(self):
         """Packs all the widgets in their holder layouts"""
         # search Section
-        self.searchFieldLayout.addWidget(self.inputField, Qt.AlignmentFlag.AlignCenter)
-        self.searchRelatedButtonLayout.addWidget(self.searchBySingerButton, Qt.AlignmentFlag.AlignCenter)
-        self.searchRelatedButtonLayout.addWidget(self.searchButton, Qt.AlignmentFlag.AlignCenter)
+        self.searchFieldDummyLayout.addWidget(self.inputField, Qt.AlignmentFlag.AlignCenter)
+        self.searchRelatedButtonDummyLayout.addWidget(self.searchBySingerButton, Qt.AlignmentFlag.AlignCenter)
+        self.searchRelatedButtonDummyLayout.addWidget(self.searchButton, Qt.AlignmentFlag.AlignCenter)
 
         # Control Section
-        self.controlSectionInnerLayout.addWidget(self.BackGroundButton, alignment=Qt.AlignmentFlag.AlignTop)
-        self.controlSectionInnerLayout.addWidget(self.HighQualityEnableButton, alignment=Qt.AlignmentFlag.AlignTop)
-        self.controlSectionInnerLayout.addWidget(self.lowQualityEnableButton, alignment=Qt.AlignmentFlag.AlignTop)
-        self.controlSectionInnerLayout.addWidget(self.setDownloadDirectory, alignment=Qt.AlignmentFlag.AlignTop)
-        self.controlSectionInnerLayout.addWidget(self.showDownloadingHistory, alignment=Qt.AlignmentFlag.AlignTop)
-        self.controlSectionInnerLayout.addWidget(self.deleteDownlaodingHistory, alignment=Qt.AlignmentFlag.AlignTop)
-        self.controlSectionInnerLayout.addWidget(self.deleteButton, alignment = Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerDummyLayout.addWidget(self.BackGroundButton, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerDummyLayout.addWidget(self.HighQualityEnableButton, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerDummyLayout.addWidget(self.lowQualityEnableButton, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerDummyLayout.addWidget(self.setDownloadDirectory, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerDummyLayout.addWidget(self.showDownloadingHistory, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerDummyLayout.addWidget(self.deleteDownloadingHistory, alignment=Qt.AlignmentFlag.AlignTop)
+        self.controlSectionInnerDummyLayout.addWidget(self.deleteButton, alignment = Qt.AlignmentFlag.AlignTop)
         return
     
     # INTERFACING
     def resizeGivenWallpaper(self, loc : str = None) -> None:
         """For the background of the application this method resizes the currently selected image from the static path
          and saves it. If any error occurred then sends a signal to the application"""
-        if(loc):
+        if loc:
             self._clearTempDirectory()
             loc = loc.replace("\\", "/")
             fileName = loc.split("/")[-1]
             savingPath = os.path.join(os.getcwd() + Constants.TEMP_PATH + fileName)
             ImageModifier.resizeImage(loc, Constants.DUMMY_WINDOW_WIDTH, Constants.DUMMY_WINDOW_HEIGHT, savingPath)
-            if(os.path.exists(savingPath)):
-                self.masterLayoutInnerFrame.setStyleSheet(
+            if os.path.exists(savingPath):
+                self.masterDummyLayoutInnerFrame.setStyleSheet(
                     "#master_inner_layout_frame{background-image: url(./temp/" + fileName + ");}"
                 )
         return
-    
-    def _clearTempDirectory(self) -> None:
+
+    @staticmethod
+    def _clearTempDirectory() -> None:
         """After Completing wallpaper Changing operation use this method to keep Temp folder Clean."""
         for tempFile in os.listdir("./temp"):
             os.remove(os.path.join("./temp", tempFile))
         return
-    
+
     def _loadStyleSheet(self) -> None:
         try:
             file = QFile(Constants.DUMMY_FILE_STYLE_PATH) # Creating File Objects
