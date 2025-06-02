@@ -47,4 +47,4 @@
 
 ## 🖥️ Interface Preview
 
-> *Coming Soon — sleek, dark-themed futuristic interface screenshots with dynamic feedback indicators.*
+> *Coming Soon*
