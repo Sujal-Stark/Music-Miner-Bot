@@ -25,6 +25,7 @@ PAGAL_FREE_SITE_URL = r"https://pagalfree.com/"
 SEARCH_DELIMITER = "%20" # replaces the space key
 SEARCH_END_POINT = "search/" # end point for search operation in site
 ID_CATAGORY_CONTENT = "category_content"
+INDICATOR_WIDTH = 20 # can be used to give default width to any indicator
 
 # POSSESSING ALGORITHM RELATED CONSTANTS
 NOT_FOUND_MESSAGE = "NOT FOUND"
