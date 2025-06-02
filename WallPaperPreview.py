@@ -171,7 +171,7 @@ class SelectWallpaperUI(QDialog):
         return
 
     @staticmethod
-    def _generateWallpaperLabel(self, location : str = None):
+    def _generateWallpaperLabel(location : str = None):
         label = ClickableLabel()
         label.setFixedSize(100, 100)
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
