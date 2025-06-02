@@ -1,4 +1,5 @@
-# this file is responsible for navigating in pagalFreeWebsite, search song, getting links and downloading all the songs and other related operations
+# this file is responsible for navigating in pagalFreeWebsite, search song, getting links and downloading
+# all the songs and other related operations
 
 import requests
 from requests.exceptions import ConnectionError
@@ -116,12 +117,17 @@ class PagalFreeSiteExplorer:
         except ConnectionError: return
         return
     
-    def downloadSongFromLink(self, url : str, songName : str, directory : str, downloadIndex : int) -> bool | None:
+    def downloadSongFromLink(
+            self, url: str, songName: str, directory: str, downloadIndex: int
+    ) -> bool | None:
         """Takes one integer index from user as 0 or 1 0 -> 180 kbps download and 1 -> 320kbps downloads"""
         try:
             self.getDownloadingUrl(url)
             if self.downloadableLinks:
-                songName = songName + Constants.MP3_EXTENSION if(not songName.endswith(Constants.MP3_EXTENSION)) else songName # check for extension and corrects it
+                # check for extension and corrects it
+                songName = songName + (
+                    Constants.MP3_EXTENSION if (not songName.endswith(Constants.MP3_EXTENSION)) else songName
+                )
                 downloadResponse = requests.get(self.downloadableLinks[downloadIndex])
                 songName_withPath = os.path.join(directory, songName)
                 if downloadResponse.status_code == 200:
@@ -153,7 +159,9 @@ class PagalFreeSiteExplorer:
         except requests.exceptions: return None
     
     def _cleanAllMemory(self) -> None:
-        """When data is no longer required from engine then release the data using this method"""
+        """When data is no longer required from engine then release the data using this method
+        :rtype: None
+        """
         self.songDataContainer = {
             Constants.LINK_TO_REDIRECT_TUNE_CONTAINER : [],
             Constants.LINK_TO_TUNE_POSTER_CONTAINER : [],
