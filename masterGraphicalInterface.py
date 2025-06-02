@@ -31,6 +31,7 @@ class MasterGraphicalUserInterface(QMainWindow):
         self._setUpToolTip() # initialize tool tips
         self._setResponse() # all Actions and Signals are bind with UI Elements
         
+        # initial Action
         self._generateConfigFiles() # Throughout system all files regarding user preferences and choices will be generated
         self._configFileExistAction() # use Config file styles and data
         self._colorFileExistsAction() # use Colors file styles and data
@@ -89,7 +90,7 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.streamer.dataOnFly.connect(self._addItemToTable) # Accept data from Populator Thread
         self.streamer.outputSignal.connect(self._setMessageForUser) # Shows information to the user
         self.tuneDownloaderThread.messageSignal.connect(self._setMessageForUser) # Shows download Status
-        self.tuneDownloaderThread.threadFinishedSignal.connect(self.downloadingFinishedSignalAction) # cleans thread class variables
+
         self.wallpaperPreview.fileSelectedSignal.connect(self._setWallpaper) # set the wallpaper for background
         return
 
@@ -309,7 +310,7 @@ class MasterGraphicalUserInterface(QMainWindow):
         return
     
     # INTERFACING
-    @pyqtSlot()
+    # @pyqtSlot()
     def _setMessageForUser(self, msg : str = None) -> None:
         self.infoLabel.setText(msg)
         return
@@ -394,6 +395,11 @@ class MasterGraphicalUserInterface(QMainWindow):
             sender.property(Constants.SONG_NAME),
             sender.property(Constants.HREF)
         ) # takes information like name directory and link
+
+        self.tuneDownloaderThread.threadFinishedSignal.connect(
+            self.downloadingFinishedSignalAction
+        )  # cleans thread class variables
+
         self.tuneDownloaderThread.start()
         return
 
@@ -548,7 +554,8 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.update()
         return False
 
-    def generateSupportingColor(self, color : tuple[int, int, int]) -> list[list]:
+    @staticmethod
+    def generateSupportingColor(color : tuple[int, int, int]) -> list[list]:
         """Parameters: color: tuple[int, int, int] - RGB values (0-255).
             Returns: list[str]: [
                 background color,   text (inverse) color,   hover effect color, clicked effect color
