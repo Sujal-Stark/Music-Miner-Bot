@@ -106,7 +106,7 @@ class ConfigFileHandler:
         else: return None
 
     def getCurrentWallpaperLocation(self) -> str:
-        """If config.json file exist's then this methods return the currently used
+        """If config.json file exists then this methods return the currently used
          wallpaper file location to the UI module"""
         filePath = os.path.join(os.getcwd(), Constants.FILE_NAME)
         if os.path.exists(filePath):

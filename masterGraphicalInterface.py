@@ -259,17 +259,17 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.highQualityEnableLabel = QLabel("H") # indicates state of High Quality Search
         self.highQualityEnableLabel.setFixedWidth(Constants.INDICATOR_WIDTH)
         self.highQualityEnableLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.highQualityEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
+        self.highQualityEnableLabel.setStyleSheet(self.indicatorDisableStyle())
 
         self.lowQualityEnableLabel = QLabel("L") # indicate state of Low quality search
         self.lowQualityEnableLabel.setFixedWidth(Constants.INDICATOR_WIDTH)
         self.lowQualityEnableLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.lowQualityEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
+        self.lowQualityEnableLabel.setStyleSheet(self.indicatorDisableStyle())
 
         self.searchForSignerEnableLabel = QLabel("S") # indicate state of Singer related Search
         self.searchForSignerEnableLabel.setFixedWidth(Constants.INDICATOR_WIDTH)
         self.searchForSignerEnableLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.searchForSignerEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
+        self.searchForSignerEnableLabel.setStyleSheet(self.indicatorDisableStyle())
         return
     
     def _buildLineInput(self) -> None:
@@ -347,12 +347,13 @@ class MasterGraphicalUserInterface(QMainWindow):
         return
 
     def _resizeGivenWallpaper(self, loc : str = None) -> None:
-        """For the background of the application this method resizes the currently selected image from the static path and saves it. If any error occurred then sends a signal to the application"""
-        if loc is None: loc = self.configFileHandler.getCurrentWallpaperLocation()
-        if loc:
-            self.imageModifierEngine.resizeImage(loc)
-        else:
-            pass # signal will be added later
+        """
+            For the background of the application this method resizes the currently selected
+            image from the static path and saves it. If any error occurred then sends a signal to the application
+        """
+        if loc is None: loc = self.configFileHandler.getCurrentWallpaperLocation() # input is not given
+        if loc: self.imageModifierEngine.resizeImage(loc)
+        else: self._setMessageForUser(Constants.FAILED_TO_COMMIT_CHANGE)
         return
     
     def setPosterAtTableView(self)-> None:
@@ -364,7 +365,7 @@ class MasterGraphicalUserInterface(QMainWindow):
                 Constants.VIEW_PANEL_WIDTH - 40, Constants.VIEW_PANEL_HEIGHT - 40
             )
             self.default_label.setPixmap(table_default_poster)
-        except (OSError, PermissionError, ValueError, MemoryError, TypeError, FileNotFoundError): return # handles file related errors
+        except (OSError, PermissionError, ValueError, MemoryError, TypeError, FileNotFoundError): return
         self.default_label.show() # shows the image in the table view
         return
     
@@ -399,7 +400,7 @@ class MasterGraphicalUserInterface(QMainWindow):
             else:
                 self.searchBySingerButton.setCheckable(True)
                 self.SEARCH_BY_SINGER_ENABLE = False # control changed
-                self.searchForSignerEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
+                self.searchForSignerEnableLabel.setStyleSheet(self.indicatorDisableStyle())
         
         elif self.sender().objectName() == Constants.SHOW_HIGH_QUALITY:
             if self.HighQualityEnableButton.isChecked():
@@ -409,7 +410,7 @@ class MasterGraphicalUserInterface(QMainWindow):
             else:
                 self.HighQualityEnableButton.setCheckable(True)
                 self.SEARCH_HIGH_QUALITY = False # control changed
-                self.highQualityEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
+                self.highQualityEnableLabel.setStyleSheet(self.indicatorDisableStyle())
         
         elif self.sender().objectName() == Constants.SHOW_LOW_QUALITY:
             if self.lowQualityEnableButton.isChecked():
@@ -419,7 +420,7 @@ class MasterGraphicalUserInterface(QMainWindow):
             else:
                 self.lowQualityEnableButton.setCheckable(True)
                 self.SEARCH_LOW_QUALITY = False # control change
-                self.lowQualityEnableLabel.setStyleSheet(self.inidicatorDisableStyle())
+                self.lowQualityEnableLabel.setStyleSheet(self.indicatorDisableStyle())
         return
     
     def _downloadSelectedSong(self) -> None:
@@ -533,8 +534,8 @@ class MasterGraphicalUserInterface(QMainWindow):
             self.masterLayoutFrame.setStyleSheet(style)
             self.configFileHandler.setWallpaperLocation(loc)
             self._changeButtonColor(
-                    self.imageModifierEngine.computeAVGColor(loc)
-            )
+                    list(self.imageModifierEngine.computeAVGColor(loc))
+                )
         return
     
     def _changeButtonColor(self, color : list = None) -> bool:
@@ -619,7 +620,7 @@ class MasterGraphicalUserInterface(QMainWindow):
         """
 
     @staticmethod
-    def inidicatorDisableStyle() -> str:
+    def indicatorDisableStyle() -> str:
         return """
             QLabel {
                 color: #000000;
