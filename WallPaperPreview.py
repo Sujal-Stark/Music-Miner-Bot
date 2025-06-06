@@ -1,3 +1,4 @@
+import icecream
 from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QHBoxLayout, QFrame, QFileDialog, QPushButton, QLabel
 from PyQt5.QtCore import Qt, QFile, QIODevice, pyqtSignal
 from PyQt5.QtGui import QPixmap, QIcon
@@ -8,8 +9,11 @@ from DummyWindow import DummyPreview
 
 import sys
 class SelectWallpaperUI(QDialog):
+    # Signal Declaration
     fileSelectedSignal = pyqtSignal(str)
-    def __init__(self):
+    wallpaperChangeAbortAction = pyqtSignal(bool)
+
+    def __init__(self, wallpaper_location : str):
         super().__init__()
         self.setModal(True)
         self.setWindowTitle(Constants.WALLPAPER_PREVIEW_TITLE)
@@ -17,21 +21,61 @@ class SelectWallpaperUI(QDialog):
         self.setWindowIcon(QIcon(Constants.ICON_PATH))
         self.masterLayout = QVBoxLayout(self)
 
+        self.currentWallpaperLocationFromMainWindow(wallpaper_location) # The wallpaper user currently using
+
+        self._setProperties()
         self._initializeUI()
         self._constructUI()
         self._addAttributes()
         self._loadStyleSheet()
         return
-    
+
+    # Overridden Methods
     def show(self):
         # show method is Overridden so that Each time this window is used the preview UI becomes ready again
         self.previewUI.show()
         return super().show()
-    
+
+    def closeEvent(self, a0):
+        # Notify main application that this class is terminated
+        self.wallpaperChangeAbortAction.emit(True) # sends true if the window is closed
+        a0.accept()
+        return
+
+    # Setting parameters or getting values
+    def  _setProperties(self) -> None:
+        """
+            All Class related parameters are generated here
+            :return: None
+        """
+        self.selectedFile_Name : str = None
+        return
+
+    def currentWallpaperLocationFromMainWindow(self, location : str):
+        """
+            Takes location of user's currently using image and set this as class'es own parameter
+            :param location: String [Valid Image location in system]
+            :return: None
+        """
+        self.currentWallpaperLocation = location if os.path.exists(location) else Constants.DEFAULT_WALLPAPER_LOCATION
+        return
+
+    def _setResponses(self) -> None:
+        """
+            define response for the inputs given to the GUI of this class
+            :return: None
+        """
+        self.selectFromDevice.clicked.connect(self._setPreviewWithDeviceImage)
+        self.useInApplication.clicked.connect(self._closeWindow)
+        return
+
+    # Build UI
     def _initializeUI(self) -> None:
-        """Initialise all the attributes and layouts used in this UI"""
+        """
+            Initialise all the attributes and layouts used in this UI
+            :return: None
+        """
         self._buildPreviewWallpaper()
-        self._setProperties()
         self._buildLayouts()
         self._buildFrames()
         self._buildPushButtons()
@@ -39,21 +83,20 @@ class SelectWallpaperUI(QDialog):
         self._setResponses()
         return
 
-    def  _setProperties(self) -> None:
-        self.selectedFile_Name : str = None
-        return
-
-    def _setResponses(self) -> None:
-        self.selectFromDevice.clicked.connect(self._setPreviewWithDeviceImage)
-        self.useInApplication.clicked.connect(self._closeWindow)
-        return
-
     def _buildPreviewWallpaper(self) -> None:
+        """
+            Instantiate the Dummy window here
+            :return: None
+        """
         self.previewUI = DummyPreview()
+        self.previewUI.getTestingWallpaperLocation(self.currentWallpaperLocation)
         return
 
     def _buildLayouts(self)-> None:
-        """Creates all the layouts used in this UI"""
+        """
+            Creates all the layouts used in this UI
+            :return: None
+        """
         # main Layout
         self.innerMasterLayout = QVBoxLayout()
 
@@ -70,7 +113,7 @@ class SelectWallpaperUI(QDialog):
         self.selectionLayout = QHBoxLayout() # parent
         self.selectionInnerLayout = QHBoxLayout() # actual holder
         return
-    
+
     def _buildFrames(self) ->None:
         # main frame holds everything inside it
         self.mainFrame = QFrame()
@@ -83,12 +126,12 @@ class SelectWallpaperUI(QDialog):
         # application wallpaper section
         self.wallpaperHolderFrame = QFrame()
         self.wallpaperHolderFrame.setFrameShape(QFrame.Shape.StyledPanel)
-        
+
         # File selection Section
         self.selectionFrame = QFrame()
         self.selectionFrame.setFrameShape(QFrame.Shape.StyledPanel)
         return
-    
+
     def _buildLabels(self) -> None:
         # preview Section
         self.previewLabel = QLabel(Constants.SCREEN_PREVIEW)
@@ -141,7 +184,7 @@ class SelectWallpaperUI(QDialog):
         self.selectionLayout.addWidget(self.selectionFrame)
         self.selectionFrame.setLayout(self.selectionInnerLayout)
         return
-    
+
     def _addAttributes(self) -> None:
         # Preview 
         self.innerPreviewLayout.addWidget(self.previewLabel, stretch = 10, alignment = Qt.AlignmentFlag.AlignCenter)
@@ -160,53 +203,89 @@ class SelectWallpaperUI(QDialog):
         self.selectionInnerLayout.addWidget(self.selectFromDevice, alignment = Qt.AlignmentFlag.AlignRight)
         return
 
-    # INTERFACING
     def _loadStyleSheet(self) -> None:
+        """
+            Read the QML file and load the style for this window
+            :return: None
+        """
         try:
             file = QFile(Constants.WALLPAPER_PREVIEW_STYLE_PATH)
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
                 qss = file.readAll().data().decode(Constants.PARSER_KEY)
                 self.setStyleSheet(qss)
-        except (OSError, MemoryError, PermissionError, FileNotFoundError): return # doesn't change anything if   file not found
+        except (OSError, MemoryError, PermissionError, FileNotFoundError): return # doesn't change anything if file not found
         return
 
+
+    ########################################## INTERFACING ########################################################
+    # Wallpaper related
     @staticmethod
     def _generateWallpaperLabel(location : str = None):
-        label = ClickableLabel()
-        label.setFixedSize(100, 100)
+        """
+            Creates a Label that holds wallpaper location in static folder and when clicked it sends the wallpaper
+            location as pyqt signal
+            :param location: String [valid Image location]
+            :return: ClickableLabel
+        """
+        label = ClickableLabel() # instantiate
+        label.setFixedSize(100, 100) # size
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        if location:
+        if location: # if location is correct
             label.setProperty(Constants.LOCATION_PROP, location)
             pixmap = QPixmap(location).scaled(label.size())
             label.setPixmap(pixmap)
-        else: label.setText(Constants.UNABLE_TO_LOAD) 
+        else: label.setText(Constants.UNABLE_TO_LOAD) # No image will be loaded
         return label
-    
+
     def _passWallpaperLocation(self, loc : str = None):
+        """
+            with the given image location path this method set the  wallpaper of dummy window
+            :param loc: String [valid Image location]
+            :return: None
+        """
         if loc:
-            self.selectedFile_Name = loc
-            self.previewUI.resizeGivenWallpaper(loc)
+            self.selectedFile_Name = loc # to send the chosen wallpaper to main window
+            self.previewUI.getTestingWallpaperLocation(self.selectedFile_Name)
+            self.previewUI.setWallpaper()
         return
 
     def _setPreviewWithDeviceImage(self) -> None:
+        """
+            Takes Image location from device and use as wallpaper in dummy window
+            :return: None
+        """
         file_Name = QFileDialog.getOpenFileName(
             self, caption= Constants.SELECT_FROM_DEVICE, filter="Image Files (*.png *.jpg *.jpeg *.bmp *.gif)"
-        )
+        ) # image location from file
         if file_Name and os.path.exists(file_Name[0]):
-            self.previewUI.resizeGivenWallpaper(file_Name[0])
-            self.selectedFile_Name = file_Name[0]
+            self.previewUI.getTestingWallpaperLocation(file_Name[0]) # sent new Location to PreviewUI
+            self.previewUI.setWallpaper() # wallpaper is set in previewUI
+            self.selectedFile_Name = file_Name[0] # new location is ready to set
         return
-    
+
+    #GUI related
     def _closeWindow(self) -> bool:
+        """
+            Closes this window send the selected file name to the application and remove everything from
+            DummyResourceFolder
+            :return: None
+        """
         if self.selectedFile_Name: self.fileSelectedSignal.emit(self.selectedFile_Name)
+        self.previewUI.clearDummyResourceFolder()
         self.previewUI.close()
         return self.close()
     pass
 
 class ClickableLabel(QLabel):
+    #PyQt Signal
     location_signal = pyqtSignal(str)
     
     def mousePressEvent(self, ev):
+        """
+            When this label is clicked it sends the location of the Image which is assigned to it as property
+            :param ev: Event like click event
+            :return: None
+        """
         super().mousePressEvent(ev)
         if ev.button() == Qt.MouseButton.LeftButton:
             self.location_signal.emit(self.property(Constants.LOCATION_PROP))
