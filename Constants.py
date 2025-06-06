@@ -37,6 +37,7 @@ SOFTWARE_TITLE = "Music-Miner-Bot" # shows as the name
 SOFTWARE_WIDTH = 900 # main window length
 SOFTWARE_HEIGHT = 720 # main window height
 MASTER_FRAME_OBJECT_NAME = "master_layout_frame"
+DEFAULT_WALLPAPER_LOCATION = "./static/arora1.jpg"
 # Search Section Width and height
 SEARCH_SECTION_WIDTH = 860
 SEARCH_SECTION_HEIGHT = 80
@@ -65,7 +66,7 @@ SEARCH_HERE = "Search here....."
 
 # CONTROL RELATED BUTTON TEXTS
 CHANGE_BACKGROUND = "Change Background"
-SET_DOWNLOAD_DIRECTORY = "Set downlaoding Directory"
+SET_DOWNLOAD_DIRECTORY = "Set downloading Directory"
 SHOW_HIGH_QUALITY = "Show High Quality"
 SHOW_LOW_QUALITY = "Show Low Quality"
 SHOW_DOWNLOAD_HISTORY = "Show downloading history"
@@ -83,7 +84,7 @@ SINGER_NAME = "Singer name"
 SINGER_NAME_SIZE = 170
 DOWNLOAD_URL = "Download Here"
 DOWNLOAD_URL_SIZE = 115
-DOWNLOAD_BUTTON_TEXT = "Downlaod"
+DOWNLOAD_BUTTON_TEXT = "Download"
 ROW_HEIGHT = 150
 
 # Static file Paths
@@ -110,7 +111,9 @@ LABEL_POSTER_TOOL_TIP = "Search First to get your result"
 
 
 # DEFAULT STYLES
-DOWNLOAD_BUTTON_STYLE = """QPushButton { background-color: rgb(7, 128, 87); }QPushButton:hover {background-color: rgb(0, 160, 110);}"""
+DOWNLOAD_BUTTON_STYLE = """QPushButton {
+    background-color: rgb(7, 128, 87); }QPushButton:hover {background-color: rgb(0, 160, 110);
+}"""
 
 
 # CONFIG FILE CONSTANTS
@@ -141,7 +144,7 @@ DOWNLOAD_CONTINUES = "Downloading..."
 
 
 
-############### CONSTANTS FOR WALLPAPPER PREVIEW ##################
+############### CONSTANTS FOR WALLPAPER PREVIEW ##################
 WALLPAPER_PREVIEW_STYLE_PATH = "WallPaperPreviewStyle.qml" # Style for Image Preview Window
 WALLPAPER_PREVIEW_TITLE = "Select Wallpaper" # main ttile for the window
 WALLPAPER_PREVIEW_WIDTH = 600 # fixed width of the window
@@ -173,6 +176,7 @@ LOCATION_PROP = "Location"
 
 #################   DUMMY FILE    ####################
 TEMP_PATH = "/temp/"
+DUMMY_RESOURCE_FOLDER = "./DummyResourceFolder"
 DUMMY_FILE_STYLE_PATH = "DummyFile_style.qml"
 DUMMY_WINDOW_WIDTH = 540
 DUMMY_WINDOW_HEIGHT = 300
