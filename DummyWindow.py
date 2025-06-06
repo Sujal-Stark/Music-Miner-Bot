@@ -16,18 +16,41 @@ class DummyPreview(QWidget):
         self._initializeUI() # initialises all the UI material
         self._constructUI() # apply ui material in window
         self._addAttributes() # adding all Widgets
-        self.resizeGivenWallpaper("./static/arora1.jpg") # relative path is given instead of real path
+        self._createMainClassAttributes() # create all attributes that hold Main class Attribute values
+        self._initializeHelperClasses()
         self._loadStyleSheet() # Applying Style in The UI
         return
-    
-    def show(self):
-        # show method is overridden to reset the wallpaper to arora1.jpg
-        self.resizeGivenWallpaper("./static/arora1.jpg")
-        return super().show()
+
+    def _initializeHelperClasses(self) -> None:
+        """
+            Any class that are needed to run for this class is initialized here except rarely used one
+        """
+        self.imageModifierEngine = ImageModifier() # handles image related modifications
+        return
+
+    def _createMainClassAttributes(self) -> None:
+        """
+            Inside This method Some Class Variables are declared which use to accept values from main GUI so that this
+            dummy window can be initialized.
+            This Method should be called inside init to initialize with None values or any initial values
+        """
+        self.currentWallpaperLocation : str = Constants.DEFAULT_WALLPAPER_LOCATION
+        return
+
+    def getTestingWallpaperLocation(self, location : str) -> None:
+        """
+            Accepts applications current wallpaper location
+            :param location: Holds the address of wallpaper
+            :return: None
+        """
+        self.currentWallpaperLocation = location
+        return
 
     def _initializeUI(self) -> None:
-        """this function must be called inside the  constructor so that when the class is called all the uI components
-         gets loaded in the window"""
+        """
+            this function must be called inside the  constructor so that when the class is called all the uI components
+            gets loaded in the window
+         """
         self._buildFrames()
         self._buildLayouts()
         self._buildButtons()
@@ -35,8 +58,10 @@ class DummyPreview(QWidget):
         return
 
     def _buildFrames(self) -> None:
-        """This method must be called inside initializeUI method to load all the frames using in the UI, no relevant
-         external use"""
+        """
+            This method must be called inside initializeUI method to load all the frames using in the UI, no relevant
+            external use
+        """
         # main Frame that holds master Layout
         self.masterDummyLayoutInnerFrame = QFrame()
         self.masterDummyLayoutInnerFrame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -63,7 +88,6 @@ class DummyPreview(QWidget):
 
     def _buildLayouts(self) -> None:
         """Must be called inside _initializeUI method. it is used to build the Layouts"""
-
         # main Layout 
         self.bodyDummyLayout = QVBoxLayout()
         
@@ -106,7 +130,10 @@ class DummyPreview(QWidget):
         return
 
     def _constructUI(self) -> None:
-        """This method must be run after the _buildFrames method inside the constructor to form the GUI using the components"""
+        """
+            This method must be run after the _buildFrames method
+            inside the constructor to form the GUI using the components
+        """
         #MAIN WINDOW
         self.masterDummyLayout.addWidget(self.masterDummyLayoutInnerFrame, Qt.AlignmentFlag.AlignCenter)
         self.masterDummyLayoutInnerFrame.setLayout(self.bodyDummyLayout)
@@ -133,7 +160,9 @@ class DummyPreview(QWidget):
         return
     
     def _addAttributes(self):
-        """Packs all the widgets in their holder layouts"""
+        """
+            Packs all the widgets in their holder layouts
+        """
         # search Section
         self.searchFieldDummyLayout.addWidget(self.inputField, Qt.AlignmentFlag.AlignCenter)
         self.searchRelatedButtonDummyLayout.addWidget(self.searchBySingerButton, Qt.AlignmentFlag.AlignCenter)
@@ -148,31 +177,12 @@ class DummyPreview(QWidget):
         self.controlSectionInnerDummyLayout.addWidget(self.deleteDownloadingHistory, alignment=Qt.AlignmentFlag.AlignTop)
         self.controlSectionInnerDummyLayout.addWidget(self.deleteButton, alignment = Qt.AlignmentFlag.AlignTop)
         return
-    
-    # INTERFACING
-    def resizeGivenWallpaper(self, loc : str = None) -> None:
-        """For the background of the application this method resizes the currently selected image from the static path
-         and saves it. If any error occurred then sends a signal to the application"""
-        if loc:
-            self._clearTempDirectory()
-            loc = loc.replace("\\", "/")
-            fileName = loc.split("/")[-1]
-            savingPath = os.path.join(os.getcwd() + Constants.TEMP_PATH + fileName)
-            ImageModifier.resizeImage(loc, Constants.DUMMY_WINDOW_WIDTH, Constants.DUMMY_WINDOW_HEIGHT, savingPath)
-            if os.path.exists(savingPath):
-                self.masterDummyLayoutInnerFrame.setStyleSheet(
-                    "#master_inner_layout_frame{background-image: url(./temp/" + fileName + ");}"
-                )
-        return
-
-    @staticmethod
-    def _clearTempDirectory() -> None:
-        """After Completing wallpaper Changing operation use this method to keep Temp folder Clean."""
-        for tempFile in os.listdir("./temp"):
-            os.remove(os.path.join("./temp", tempFile))
-        return
 
     def _loadStyleSheet(self) -> None:
+        """
+            Read the QML file and load the style for this window
+            :return:
+        """
         try:
             file = QFile(Constants.DUMMY_FILE_STYLE_PATH) # Creating File Objects
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
@@ -180,6 +190,66 @@ class DummyPreview(QWidget):
                 self.setStyleSheet(qss) # adding Style
         except (OSError, MemoryError, PermissionError, FileNotFoundError): return # handles loading error
         return
+
+    ############################################# Interfacing #######################################################
+    def show(self):
+        # show method is overridden to reset the wallpaper to arora1.jpg
+        self.setWallpaper()
+        return super().show()
+
+    #### wallpaper related operations
+    def setWallpaper(self) -> None:
+        """
+            Check's if the currentWallpaperLocation exists or not. IF doesn't exist then default location is given and
+            default wallpaper is set to the Dummy Interface
+            :return: None
+        """
+        if not os.path.exists(self.currentWallpaperLocation):
+            self.currentWallpaperLocation = Constants.DEFAULT_WALLPAPER_LOCATION
+
+        saving_directory = self.resizeGivenWallpaper(self.currentWallpaperLocation)
+
+        if saving_directory: # if final_path is a valid path only then wallpaper will change
+            self.masterDummyLayoutInnerFrame.setStyleSheet(
+                "#master_inner_layout_frame{background-image: url(" + saving_directory + ");}"
+            )
+        else: # if final_path is not valid then default wallpaper will be set
+            self.masterDummyLayoutInnerFrame.setStyleSheet(
+                "#master_inner_layout_frame{background-image: url(" + Constants.DEFAULT_WALLPAPER_LOCATION + ");}"
+            )
+        return None
+
+
+    def resizeGivenWallpaper(self, location : str = None) -> str | None:
+        """
+            This method resizes the currently selected image from the static path or any other image form the system
+            and saves it in temp. If any error occurred then sends a signal to the application
+        """
+        if location: # checking validity of location
+            location = location.replace("\\", "/")
+            savingPath = (os.path.join(os.getcwd(), "DummyResourceFolder/", location.split("/")[-1])
+                .replace("\\", "/"))
+
+            self.imageModifierEngine.resizeImage(
+                location, Constants.DUMMY_WINDOW_WIDTH, Constants.DUMMY_WINDOW_HEIGHT, savingPath
+            ) # resizing to fit with window dimension
+
+            if os.path.exists(savingPath): return savingPath
+            else: return None
+        else: return None
+
+    ##### Dummy Resource folder related operations
+    @staticmethod
+    def clearDummyResourceFolder() -> None:
+        """
+            After performing any os related operation in DummyResourceFolder clear the dummy resource folder
+            :return: None
+        """
+        try:
+            for file in os.listdir(Constants.DUMMY_RESOURCE_FOLDER):
+                os.remove(os.path.join(Constants.DUMMY_RESOURCE_FOLDER, file))
+        except (OSError, PermissionError, FileNotFoundError):
+            print("got Error")
     pass
 
 if __name__ == '__main__':
