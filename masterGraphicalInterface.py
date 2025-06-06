@@ -1,8 +1,8 @@
 # this file is mainly responsible for creating the Graphical user interface of the software using pyqt5
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel, QScrollArea, QTableWidget, QTableWidgetItem, QAbstractItemView, QToolTip, QFileDialog
-from PyQt5.QtCore import Qt, QFile, QIODevice, pyqtSlot
+from PyQt5.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel,
+QScrollArea, QTableWidget, QTableWidgetItem, QAbstractItemView, QToolTip, QFileDialog)
+from PyQt5.QtCore import Qt, QFile, QIODevice
 from PyQt5.QtGui import QIcon, QPixmap, QFont
-# from icecream import ic
 import os
 
 # custom import
@@ -20,17 +20,18 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.setWindowTitle(Constants.SOFTWARE_TITLE) # application name
         self.setWindowIcon(QIcon(Constants.ICON_PATH)) # icon for the application
         self.setFixedSize(Constants.SOFTWARE_WIDTH, Constants.SOFTWARE_HEIGHT) # application max size
+        self.configFileHandler = ConfigFileHandler()  # create and update Config Details
 
         self._initializeUI() # builds all the components
         self._constructUI() # form the layouts together
         self._addAttributes() # add widgets to the layouts
         self.setPosterAtTableView() # shows the poster in TableView
         self._loadStyleSheet() # loads the Qss
-        
+
         self._initializeHelperClassConstructor() # all useful classes are Initialised with parameters if any
         self._setUpToolTip() # initialize tool tips
         self._setResponse() # all Actions and Signals are bind with UI Elements
-        
+
         # initial Action
         self._generateConfigFiles() # Throughout system all files regarding user preferences and choices will be generated
         self._configFileExistAction() # use Config file styles and data
@@ -38,18 +39,20 @@ class MasterGraphicalUserInterface(QMainWindow):
         return
 
     def _initializeHelperClassConstructor(self) -> None:
-        """This method initializes all the important classes to work with in a one go"""
+        """
+            This method initializes all the important classes to work with in a one go
+        """
         self.searchEngine = PagalFreeSiteExplorer() # initializing the search engine
-        self.configFileHandler = ConfigFileHandler() # create and update Config Details
         self.streamer = TableDataStreamer() # Populate the table with Song data
         self.tuneDownloaderThread = TuneDownloaderThread() # Download a particular song
         self.imageModifierEngine = ImageModifier() # handles UI image related Actions
-        self.wallpaperPreview = SelectWallpaperUI() # creates a separate window to preview wallpaper
         return
 
     def _initializeUI(self) -> None:
-        """this function must be called inside the  constructor so that when the class is called,
-         all the UI components gets loaded in the window"""
+        """
+            this function must be called inside the  constructor so that when the class is called,
+            all the UI components gets loaded in the window
+        """
         self._properties()
         self._buildFrames()
         self._buildScrollArea()
@@ -64,6 +67,21 @@ class MasterGraphicalUserInterface(QMainWindow):
     def _properties(self) -> None:
         self.resourceFreeFlag = True # if false then no data will be passed to this classes data from engine
         self.generatedConfigLocation : str = None # if config file exists this str object will store the address
+        self.staticContent = [
+            "./static/arora1.jpg",
+            "./static/blackHole.jpeg",
+            "./static/desert.jpeg",
+            "static/dragon.jpeg",
+            "./static/icon.png",
+            "./static/planet.jpeg",
+            "./static/startingScreen.png",
+            "./static/tagline.png"
+        ] # Static content of the application
+
+        # config related information
+        self.WALLPAPER_LOCATION = None
+        self.USER_NAME = None
+        self.CURRENT_DOWNLOADING_DIRECTORY = None
         return
 
     def _preferences(self) -> None:
@@ -80,7 +98,7 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.searchBySingerButton.clicked.connect(lambda : self._showClickedState()) # NOT IN WORKING STATE
 
         # control section buttons
-        self.BackGroundButton.clicked.connect(self.wallpaperPreview.show) # user will select one wallpaper to set as background
+        self.BackGroundButton.clicked.connect(self.backGroundButtonAction) # change wallpaper
         self.setDownloadDirectory.clicked.connect(self._selectDownloadingDirectory) # To choose Downloading Directory
         self.HighQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show High Quality Songs
         self.lowQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show Low Quality Songs
@@ -90,8 +108,6 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.streamer.dataOnFly.connect(self._addItemToTable) # Accept data from Populator Thread
         self.streamer.outputSignal.connect(self._setMessageForUser) # Shows information to the user
         self.tuneDownloaderThread.messageSignal.connect(self._setMessageForUser) # Shows download Status
-
-        self.wallpaperPreview.fileSelectedSignal.connect(self._setWallpaper) # set the wallpaper for background
         return
 
     def _buildFrames(self) -> None:
@@ -339,44 +355,7 @@ class MasterGraphicalUserInterface(QMainWindow):
         # information Section
         self.informationLayout.addWidget(self.infoLabel, alignment = Qt.AlignmentFlag.AlignCenter)
         return
-    
-    # INTERFACING
-    # @pyqtSlot()
-    def _setMessageForUser(self, msg : str = None) -> None:
-        self.infoLabel.setText(msg)
-        return
 
-    def _resizeGivenWallpaper(self, loc : str = None) -> None:
-        """
-            For the background of the application this method resizes the currently selected
-            image from the static path and saves it. If any error occurred then sends a signal to the application
-        """
-        if loc is None: loc = self.configFileHandler.getCurrentWallpaperLocation() # input is not given
-        if loc: self.imageModifierEngine.resizeImage(loc)
-        else: self._setMessageForUser(Constants.FAILED_TO_COMMIT_CHANGE)
-        return
-    
-    def setPosterAtTableView(self)-> None:
-        """Alter table method removes the table from the table view and put poster image"""
-        self.default_label.hide() # for safety purposes
-        try:
-            table_default_poster = QPixmap(Constants.TABLE_DEFAULT_LABEL)
-            table_default_poster = table_default_poster.scaled(
-                Constants.VIEW_PANEL_WIDTH - 40, Constants.VIEW_PANEL_HEIGHT - 40
-            )
-            self.default_label.setPixmap(table_default_poster)
-        except (OSError, PermissionError, ValueError, MemoryError, TypeError, FileNotFoundError): return
-        self.default_label.show() # shows the image in the table view
-        return
-    
-    def alterPosterView(self) -> None:
-        """Removes the poster and show the  table containing data"""
-        if self.mainTable.parent() is None: # only post the table if it is not posted
-            self.default_label.hide()
-            self.default_label.setParent(None)
-            self.tableHolderLayout.addWidget(self.mainTable, alignment = Qt.AlignmentFlag.AlignCenter)
-        return
-    
     def _loadStyleSheet(self) -> None:
         """Should be called in the constructor, and it loads the style sheet from qml file"""
         try:
@@ -385,9 +364,18 @@ class MasterGraphicalUserInterface(QMainWindow):
                 qss = file.readAll().data().decode(Constants.PARSER_KEY)
                 self.setStyleSheet(qss)
         except (OSError, MemoryError, PermissionError, FileNotFoundError): return # handles loading error
-    
-    def _setUpToolTip(self) -> None:
+
+
+    ############################################## INTERFACING ################################################
+    # GUI Related action
+    @staticmethod
+    def _setUpToolTip() -> None:
         QToolTip.setFont(QFont("Georgia", 10))
+        return
+
+    # @pyqtSlot()
+    def _setMessageForUser(self, msg : str = None) -> None:
+        self.infoLabel.setText(msg)
         return
     
     def _showClickedState(self) -> None:
@@ -422,7 +410,50 @@ class MasterGraphicalUserInterface(QMainWindow):
                 self.SEARCH_LOW_QUALITY = False # control change
                 self.lowQualityEnableLabel.setStyleSheet(self.indicatorDisableStyle())
         return
-    
+
+    @staticmethod
+    def indicatorEnabledStyle() -> str:
+        return """
+            QLabel {
+                color: #ffffff;
+                background-color: #15e661;
+                border-radius : 5px;
+            }
+        """
+
+    @staticmethod
+    def indicatorDisableStyle() -> str:
+        return """
+            QLabel {
+                color: #000000;
+                background-color: #ffffff;
+                border-radius : 5px;
+            }
+        """
+
+    # Music related
+    def setPosterAtTableView(self) -> None:
+        """Alter table method removes the table from the table view and put poster image"""
+        self.default_label.hide()  # for safety purposes
+        try:
+            table_default_poster = QPixmap(Constants.TABLE_DEFAULT_LABEL)
+            table_default_poster = table_default_poster.scaled(
+                Constants.VIEW_PANEL_WIDTH - 40, Constants.VIEW_PANEL_HEIGHT - 40
+            )
+            self.default_label.setPixmap(table_default_poster)
+        except (OSError, PermissionError, ValueError, MemoryError, TypeError, FileNotFoundError):
+            return
+        self.default_label.show()  # shows the image in the table view
+        return
+
+    def alterPosterView(self) -> None:
+        """Removes the poster and show the  table containing data"""
+        if self.mainTable.parent() is None:  # only post the table if it is not posted
+            self.default_label.hide()
+            self.default_label.setParent(None)
+            self.tableHolderLayout.addWidget(self.mainTable, alignment=Qt.AlignmentFlag.AlignCenter)
+        return
+
     def _downloadSelectedSong(self) -> None:
         """uses An Thread in the background and downloads the asked song in the Chosen directory"""
         sender = self.sender()
@@ -440,7 +471,6 @@ class MasterGraphicalUserInterface(QMainWindow):
 
         self.tuneDownloaderThread.start()
         return
-
 
     def _addItemToTable(
             self, index: int, song_name: str, singer_name: str, href: str, picture: QPixmap
@@ -512,12 +542,6 @@ class MasterGraphicalUserInterface(QMainWindow):
             self.tableHolderLayout.addWidget(self.default_label, alignment = Qt.AlignmentFlag.AlignCenter)
             self.default_label.show() # poster will be shown instead of table
         return
-    
-    def _generateConfigFiles(self) -> None:
-        """IF Software doesn't have any config data file then This method generate config file"""
-        self.configFileHandler.generateConfigFile() # configFileLocation is set
-        self.configFileHandler.generateColorFile() # generates colors.json file
-        return
 
     def _selectDownloadingDirectory(self) -> None:
         """Changes the downloading directory as per user's Choice"""
@@ -527,40 +551,65 @@ class MasterGraphicalUserInterface(QMainWindow):
         else: pass
         return
 
-    def _setWallpaper(self, loc : str = None) -> None:
-        if os.path.exists(loc):
-            self._resizeGivenWallpaper(loc)
-            style = "#master_layout_frame{background-image: url(" + loc + ");}"
-            self.masterLayoutFrame.setStyleSheet(style)
-            self.configFileHandler.setWallpaperLocation(loc)
-            self._changeButtonColor(
-                    list(self.imageModifierEngine.computeAVGColor(loc))
-                )
+    def downloadingFinishedSignalAction(self, completed : bool):
+        if completed:
+            self._setMessageForUser(Constants.DOWNLOAD_SUCCEED)
+            self.tuneDownloaderThread.cleanMemory()
         return
-    
+
+    # Wallpaper related action
+    def backGroundButtonAction(self) -> None:
+        """
+            Open Preview Window binds signals with methods and show the preview window
+            :return: None
+        """
+        self.wallpaperPreview = SelectWallpaperUI(self.WALLPAPER_LOCATION)# creates a separate window to preview wallpaper
+        self.wallpaperPreview.fileSelectedSignal.connect(self._setWallpaper)  # set the wallpaper for background
+        self.wallpaperPreview.wallpaperChangeAbortAction.connect(
+            self.wallpaperPreview.previewUI.clearDummyResourceFolder
+        ) # cleans the temp folder except wallpaper file
+        self.wallpaperPreview.show()
+        return
+
+    def _setWallpaper(self, loc : str = None) -> None:
+        """
+            Change the wallpaper of the window with given image location
+            :param loc: String [Valid image location]
+            :return: None
+        """
+        if os.path.exists(loc):
+            # full destination path for newly generated wallpaper
+            destination_path = os.path.join(os.getcwd(),"temp/",loc.split("/")[-1]).replace("\\", "/")
+
+            # changing style
+            self._resizeGivenWallpaper(loc, dpath = destination_path)
+            style = "#master_layout_frame{background-image: url(" + destination_path + ");}"
+            self.masterLayoutFrame.setStyleSheet(style)
+            self._changeButtonColor(
+                    list(self.imageModifierEngine.computeAVGColor(destination_path))
+                )
+
+            # permanent setting
+            self.configFileHandler.setWallpaperLocation(destination_path)
+            self.imageModifierEngine.clearTempDirectory(destination_path)
+        return
+
+    def _resizeGivenWallpaper(self, loc : str = None, dpath : str = None) -> None:
+        """
+            For the background of the application this method resizes the currently selected
+            image from the static path and saves it. If any error occurred then sends a signal to the application
+        """
+        if loc is None: loc = self.configFileHandler.getCurrentWallpaperLocation() # input is not given
+        if loc: self.imageModifierEngine.resizeImage(imagePath = loc, dPath = dpath)
+        else: self._setMessageForUser(Constants.FAILED_TO_COMMIT_CHANGE)
+        return
+
     def _changeButtonColor(self, color : list = None) -> bool:
         if color is None or len(color) != 3: return False # no action needed for invalid Input
         if not isinstance(color, list): color = list(color)
         self.configFileHandler.setColorValueIntoFile(Constants.BUTTON_COLOR_CONFIG, color) # saving color value
         if color: self._alterColorStyle(self.generateSupportingColor(color))
         return True
-    
-    def _configFileExistAction(self)-> None:
-        if os.path.exists(os.path.join(os.getcwd(), Constants.FILE_NAME)):
-            style = "#master_layout_frame{background-image: url(" + self.configFileHandler.getCurrentWallpaperLocation() + ");}"
-            self.masterLayoutFrame.setStyleSheet(style)
-        else:
-            self.masterLayoutFrame.setStyleSheet(
-                "#master_layout_frame{background-image: url(./static/arora1.jpg);}"
-            )
-        return
-    
-    def _colorFileExistsAction(self) -> None:
-        """If color file exists then this method fetch user preferences from file and inject in the UI style"""
-        if os.path.exists(os.path.join(os.getcwd(), Constants.COLOR_FILE_REL_PATH)):
-            color = self.configFileHandler.getColorValueFromFile(Constants.BUTTON_COLOR_CONFIG)
-            if color: self._alterColorStyle(self.generateSupportingColor(color))
-        return
     
     def _alterColorStyle(self, colorList : list[list]) -> bool:
         """Parameters: colorList -> list[str], unpack the string values and set them as Background
@@ -603,31 +652,33 @@ class MasterGraphicalUserInterface(QMainWindow):
         colorList : list = [color, inverseColor, hoverColor, clickedColor]
         return colorList
 
-    def downloadingFinishedSignalAction(self, completed : bool):
-        if completed:
-            self._setMessageForUser(Constants.DOWNLOAD_SUCCEED)
-            self.tuneDownloaderThread.cleanMemory()
+    # Config related action
+    def _generateConfigFiles(self) -> None:
+        """IF Software doesn't have any config data file then This method generate config file"""
+        self.configFileHandler.generateConfigFile() # configFileLocation is set
+        self.configFileHandler.generateColorFile() # generates colors.json file
         return
 
-    @staticmethod
-    def indicatorEnabledStyle() -> str:
-        return """
-            QLabel {
-                color: #ffffff;
-                background-color: #15e661;
-                border-radius : 5px;
-            }
-        """
+    def _configFileExistAction(self) -> None:
+        if os.path.exists(os.path.join(os.getcwd(), Constants.FILE_NAME)):
+            self.WALLPAPER_LOCATION = self.configFileHandler.getCurrentWallpaperLocation()
+            if not os.path.exists(self.WALLPAPER_LOCATION):
+                self.WALLPAPER_LOCATION = Constants.DEFAULT_WALLPAPER_LOCATION
+            style = "#master_layout_frame{background-image: url(" + self.WALLPAPER_LOCATION + ");}"
+            self.imageModifierEngine.getCurrentlyUsedImageLocation(self.WALLPAPER_LOCATION)
+            self.masterLayoutFrame.setStyleSheet(style)
+        else:
+            self.masterLayoutFrame.setStyleSheet(
+                "#master_layout_frame{background-image: url(./static/arora1.jpg);}"
+            )
+        return
 
-    @staticmethod
-    def indicatorDisableStyle() -> str:
-        return """
-            QLabel {
-                color: #000000;
-                background-color: #ffffff;
-                border-radius : 5px;
-            }
-        """
+    def _colorFileExistsAction(self) -> None:
+        """If color file exists then this method fetch user preferences from file and inject in the UI style"""
+        if os.path.exists(os.path.join(os.getcwd(), Constants.COLOR_FILE_REL_PATH)):
+            color = self.configFileHandler.getColorValueFromFile(Constants.BUTTON_COLOR_CONFIG)
+            if color: self._alterColorStyle(self.generateSupportingColor(color))
+        return
     pass
 
 
