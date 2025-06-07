@@ -13,6 +13,7 @@ from TablePopulatorThreadClass import TableDataStreamer
 from TuneDownloaderThreadForPW import TuneDownloaderThread
 from UserInformationHandler import ConfigFileHandler
 from WallPaperPreview import SelectWallpaperUI
+from SongCard import SongCard
 
 class MasterGraphicalUserInterface(QMainWindow):
     def __init__(self) -> None:
@@ -186,16 +187,13 @@ class MasterGraphicalUserInterface(QMainWindow):
         """Meant to be  called under _initializeUI method builds the table view of the generated song data"""
         self.mainTable = QTableWidget() # holds the scraped Data
         self.mainTable.setFixedSize(self.tableScrollArea.width()- 20, self.tableScrollArea.height()- 20) # dimensions
-        self.mainTable.setColumnCount(4) # column counts are always fixed
+        self.mainTable.setColumnCount(1) # column counts are always fixed
         self.mainTable.setWordWrap(True)
         # column width Must be constants
-        self.mainTable.setColumnWidth(0, Constants.THUMBNAIL_SIZE) # HOLDS PIXMAP POSTER
-        self.mainTable.setColumnWidth(1,Constants.SONG_NAME_SIZE) # SONG NAME WITH BIT RATE
-        self.mainTable.setColumnWidth(2,Constants.SINGER_NAME_SIZE) # SINGER NAME
-        self.mainTable.setColumnWidth(3, Constants.DOWNLOAD_URL_SIZE) # BUTTON 
+        self.mainTable.setColumnWidth(0, Constants.SONG_CARD_WIDTH) # HOLDS PIXMAP POSTER
         
         self.mainTable.setHorizontalHeaderLabels( # column headings
-            [Constants.THUMBNAIL, Constants.DOWNLOAD_URL, Constants.SONG_NAME, Constants.SINGER_NAME]
+            [Constants.SEARCH_RESULT]
         )
         self.mainTable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers) # read only mode
         return
@@ -477,23 +475,15 @@ class MasterGraphicalUserInterface(QMainWindow):
     ) -> None:
         """This method acts as Signal Acceptor. Accepts table Items from the Thread class(TablePopulatorThreadClass)
          and exhibit in the table"""
-        self.mainTable.insertRow(index) # row definition
-        self.mainTable.setRowHeight(index, Constants.ROW_HEIGHT)
-        if picture: # if poster is found out only then poster will be shown
-            label = QLabel()
-            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            label.setPixmap(picture)
-            self.mainTable.setCellWidget(index, 0, label)
-        
-        button = QPushButton(Constants.DOWNLOAD_BUTTON_TEXT) # button
-        button.setStyleSheet(Constants.DOWNLOAD_BUTTON_STYLE)
-        button.setProperty(Constants.HREF, href) # href holds the link for the downloading page
-        button.setProperty(Constants.SONG_NAME, song_name)
-        button.clicked.connect(self._downloadSelectedSong) # Temporary Button that's why can't Put this action in response method
-        
-        self.mainTable.setCellWidget(index, 1, button)
-        self.mainTable.setItem(index, 2, QTableWidgetItem(song_name)) # song name
-        self.mainTable.setItem(index, 3, QTableWidgetItem(singer_name)) # singer's name
+        self.mainTable.insertRow(index)  # row definition
+        self.mainTable.setRowHeight(index, Constants.SONG_CARD_HEIGHT)
+        songCard = SongCard()
+        if picture:  # if poster is found out only then poster will be shown
+            songCard.setImageToCard(picture)
+        songCard.set_data(song_name, singer_name, href)
+        songCard.downloadButton.clicked.connect(self._downloadSelectedSong)  # response Added
+        self.mainTable.setCellWidget(index, 0, songCard)
+        songCard.show()
         return
 
     def searchButtonAction(self) -> None:
