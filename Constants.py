@@ -86,6 +86,7 @@ DOWNLOAD_URL = "Download Here"
 DOWNLOAD_URL_SIZE = 115
 DOWNLOAD_BUTTON_TEXT = "Download"
 ROW_HEIGHT = 150
+SEARCH_RESULT = "Search Result"
 
 # Static file Paths
 ICON_PATH = R"static\icon.png" # Window Icon
@@ -144,7 +145,7 @@ DOWNLOAD_CONTINUES = "Downloading..."
 
 
 
-############### CONSTANTS FOR WALLPAPER PREVIEW ##################
+####################################### CONSTANTS FOR WALLPAPER PREVIEW #############################################
 WALLPAPER_PREVIEW_STYLE_PATH = "WallPaperPreviewStyle.qml" # Style for Image Preview Window
 WALLPAPER_PREVIEW_TITLE = "Select Wallpaper" # main ttile for the window
 WALLPAPER_PREVIEW_WIDTH = 600 # fixed width of the window
@@ -163,6 +164,15 @@ WALLPAPER_PREVIEW_BUTTON_HEIGHT = 40
 # LABELS
 SCREEN_PREVIEW = "Preview of the Application"
 CUSTOM_WALLPAPER = "Custom Wallpapers"
+
+# SONG CARD
+SONG_CARD_OBJECT_NAME = "Song Card"
+SONG_CARD_WIDTH = VIEW_PANEL_WIDTH - 60
+SONG_CARD_HEIGHT = 150
+SONG_CARD_IMAGE_WIDTH = 130
+SONG_CARD_IMAGE_HEIGHT = 130
+SONG_CARD_NAME_LABEL_WIDTH = 400
+SONG_CARD_QSS_LOCATION = "./SongCard.qss"
 
 # static wallpaper location
 WALLPAPER_ARORA = "./static/arora1.jpg"
