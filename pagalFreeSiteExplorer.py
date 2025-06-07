@@ -86,23 +86,25 @@ class PagalFreeSiteExplorer:
                 Constants.SONG_NAME : [],
                 Constants.SINGER_NAME : []
             } # makes sure that data set is empty
-            for el in dataElement:
-                self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER].append(
-                    el.find(Constants.A_TAG).get_attribute_list(Constants.HREF)[0]
-                )
-                self.songDataContainer[Constants.LINK_TO_TUNE_POSTER_CONTAINER].append(
-                    el.find(Constants.IMG_TAG).get_attribute_list(Constants.SRC)[0]
-                )
-                self.songDataContainer[Constants.SONG_NAME].append(
-                    str(el.find(Constants.DIV, class_ = Constants.MAIN_PAGE_SONG_TEXT).find(Constants.B_TAG).text)
-                    .replace(" ", "").replace("\n", "")
-                )
-                self.songDataContainer[Constants.SINGER_NAME].append(
-                    str(el.find(Constants.DIV, class_ = Constants.MAIN_PAGE_SONG_TEXT).find_all(Constants.DIV)[1].text)
-                    .replace(" ", "").replace("\n", "")
-                )
-            if len(self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER]) > 0:
-                self.resourceOccupiedFlag = True # resource occupied
+            try:
+                for el in dataElement:
+                    self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER].append(
+                        el.find(Constants.A_TAG).get_attribute_list(Constants.HREF)[0]
+                    )
+                    self.songDataContainer[Constants.LINK_TO_TUNE_POSTER_CONTAINER].append(
+                        el.find(Constants.IMG_TAG).get_attribute_list(Constants.SRC)[0]
+                    )
+                    self.songDataContainer[Constants.SONG_NAME].append(
+                        str(el.find(Constants.DIV, class_ = Constants.MAIN_PAGE_SONG_TEXT).find(Constants.B_TAG).text)
+                        .replace(" ", "").replace("\n", "")
+                    )
+                    self.songDataContainer[Constants.SINGER_NAME].append(
+                        str(el.find(Constants.DIV, class_ = Constants.MAIN_PAGE_SONG_TEXT).find_all(Constants.DIV)[1].text)
+                        .replace(" ", "").replace("\n", "")
+                    )
+                if len(self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER]) > 0:
+                    self.resourceOccupiedFlag = True # resource occupied
+            except (IndexError, TypeError): pass
         return self.songDataContainer
     
     def getDownloadingUrl(self, url : str) -> None:
@@ -148,7 +150,9 @@ class PagalFreeSiteExplorer:
         try:
             posterReq = requests.get(imageLink)
             if posterReq.status_code == Constants.STATUSCODE_SUCCEED:
-                image = Image.open(BytesIO(posterReq.content)).convert(Constants.RGBA_LITERAL).resize((140, 140))
+                image = Image.open(BytesIO(posterReq.content)).convert(Constants.RGBA_LITERAL).resize(
+                    (Constants.SONG_CARD_IMAGE_WIDTH, Constants.SONG_CARD_IMAGE_HEIGHT)
+                )
                 pixmap = QPixmap.fromImage(
                     QImage(
                         image.tobytes(Constants.RAW_LITERAL), image.width, image.height, QImage.Format.Format_RGBA8888
