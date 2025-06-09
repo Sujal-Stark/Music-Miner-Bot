@@ -104,7 +104,8 @@ class PagalFreeSiteExplorer:
                     )
                 if len(self.songDataContainer[Constants.LINK_TO_REDIRECT_TUNE_CONTAINER]) > 0:
                     self.resourceOccupiedFlag = True # resource occupied
-            except (IndexError, TypeError): pass
+            except (IndexError, TypeError):
+                pass
         return self.songDataContainer
     
     def getDownloadingUrl(self, url : str) -> None:
