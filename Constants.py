@@ -32,6 +32,10 @@ NOT_FOUND_MESSAGE = "NOT FOUND"
 LINK_TO_REDIRECT_TUNE_CONTAINER = "link_to_redirect_tune_container" # dictionary key
 LINK_TO_TUNE_POSTER_CONTAINER = "link_to_tune_poster_container" # dictionary key
 
+
+######################################### Key action related ##############################################
+ENTER_KEY_SHORTCUT = "Enter Key Shortcut"
+
 # SOFTWARE DIMENSION RELATED
 SOFTWARE_TITLE = "Music-Miner-Bot" # shows as the name
 SOFTWARE_WIDTH = 900 # main window length
@@ -190,3 +194,23 @@ DUMMY_RESOURCE_FOLDER = "./DummyResourceFolder"
 DUMMY_FILE_STYLE_PATH = "DummyFile_style.qml"
 DUMMY_WINDOW_WIDTH = 540
 DUMMY_WINDOW_HEIGHT = 300
+
+
+################################## DataBase Manager ################################
+DB_MANAGER_WINDOW_TITLE = "History"
+DB_MANAGER_WINDOW_WIDTH =  600
+DB_MANAGER_WINDOW_HEIGHT = 400
+
+DB_MAIN_FRAME_WIDTH = DB_MANAGER_WINDOW_WIDTH - 20
+DB_MAIN_FRAME_HEIGHT = DB_MANAGER_WINDOW_HEIGHT - 20
+DB_MAIN_FRAME_OBJECT_NAME = "Main Frame"
+
+DB_BODY_LAYOUT_FRAME_OBJECT_NAME = "Body Layout Frame"
+
+DB_SCROLL_AREA_OBJECT_NAME = "History Scroll Area"
+DB_BODY_LAYOUT_SCROLL_AREA_WIDTH = 560
+DB_BODY_LAYOUT_SCROLL_AREA_HEIGHT = 310
+DB_TABLE_SL = "Sl"
+DB_TABLE_SONG_NAME = "Song Name"
+DB_TABLE_DATE = "Date"
+DB_UI_QSS_PATH = "./DataBaseManager.qss"
