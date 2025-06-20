@@ -1,8 +1,8 @@
 # this file is mainly responsible for creating the Graphical user interface of the software using pyqt5
 from PyQt5.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLineEdit, QLabel,
-QScrollArea, QTableWidget, QTableWidgetItem, QAbstractItemView, QToolTip, QFileDialog)
+QScrollArea, QTableWidget, QAbstractItemView, QToolTip, QFileDialog, QShortcut)
 from PyQt5.QtCore import Qt, QFile, QIODevice
-from PyQt5.QtGui import QIcon, QPixmap, QFont
+from PyQt5.QtGui import QIcon, QPixmap, QFont, QKeySequence
 import os
 
 # custom import
@@ -14,6 +14,7 @@ from TuneDownloaderThreadForPW import TuneDownloaderThread
 from UserInformationHandler import ConfigFileHandler
 from WallPaperPreview import SelectWallpaperUI
 from SongCard import SongCard
+from DataBaseManager import DataBaseManager
 
 class MasterGraphicalUserInterface(QMainWindow):
     def __init__(self) -> None:
@@ -30,6 +31,7 @@ class MasterGraphicalUserInterface(QMainWindow):
         self._loadStyleSheet() # loads the Qss
 
         self._initializeHelperClassConstructor() # all useful classes are Initialised with parameters if any
+        self._createKeySequence()
         self._setUpToolTip() # initialize tool tips
         self._setResponse() # all Actions and Signals are bind with UI Elements
 
@@ -47,6 +49,7 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.streamer = TableDataStreamer() # Populate the table with Song data
         self.tuneDownloaderThread = TuneDownloaderThread() # Download a particular song
         self.imageModifierEngine = ImageModifier() # handles UI image related Actions
+        self.databaseManager = DataBaseManager() # Manage all crud operation related to Downloading History
         return
 
     def _initializeUI(self) -> None:
@@ -103,6 +106,8 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.setDownloadDirectory.clicked.connect(self._selectDownloadingDirectory) # To choose Downloading Directory
         self.HighQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show High Quality Songs
         self.lowQualityEnableButton.clicked.connect(self.applyQualityFiler) # only Show Low Quality Songs
+        self.showDownloadingHistory.clicked.connect(self._showDownloadingHistory) # Display downloading History
+        self.deleteDownloadingHistory.clicked.connect(self.databaseManager.truncateTableFromDataBase)
         self.deleteButton.clicked.connect(self._resetPanelAction) # Delete The Search Result
 
         # Signal Response Addition
@@ -110,6 +115,16 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.streamer.outputSignal.connect(self._setMessageForUser) # Shows information to the user
         self.tuneDownloaderThread.messageSignal.connect(self._setMessageForUser) # Shows download Status
         return
+
+    def _createKeySequence(self) -> None:
+        """
+            All required key Sequence for this UI are built here
+            :return: None
+        """
+        self.enterKeyAction = QShortcut(QKeySequence(Qt.Key.Key_Enter), self)
+        self.enterKeyAction.setObjectName(Constants.ENTER_KEY_SHORTCUT)
+        self.enterKeyAction.activated.connect(lambda: self.searchButtonAction())
+        return None
 
     def _buildFrames(self) -> None:
         """This method must be called inside initializeUI method to load all the frames using in the UI, no relevant
@@ -246,7 +261,7 @@ class MasterGraphicalUserInterface(QMainWindow):
         )
         self.showDownloadingHistory.setToolTip(Constants.DOWNLOAD_HISTORY_BUTTON_TOOL_TIP)
         
-        self.deleteDownloadingHistory = QPushButton(Constants.DELETE_DOWNLOAD_HISTORY) # delete all the downloading history
+        self.deleteDownloadingHistory = QPushButton(Constants.DELETE_DOWNLOAD_HISTORY) # delete all downloading history
         self.deleteDownloadingHistory.setFixedSize(
             Constants.CONTROL_SECTION_BUTTON_WIDTH, Constants.CONTROL_SECTION_BUTTON_HEIGHT
         )
@@ -466,7 +481,9 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.tuneDownloaderThread.threadFinishedSignal.connect(
             self.downloadingFinishedSignalAction
         )  # cleans thread class variables
-
+        self.tuneDownloaderThread.currentlyDownloadedSongName.connect(
+            lambda songName : self.databaseManager.insertIntoTable(songName)
+        ) # returns the song name and this method save it in Database
         self.tuneDownloaderThread.start()
         return
 
@@ -489,9 +506,11 @@ class MasterGraphicalUserInterface(QMainWindow):
     def searchButtonAction(self) -> None:
         """Works after search button is pressed. Handles searchBySinger & searchBySong Both the action"""
         sender_ObjectName = self.sender().objectName()
+        print(sender_ObjectName)
         if(self.inputField.text() != "" and (
             sender_ObjectName == Constants.SHOW_HIGH_QUALITY or
             sender_ObjectName == Constants.SHOW_LOW_QUALITY or
+            sender_ObjectName == Constants.ENTER_KEY_SHORTCUT or
             self.resourceFreeFlag
         )): # no search if input field is empty
             try:
@@ -553,7 +572,7 @@ class MasterGraphicalUserInterface(QMainWindow):
             Open Preview Window binds signals with methods and show the preview window
             :return: None
         """
-        self.wallpaperPreview = SelectWallpaperUI(self.WALLPAPER_LOCATION)# creates a separate window to preview wallpaper
+        self.wallpaperPreview = SelectWallpaperUI(self.WALLPAPER_LOCATION)# creates separate window to preview wallpaper
         self.wallpaperPreview.fileSelectedSignal.connect(self._setWallpaper)  # set the wallpaper for background
         self.wallpaperPreview.wallpaperChangeAbortAction.connect(
             self.wallpaperPreview.previewUI.clearDummyResourceFolder
@@ -669,6 +688,16 @@ class MasterGraphicalUserInterface(QMainWindow):
             color = self.configFileHandler.getColorValueFromFile(Constants.BUTTON_COLOR_CONFIG)
             if color: self._alterColorStyle(self.generateSupportingColor(color))
         return
+
+    ######################################## Database Related Operations #####################################
+    def _showDownloadingHistory(self) -> None:
+        """
+            Shows the Database in a separate window
+            :return: None
+        """
+        self.databaseManager.show()
+        self.databaseManager.displayData()
+        return None
     pass
 
 
