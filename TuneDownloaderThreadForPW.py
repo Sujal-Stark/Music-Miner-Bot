@@ -11,6 +11,7 @@ import Constants
 class TuneDownloaderThread(QThread):
     messageSignal = pyqtSignal(str) # sends message to the main UI
     threadFinishedSignal = pyqtSignal(bool)  # Returns true if the thread action is finished
+    currentlyDownloadedSongName = pyqtSignal(str) # after downloading the song the name of the song is returned
 
     # Constructor
     def __init__(self):
@@ -39,6 +40,7 @@ class TuneDownloaderThread(QThread):
 
             if self.engine.downloadSongFromLink(self.url, self.songName, self.downloadingDirectory, downloadingIndex):
                 self.threadFinishedSignal.emit(True) # Thread Finished successfully
+                self.currentlyDownloadedSongName.emit(self.songName) # returning Song name to save in memory
                 return
             else:
                 self.messageSignal.emit(Constants.DOWNLOAD_FAILED) #internal error
