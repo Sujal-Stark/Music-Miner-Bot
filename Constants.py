@@ -93,7 +93,7 @@ ROW_HEIGHT = 150
 SEARCH_RESULT = "Search Result"
 
 # Static file Paths
-ICON_PATH = R"static\icon.png" # Window Icon
+ICON_PATH = R"static\icon.ico" # Window Icon
 TABLE_DEFAULT_LABEL = R"static\tagline.png"
 STARTING_SCREEN_PATH = R"static\startingScreen.png" # for splash screen image
 STARTING_SCREEN_SHOW_TIME = 3 # for this much time the splash Screen will be visbile
