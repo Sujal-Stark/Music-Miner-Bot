@@ -184,7 +184,7 @@ class DummyPreview(QWidget):
             :return:
         """
         try:
-            file = QFile(Constants.DUMMY_FILE_STYLE_PATH) # Creating File Objects
+            file = QFile(os.path.join(os.getcwd(), Constants.DUMMY_FILE_STYLE_PATH)) # Creating File Objects
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
                 qss = file.readAll().data().decode(Constants.PARSER_KEY) # extracting Style
                 self.setStyleSheet(qss) # adding Style
@@ -246,8 +246,11 @@ class DummyPreview(QWidget):
             :return: None
         """
         try:
-            for file in os.listdir(Constants.DUMMY_RESOURCE_FOLDER):
-                os.remove(os.path.join(Constants.DUMMY_RESOURCE_FOLDER, file))
+            dummy_resource_folder = os.path.join(os.getcwd(), Constants.DUMMY_RESOURCE_FOLDER).replace(
+                "\\", "/"
+            )
+            for file in os.listdir(dummy_resource_folder):
+                os.remove(os.path.join(dummy_resource_folder, file))
         except (OSError, PermissionError, FileNotFoundError):
             print("got Error")
     pass

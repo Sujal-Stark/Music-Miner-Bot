@@ -372,7 +372,7 @@ class MasterGraphicalUserInterface(QMainWindow):
     def _loadStyleSheet(self) -> None:
         """Should be called in the constructor, and it loads the style sheet from qml file"""
         try:
-            file = QFile(Constants.MAIN_QML_PATH)
+            file = QFile(os.path.join(os.getcwd(), Constants.MAIN_QML_PATH))
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
                 qss = file.readAll().data().decode(Constants.PARSER_KEY)
                 self.setStyleSheet(qss)

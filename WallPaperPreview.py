@@ -209,7 +209,7 @@ class SelectWallpaperUI(QDialog):
             :return: None
         """
         try:
-            file = QFile(Constants.WALLPAPER_PREVIEW_STYLE_PATH)
+            file = QFile(os.path.join(os.getcwd(), Constants.WALLPAPER_PREVIEW_STYLE_PATH))
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
                 qss = file.readAll().data().decode(Constants.PARSER_KEY)
                 self.setStyleSheet(qss)
