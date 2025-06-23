@@ -189,8 +189,8 @@ WALLPAPER_PLANET = "./static/planet.jpeg"
 LOCATION_PROP = "Location"
 
 #################   DUMMY FILE    ####################
-TEMP_PATH = "/temp/"
-DUMMY_RESOURCE_FOLDER = "./DummyResourceFolder"
+TEMP_PATH = "temp"
+DUMMY_RESOURCE_FOLDER = "DummyResourceFolder"
 DUMMY_FILE_STYLE_PATH = "DummyFile_style.qml"
 DUMMY_WINDOW_WIDTH = 540
 DUMMY_WINDOW_HEIGHT = 300
@@ -198,6 +198,7 @@ DUMMY_WINDOW_HEIGHT = 300
 
 ################################## DataBase Manager ################################
 DB_MANAGER_WINDOW_TITLE = "History"
+DATA_BASE_FOLDER_LOCATION = "Databases"
 DB_MANAGER_WINDOW_WIDTH =  600
 DB_MANAGER_WINDOW_HEIGHT = 400
 
