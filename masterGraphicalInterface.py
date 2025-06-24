@@ -15,6 +15,8 @@ from UserInformationHandler import ConfigFileHandler
 from WallPaperPreview import SelectWallpaperUI
 from SongCard import SongCard
 from DataBaseManager import DataBaseManager
+from utility import Utility
+
 
 class MasterGraphicalUserInterface(QMainWindow):
     def __init__(self) -> None:
@@ -372,7 +374,7 @@ class MasterGraphicalUserInterface(QMainWindow):
     def _loadStyleSheet(self) -> None:
         """Should be called in the constructor, and it loads the style sheet from qml file"""
         try:
-            file = QFile(os.path.join(os.getcwd(), Constants.MAIN_QML_PATH))
+            file = QFile(Utility.getResourcePath(Constants.MAIN_QML_PATH))
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
                 qss = file.readAll().data().decode(Constants.PARSER_KEY)
                 self.setStyleSheet(qss)

@@ -6,6 +6,8 @@ import os
 # custom import
 import Constants
 from ImageModifierEngine import ImageModifier
+from utility import Utility
+
 
 class DummyPreview(QWidget):
     def __init__(self, factor : int = 2) -> None:
@@ -184,7 +186,7 @@ class DummyPreview(QWidget):
             :return:
         """
         try:
-            file = QFile(os.path.join(os.getcwd(), Constants.DUMMY_FILE_STYLE_PATH)) # Creating File Objects
+            file = QFile(Utility.getResourcePath(Constants.DUMMY_FILE_STYLE_PATH)) # Creating File Objects
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
                 qss = file.readAll().data().decode(Constants.PARSER_KEY) # extracting Style
                 self.setStyleSheet(qss) # adding Style

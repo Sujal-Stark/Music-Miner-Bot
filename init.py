@@ -6,6 +6,7 @@ import sys, os
 
 # custom import
 from masterGraphicalInterface import MasterGraphicalUserInterface
+from utility import Utility
 import Constants
 
 def endScreen(splash : QSplashScreen, window : MasterGraphicalUserInterface):
@@ -16,13 +17,9 @@ def endScreen(splash : QSplashScreen, window : MasterGraphicalUserInterface):
 def generateSourceDirectories() -> None:
     """Creates Necessary folder if not exists"""
     try:
-        tempPath = os.path.join(os.getcwd(), Constants.TEMP_PATH).replace("\\", "/")
-        database_folder_location = os.path.join(os.getcwd(), Constants.DATA_BASE_FOLDER_LOCATION).replace(
-            "\\", "/"
-        )
-        dummy_folder_location = os.path.join(os.getcwd(), Constants.DUMMY_RESOURCE_FOLDER).replace(
-            "\\", "/"
-        )
+        tempPath = Utility.getResourcePath(Constants.TEMP_PATH)
+        database_folder_location = Utility.getResourcePath(Constants.DATA_BASE_FOLDER_LOCATION)
+        dummy_folder_location = Utility.getResourcePath(Constants.DUMMY_RESOURCE_FOLDER)
         if not os.path.exists(tempPath): os.mkdir(tempPath)
         if not os.path.exists(database_folder_location): os.mkdir(database_folder_location)
         if not os.path.exists(dummy_folder_location): os.mkdir(dummy_folder_location)
@@ -32,7 +29,7 @@ def generateSourceDirectories() -> None:
 if __name__ == "__main__":
     generateSourceDirectories()
     Application = QApplication(sys.argv)
-    StartingScreen = QPixmap(Constants.STARTING_SCREEN_PATH)
+    StartingScreen = QPixmap(Utility.getResourcePath(Constants.STARTING_SCREEN_PATH))
     splashScreen = QSplashScreen(StartingScreen)
     splashScreen.show()
     music_Miner_Bot = MasterGraphicalUserInterface()

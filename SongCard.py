@@ -4,6 +4,8 @@ from PyQt5.QtCore import Qt, QFile, QIODevice, QTimer
 import os
 # custom Import
 import Constants
+from utility import Utility
+
 
 class SongCard(QWidget):
     def __init__(self):
@@ -104,7 +106,7 @@ class SongCard(QWidget):
     def _loadStyleSheet(self) -> None:
         """Should be called in the constructor, and it loads the style sheet from qml file"""
         try:
-            file = QFile(os.path.join(os.getcwd(), Constants.SONG_CARD_QSS_LOCATION))
+            file = QFile(Utility.getResourcePath(Constants.SONG_CARD_QSS_LOCATION))
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
                 qss = file.readAll().data().decode(Constants.PARSER_KEY)
                 self.setStyleSheet(qss)

@@ -9,6 +9,8 @@ import sqlite3
 from sqlite3 import DatabaseError, OperationalError, ProgrammingError, InterfaceError
 
 import Constants
+from utility import Utility
+
 
 class DataBaseManager(QDialog):
     def __init__(self):
@@ -116,7 +118,7 @@ class DataBaseManager(QDialog):
     def _loadStyleSheet(self) -> None:
         """Should be called in the constructor, and it loads the style sheet from qml file"""
         try:
-            file = QFile(os.path.join(os.getcwd(), Constants.DB_UI_QSS_PATH))
+            file = QFile(Utility.getResourcePath(Constants.DB_UI_QSS_PATH))
             if file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
                 qss = file.readAll().data().decode(Constants.PARSER_KEY)
                 self.setStyleSheet(qss)
