@@ -41,7 +41,7 @@ SOFTWARE_TITLE = "Music-Miner-Bot" # shows as the name
 SOFTWARE_WIDTH = 900 # main window length
 SOFTWARE_HEIGHT = 720 # main window height
 MASTER_FRAME_OBJECT_NAME = "master_layout_frame"
-DEFAULT_WALLPAPER_LOCATION = "assets/static/arora1.jpg"
+DEFAULT_WALLPAPER_LOCATION = "Resources/static/arora1.jpg"
 # Search Section Width and height
 SEARCH_SECTION_WIDTH = 860
 SEARCH_SECTION_HEIGHT = 80
@@ -93,13 +93,13 @@ ROW_HEIGHT = 150
 SEARCH_RESULT = "Search Result"
 
 # Static file Paths
-ICON_PATH = R"assets/static/icon.ico"  # Window Icon
-TABLE_DEFAULT_LABEL = R"assets/static/tagline.png"
-STARTING_SCREEN_PATH = R"assets/static/startingScreen.png"  # for splash screen image
+ICON_PATH = R"Resources/static/icon.ico"  # Window Icon
+TABLE_DEFAULT_LABEL = R"Resources/static/tagline.png"
+STARTING_SCREEN_PATH = R"Resources/static/startingScreen.png"  # for splash screen image
 STARTING_SCREEN_SHOW_TIME = 3 # for this much time the splash Screen will be visible
 
 #QML path
-MAIN_QML_PATH = "assets/Style/masterUI.qss"  # Styles for Main application
+MAIN_QML_PATH = "Resources/Style/masterUI.qss"  # Styles for Main application
 
 # TOOL_TIP_CONSTANTS
 SEARCH_BUTTON_TOOL_TIP = "Click to search"
@@ -150,7 +150,7 @@ DOWNLOAD_CONTINUES = "Downloading..."
 
 
 ####################################### CONSTANTS FOR WALLPAPER PREVIEW #############################################
-WALLPAPER_PREVIEW_STYLE_PATH = "assets/Style/WallPaperPreviewStyle.qss"  # Style for Image Preview Window
+WALLPAPER_PREVIEW_STYLE_PATH = "Resources/Style/WallPaperPreviewStyle.qss"  # Style for Image Preview Window
 WALLPAPER_PREVIEW_TITLE = "Select Wallpaper" # main title for the window
 WALLPAPER_PREVIEW_WIDTH = 600 # fixed width of the window
 WALLPAPER_PREVIEW_HEIGHT = 600 # fixed height for the window
@@ -171,19 +171,19 @@ CUSTOM_WALLPAPER = "Custom Wallpapers"
 
 # SONG CARD
 SONG_CARD_OBJECT_NAME = "Song Card"
-SONG_CARD_WIDTH = VIEW_PANEL_WIDTH - 60
+SONG_CARD_WIDTH = VIEW_PANEL_WIDTH - 20
 SONG_CARD_HEIGHT = 150
 SONG_CARD_IMAGE_WIDTH = 130
 SONG_CARD_IMAGE_HEIGHT = 130
 SONG_CARD_NAME_LABEL_WIDTH = 400
-SONG_CARD_QSS_LOCATION = "assets/Style/SongCard.qss"
+SONG_CARD_QSS_LOCATION = "Resources/Style/SongCard.qss"
 
 # static wallpaper location
-WALLPAPER_ARORA = "assets/static/arora1.jpg"
-WALLPAPER_BLACK_HOLE = "assets/static/blackHole.jpeg"
-WALLPAPER_DESERT = "assets/static/desert.jpeg"
-WALLPAPER_DRAGON = "assets/static/dragon.jpeg"
-WALLPAPER_PLANET = "assets/static/planet.jpeg"
+WALLPAPER_ARORA = "Resources/static/arora1.jpg"
+WALLPAPER_BLACK_HOLE = "Resources/static/blackHole.jpeg"
+WALLPAPER_DESERT = "Resources/static/desert.jpeg"
+WALLPAPER_DRAGON = "Resources/static/dragon.jpeg"
+WALLPAPER_PLANET = "Resources/static/planet.jpeg"
 
 #  CLICKABLE LABEL CONSTANTS
 LOCATION_PROP = "Location"
@@ -191,7 +191,7 @@ LOCATION_PROP = "Location"
 #################   DUMMY FILE    ####################
 TEMP_PATH = "temp"
 DUMMY_RESOURCE_FOLDER = "DummyResourceFolder"
-DUMMY_FILE_STYLE_PATH = "assets/Style/DummyFile_style.qss"
+DUMMY_FILE_STYLE_PATH = "Resources/Style/DummyFile_style.qss"
 DUMMY_WINDOW_WIDTH = 540
 DUMMY_WINDOW_HEIGHT = 300
 
@@ -214,4 +214,4 @@ DB_BODY_LAYOUT_SCROLL_AREA_HEIGHT = 310
 DB_TABLE_SL = "Sl"
 DB_TABLE_SONG_NAME = "Song Name"
 DB_TABLE_DATE = "Date"
-DB_UI_QSS_PATH = "assets/Style/DataBaseManager.qss"
+DB_UI_QSS_PATH = "Resources/Style/DataBaseManager.qss"

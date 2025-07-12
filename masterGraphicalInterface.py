@@ -154,10 +154,6 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.controlSectionLayoutFrame = QFrame() # Provides shape to ControlSectionLayout
         self.controlSectionLayoutFrame.setFixedSize(Constants.CONTROL_SECTION_WIDTH, Constants.CONTROL_SECTION_HEIGHT)
         self.controlSectionLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
-
-        self.viewPanelLayoutFrame = QFrame() # provides shape to the ViewPanelLayout
-        self.viewPanelLayoutFrame.setFixedSize(Constants.VIEW_PANEL_WIDTH, Constants.VIEW_PANEL_HEIGHT)
-        self.viewPanelLayoutFrame.setFrameShape(QFrame.Shape.StyledPanel)
         
         # Horizontal Separators
         self.separator_one = QFrame() # separates Background edit option
@@ -172,7 +168,7 @@ class MasterGraphicalUserInterface(QMainWindow):
         """Should be used in _initializeUI method. This method build scroll areas"""
         self.tableScrollArea = QScrollArea() # provides scroll area to the table view
         self.tableScrollArea.setWidgetResizable(True)
-        self.tableScrollArea.setFixedSize(Constants.VIEW_PANEL_WIDTH -20, Constants.VIEW_PANEL_HEIGHT - 20)
+        self.tableScrollArea.setFixedSize(Constants.VIEW_PANEL_WIDTH, Constants.VIEW_PANEL_HEIGHT)
         self.tableScrollArea.setStyleSheet("background-color: rgba(255, 255, 255, 10);")
         self.tableScrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.tableScrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -194,7 +190,6 @@ class MasterGraphicalUserInterface(QMainWindow):
         self.controlSectionInnerLayout = QVBoxLayout() # holds the control widgets
 
         self.viewPanelLayout = QHBoxLayout() # stores the song details
-        self.viewPanelInnerLayout = QHBoxLayout() # stores the table Scroll Widget
         self.tableHolderLayout = QHBoxLayout() # holds the table
 
         self.informationLayout = QHBoxLayout() # shows the signals given by methods
@@ -333,9 +328,9 @@ class MasterGraphicalUserInterface(QMainWindow):
 
         #VIEW PANEL
         self.actionLayout.addLayout(self.viewPanelLayout)
-        self.viewPanelLayout.addWidget(self.viewPanelLayoutFrame, Qt.AlignmentFlag.AlignCenter)
-        self.viewPanelLayoutFrame.setLayout(self.viewPanelInnerLayout)
-        self.viewPanelInnerLayout.addWidget(self.tableScrollArea)
+        self.viewPanelLayout.addWidget(self.tableScrollArea, Qt.AlignmentFlag.AlignCenter)
+        # self.viewPanelLayoutFrame.setLayout(self.viewPanelInnerLayout)
+        # self.viewPanelInnerLayout.addWidget()
         self.tableScrollArea.setLayout(self.tableHolderLayout)
 
         # INFORMATION HOLDER
